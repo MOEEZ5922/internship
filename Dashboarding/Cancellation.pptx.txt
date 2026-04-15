@@ -1,0 +1,134 @@
+CancellationReason
+Non-Adherent (Count)
+Attempted (Count)
+Adherent (Count)
+Intolerance / Non-adherence / No improvement
+725
+256
+355
+Doctor's request
+342
+175
+432
+Patient's death
+118
+118
+917
+Clinical improvement
+61
+39
+150
+Relocation outside LHF zone
+55
+58
+999
+Transfer CO
+32
+48
+998
+Hospitalisation
+26
+26
+250
+Unhappy patient-change of provider
+16
+16
+197
+Summary cancellation reason all patients
+1
+
+2
+Data ranges from 2023-01 to 2025-01
+All patients in therapy  38,301 unique patients
+ Natural Dropout Patients: 2,036 unique patients
+Effectful Dropout Patients: 598 unique patients
+Gender
+Natural Dropout (%)
+Effectful Dropout (%)
+Male
+75
+66
+Female
+25
+34
+Details of Data
+Natural CancellationReason
+Count
+Transfert CO
+913
+Moving outside the LHF zone
+794
+Death of the patient
+93
+Input error
+51
+Expired prescription
+13
+Holiday transfer (Temporary cancellation)
+5
+IU canceled because patient equipped by another PSAD
+1
+Problem of care - patient without mutual insurance
+1
+Effectful CancellationReason
+Count
+Hospitalisation
+210
+Intolerance / Non-compliance / No improvement
+124
+Doctor's request
+84
+Change of treatment (Outside Switch)
+25
+Unhappy Patient - Change of Provider
+21
+Unhappy doctor - Change of provider
+14
+Clinical improvement
+14
+Care problem - patient unreachable
+9
+Change of doctor - does not work with LHF
+8
+Change of treatment (Switch code Therapy)
+7
+Patient refuses doctor's appointment for treatment
+3
+04
+Dropout Analysis
+
+3
+Duration
+Natural Dropout (%)
+Effectful Dropout (%)
+<1y
+11.81
+25.08
+1-2y
+12.83
+7.63
+2-3y
+10.84
+5.76
+3-4y
+8.63
+4.75
+4-5y
+8.25
+4.92
+5-10y
+29.97
+21.02
+10-15y
+13.48
+17.63
+15-20y
+3.4
+11.02
+20y+
+0.81
+2.2
+04
+Dropout Analysis
+Dropout of Patient
+3
