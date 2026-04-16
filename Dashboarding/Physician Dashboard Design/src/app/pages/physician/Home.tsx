@@ -1,8 +1,10 @@
 import { physicianQueue } from '../../data/mockData';
 import { AlertTriangle, Calendar, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
+import { useState } from 'react';
 
 export default function PhysicianHome() {
+  const [activeTab, setActiveTab] = useState<'urgent' | 'annual'>('urgent');
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'bg-[#E76F51] text-white';
     if (score >= 70) return 'bg-[#F4A261] text-white';
@@ -19,8 +21,25 @@ export default function PhysicianHome() {
         </p>
       </div>
 
-      {/* Urgent Actions Section */}
-      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden">
+      {/* Tab Navigation */}
+      <div className="flex bg-[#E8EEF2] p-1 rounded-lg">
+        <button
+          onClick={() => setActiveTab('urgent')}
+          className={`flex-1 py-3 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'urgent' ? 'bg-white shadow text-[#E76F51]' : 'text-[#5A6B7C] hover:text-[#0A1128]'}`}
+        >
+          <AlertTriangle className="w-4 h-4" /> Urgent Actions ({physicianQueue.urgent.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('annual')}
+          className={`flex-1 py-3 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'annual' ? 'bg-white shadow text-[#2D9596]' : 'text-[#5A6B7C] hover:text-[#0A1128]'}`}
+        >
+          <Calendar className="w-4 h-4" /> Annual Reviews ({physicianQueue.annualReviews.length})
+        </button>
+      </div>
+
+      {activeTab === 'urgent' && (
+      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        {/* Urgent Actions Section */}
         <div className="bg-[#E76F51] px-6 py-4 flex items-center gap-3">
           <AlertTriangle className="w-6 h-6 text-white" />
           <div>
@@ -79,9 +98,11 @@ export default function PhysicianHome() {
           ))}
         </div>
       </div>
+      )}
 
-      {/* Annual Reviews Section */}
-      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden">
+      {activeTab === 'annual' && (
+      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+        {/* Annual Reviews Section */}
         <div className="bg-[#2D9596] px-6 py-4 flex items-center gap-3">
           <Calendar className="w-6 h-6 text-white" />
           <div>
@@ -138,6 +159,7 @@ export default function PhysicianHome() {
           ))}
         </div>
       </div>
+      )}
 
       {/* Info Box */}
       <div className="bg-[#E8EEF2] rounded-xl p-6">

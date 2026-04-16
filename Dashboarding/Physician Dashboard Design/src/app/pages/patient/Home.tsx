@@ -1,14 +1,95 @@
 import { cpapData, interventionData, surveyData } from '../../data/mockData';
-import { Moon, Flame, ChevronRight, Package, FileText, Sparkles, Video, HelpCircle } from 'lucide-react';
+import { Moon, Flame, ChevronRight, Package, FileText, Sparkles, Video, HelpCircle, X, AlertCircle, Play } from 'lucide-react';
+import { useState } from 'react';
 import { Link } from 'react-router';
 
 export default function PatientHome() {
+  const [showVideoBanner, setShowVideoBanner] = useState(true);
+  const [showMicroSurvey, setShowMicroSurvey] = useState(true);
+  const [surveyResponse, setSurveyResponse] = useState<string | null>(null);
+
   const lastNightHours = cpapData.usageHistory[cpapData.usageHistory.length - 1]?.hours || 0;
   const percentComplete = (lastNightHours / 8) * 100;
   const weeklyAverage = cpapData.averageHours;
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto">
+      {/* Auto-Triggered Video Banner */}
+      {showVideoBanner && (
+        <div className="bg-[#0A1128] text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+          <button 
+            onClick={() => setShowVideoBanner(false)}
+            className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          
+          <div className="flex items-start gap-4">
+            <div className="w-14 h-14 bg-[#E76F51]/20 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer">
+              <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=150" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity" />
+              <Play className="w-6 h-6 text-white relative z-10" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <AlertCircle className="w-4 h-4 text-[#E76F51]" />
+                <span className="text-[#E76F51] font-semibold text-xs uppercase tracking-wider">Mask Leak Detected</span>
+              </div>
+              <h3 className="text-lg font-medium mb-3">Watch this 60s fix for your mask</h3>
+              <button 
+                onClick={() => setShowVideoBanner(false)}
+                className="text-sm border border-white/30 px-4 py-1.5 rounded-full hover:bg-white hover:text-[#0A1128] transition-colors"
+              >
+                Watch Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 1-Tap Micro-Survey Toast */}
+      {showMicroSurvey && (
+        <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-[#E8EEF2] relative">
+          <button 
+            onClick={() => setShowMicroSurvey(false)}
+            className="absolute top-4 right-4 text-[#5A6B7C] hover:text-[#0A1128] transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 bg-[#2D9596]/10 rounded-full flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-[#2D9596]" />
+            </div>
+            <div>
+              <h3 className="text-[#0A1128] font-medium">Quick Check-in</h3>
+              <p className="text-sm text-[#5A6B7C]">How did your new mask feel last night?</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+            {['Good 👍', 'Okay 😐', 'Bad 👎'].map((rating) => (
+              <button
+                key={rating}
+                onClick={() => {
+                  setSurveyResponse(rating);
+                  setTimeout(() => setShowMicroSurvey(false), 1500);
+                }}
+                className={`flex-1 py-3 rounded-xl border-2 transition-all font-medium text-sm ${
+                  surveyResponse === rating 
+                    ? 'border-[#2D9596] bg-[#2D9596]/10 text-[#2D9596]' 
+                    : 'border-[#E8EEF2] text-[#5A6B7C] hover:border-[#2D9596]/50'
+                }`}
+              >
+                {rating}
+              </button>
+            ))}
+          </div>
+          {surveyResponse && (
+            <p className="text-center text-sm text-[#6A994E] font-medium mt-4 animate-pulse">
+              Thanks! Your care team has been updated.
+            </p>
+          )}
+        </div>
+      )}
       {/* Next Step Card - Prominent */}
       <div className="bg-gradient-to-br from-[#6A994E] to-[#2D9596] rounded-3xl p-8 text-white shadow-xl">
         <div className="flex items-start justify-between mb-4">

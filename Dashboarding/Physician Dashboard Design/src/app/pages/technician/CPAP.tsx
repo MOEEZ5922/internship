@@ -1,6 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cpapData } from '../../data/mockData';
-import { Clock, Wind, Calendar } from 'lucide-react';
+import { Clock, Wind, Calendar, AlertCircle } from 'lucide-react';
 
 export default function TechnicianCPAP() {
   return (
@@ -30,6 +30,12 @@ export default function TechnicianCPAP() {
             <div className="w-12 h-12 bg-[#2D9596]/10 rounded-lg flex items-center justify-center">
               <Wind className="w-6 h-6 text-[#2D9596]" />
             </div>
+          </div>
+          <div className="pt-3 border-t border-[#E8EEF2]">
+            <p className="text-xs font-semibold text-[#E76F51] flex items-center gap-1 mb-1 uppercase tracking-wider">
+              <AlertCircle className="w-3.5 h-3.5" /> AI Action Prompt
+            </p>
+            <p className="text-sm text-[#E76F51] font-medium tracking-tight">Patient dropout probability is 85%. Immediate mask refit required.</p>
           </div>
         </div>
 

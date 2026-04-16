@@ -1,5 +1,5 @@
 import { technicianQueue } from '../../data/mockData';
-import { AlertTriangle, MapPin, Clock, ChevronRight } from 'lucide-react';
+import { AlertTriangle, MapPin, Clock, ChevronRight, PackageCheck } from 'lucide-react';
 import { Link } from 'react-router';
 
 export default function TechnicianHome() {
@@ -124,13 +124,21 @@ export default function TechnicianHome() {
                     {patient.action}
                   </td>
                   <td className="py-4 px-6">
-                    <Link
-                      to={`/technician/patient/${patient.id}`}
-                      className="flex items-center gap-2 px-4 py-2 bg-[#F4A261] text-white rounded-lg hover:bg-[#F4A261]/90 transition-colors text-xs font-medium whitespace-nowrap"
-                    >
-                      Prep Visit
-                      <ChevronRight className="w-4 h-4" />
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      <Link
+                        to={`/technician/patient/${patient.id}`}
+                        className="flex items-center gap-2 px-4 py-2 bg-[#F4A261] text-white rounded-lg hover:bg-[#F4A261]/90 transition-colors text-xs font-medium whitespace-nowrap"
+                      >
+                        Prep Visit
+                        <ChevronRight className="w-4 h-4" />
+                      </Link>
+                      <button
+                        title="Quick Log Dispatch"
+                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596] hover:text-white transition-all shadow-sm flex-shrink-0"
+                      >
+                        <PackageCheck className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
