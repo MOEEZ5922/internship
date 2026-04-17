@@ -8,6 +8,7 @@ export default function PhysicianInterventions() {
   const [clinicalNotes, setClinicalNotes] = useState('');
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [appIahNotes, setAppIahNotes] = useState('');
+  const [escalationSource, setEscalationSource] = useState<'ai' | 'technician'>('ai');
 
   const handleAppIahSubmit = () => {
     alert(`Clinical Order Submitted:\n\n${appIahNotes}`);
@@ -98,12 +99,22 @@ export default function PhysicianInterventions() {
           {activePathway === 'app_iah' ? (
             // App IAH UI
             <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-               <div className="bg-[#2D9596]/5 border border-[#2D9596]/30 rounded-xl p-6">
-                 <h3 className="text-[#0A1128] font-bold mb-6 flex items-center gap-2"><Activity className="w-5 h-5 text-[#2D9596]"/> Complex AHI Alert (APPEL IAH)</h3>
+                <div className="bg-[#2D9596]/5 border border-[#2D9596]/30 rounded-xl p-6">
+                 <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-[#0A1128] font-bold flex items-center gap-2"><Activity className="w-5 h-5 text-[#2D9596]"/> Complex AHI Alert (APPEL IAH)</h3>
+                    <div className="flex gap-2">
+                       <button onClick={() => setEscalationSource('ai')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${escalationSource === 'ai' ? 'bg-[#2D9596] text-white shadow' : 'bg-white border border-[#E8EEF2] text-[#5A6B7C]'}`}>Simulate AI Trigger</button>
+                       <button onClick={() => setEscalationSource('technician')} className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all ${escalationSource === 'technician' ? 'bg-[#E76F51] text-white shadow' : 'bg-white border border-[#E8EEF2] text-[#5A6B7C]'}`}>Simulate Tech Trigger</button>
+                    </div>
+                 </div>
                  
-                 <p className="text-sm border-l-4 border-[#E76F51] bg-white p-4 rounded-r-lg shadow-sm">
-                   <span className="font-bold text-[#E76F51]">AI Interpretation: </span>
-                   Patient has triggered an escalation module for Severe AHI flow issues. Comprehensive review required to make clinical therapy decisions.
+                 <p className={`text-sm border-l-4 ${escalationSource === 'ai' ? 'border-[#2D9596]' : 'border-[#E76F51]'} bg-white p-4 rounded-r-lg shadow-sm transition-all`}>
+                   <span className={`font-bold ${escalationSource === 'ai' ? 'text-[#2D9596]' : 'text-[#E76F51]'}`}>
+                      {escalationSource === 'ai' ? 'Automated AI Safety Net: ' : 'Manual Technician Escalation: '}
+                   </span>
+                   {escalationSource === 'ai' 
+                       ? 'System backend continuously tracks telemetry and has detected Severe AHI flow issues / critical threshold breach (Risk Score ≥ 8). Automatic algorithm escalation triggered.'
+                       : 'Technician logged "Physician Collaboration (O5 APPEL IAH AIRGENIOUS)". Mechanical troubleshooting exhausted; airflow problem requires clinical review.'}
                  </p>
                </div>
                

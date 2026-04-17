@@ -79,9 +79,9 @@ export default function PhysicianHome() {
                   </p>
                   <div className="flex items-center gap-4 text-sm text-[#5A6B7C]">
                     <span>Last Review: {new Date(patient.lastReview).toLocaleDateString()}</span>
-                    {patient.daysOverdue > 0 && (
+                    {patient.daysActive > 0 && (
                       <span className="text-[#E76F51] font-medium">
-                        {patient.daysOverdue} days overdue
+                        Escalated {patient.daysActive} days ago
                       </span>
                     )}
                   </div>

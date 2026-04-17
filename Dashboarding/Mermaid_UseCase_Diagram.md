@@ -60,6 +60,7 @@ UC_CalcRisk .up.> UC_FlagEsc : <<extend>>\nTrigger Urgent Alert
 UC_FlagEsc .up.> UC_Inbox : <<include>>\nPopulate Inbox
 
 UC_Dispatch .down.> UC_Pathway : <<extend>>\nProvide History
+UC_VisitLog .left.> UC_Inbox : <<extend>>\nLog O5 (APPEL IAH)
 @enduml
 ```
 
@@ -131,4 +132,5 @@ flowchart LR
     UC_FlagEsc -. "&laquo;include&raquo;<br/>Populate Inbox" .-> UC_Inbox
     
     UC_Dispatch -. "&laquo;extend&raquo;<br/>Provide History" .-> UC_Pathway
+    UC_VisitLog -. "&laquo;extend&raquo;<br/>Log O5 (APPEL IAH)" .-> UC_Inbox
 ```

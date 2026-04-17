@@ -1,11 +1,12 @@
 import { Outlet, Link, useLocation } from 'react-router';
-import { Home, Activity, Package, FileText, HelpCircle } from 'lucide-react';
+import { Home, Activity, Package, FileText, HelpCircle, Video } from 'lucide-react';
 
 const navigation = [
   { name: 'Home', href: '/patient', icon: Home },
   { name: 'Sleep', href: '/patient/cpap', icon: Activity },
   { name: 'Equipment', href: '/patient/interventions', icon: Package },
   { name: 'Surveys', href: '/patient/surveys', icon: FileText },
+  { name: 'Videos', href: '/patient/videos', icon: Video },
   { name: 'Help', href: '/patient/help', icon: HelpCircle },
 ];
 
