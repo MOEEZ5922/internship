@@ -59,7 +59,7 @@ export const physicianQueue = {
   ],
 };
 
-// Technician Priority Queue Data
+// Technician Priority Queue Data (Proactive Dropout Prevention)
 export const technicianQueue = [
   {
     id: 1,
@@ -69,7 +69,22 @@ export const technicianQueue = [
     usageCategory: "<2 hrs",
     postalCode: "97214",
     lastContact: "2026-04-10",
-    action: "Urgent Follow-up",
+    action: "Titration Review",
+    behavioralCluster: "Attempting",
+    phase: "Titration",
+    maskType: "AirFit F20 - Medium",
+    lastMaskChange: "2026-01-15",
+    equipmentNeed: ["New Cushion", "Heated Tubing"],
+    leakProfile: { p50: 12.4, p95: 28.5, max: 42.1 },
+    assetTracking: { serial: "LND-7742-XP", assetTag: "TAG-991" },
+    interventionHistory: [
+      { date: "2026-04-01", type: "Remote Pressure Alt", result: "Success (AHI Down)", tech: "J. Doe" },
+      { date: "2026-03-15", type: "Mask Size Swap", result: "Failed (Leak Same)", tech: "A. Smith" },
+    ],
+    monitoringSurveys: [
+      { id: "M1", question: "Mask Comfort (1-10)", answer: "4 (Hurts nose bridge)" },
+      { id: "M2", question: "Ease of Cleaning", answer: "Good" },
+    ]
   },
   {
     id: 2,
@@ -79,7 +94,21 @@ export const technicianQueue = [
     usageCategory: "2-4 hrs",
     postalCode: "97203",
     lastContact: "2026-04-08",
-    action: "Mask Refit",
+    action: "Motivational Call",
+    behavioralCluster: "Struggling",
+    phase: "Acclimation",
+    maskType: "AirFit N20 - Small",
+    lastMaskChange: "2026-02-20",
+    equipmentNeed: ["Chin Strap"],
+    leakProfile: { p50: 8.2, p95: 14.1, max: 19.5 },
+    assetTracking: { serial: "LND-1102-AQ", assetTag: "TAG-882" },
+    interventionHistory: [
+      { date: "2026-03-20", type: "Software Update", result: "Success", tech: "K. Lee" },
+    ],
+    monitoringSurveys: [
+      { id: "M1", question: "Morning Headache?", answer: "Occasional" },
+      { id: "M2", question: "Device Noise", answer: "Acceptable" },
+    ]
   },
   {
     id: 3,
@@ -89,17 +118,59 @@ export const technicianQueue = [
     usageCategory: "<2 hrs",
     postalCode: "97212",
     lastContact: "2026-04-12",
-    action: "Equipment Check",
+    action: "Home Visit Prep",
+    behavioralCluster: "Non-Adherent",
+    phase: "Acclimation",
+    maskType: "AirFit F30 - Medium",
+    lastMaskChange: "2025-11-05",
+    equipmentNeed: ["Mask Refit Kit", "SD Card"],
+    leakProfile: { p50: 15.5, p95: 32.2, max: 48.0 },
+    assetTracking: { serial: "LND-4491-ZZ", assetTag: "TAG-004" },
+    interventionHistory: [
+      { date: "2026-02-10", type: "Humidifier Repair", result: "Resolved", tech: "J. Doe" },
+    ],
+    monitoringSurveys: [
+      { id: "M1", question: "Skin Rash?", answer: "Yes (Cheeks)" },
+      { id: "M2", question: "Dry Mouth?", answer: "Severe" },
+    ]
+  },
+];
+
+// Technician Event-Based Inbox (Reactive Triage for Mechanical/Self-Reported Triggers)
+export const technicianEvents = [
+  {
+    id: 1,
+    type: "Patient Self-Report",
+    severity: "high",
+    detectedAt: "2026-04-19T09:45:00",
+    patient: {
+      name: "Sarah Mitchell",
+      patientId: 1,
+      address: "1425 Maple Street, Portland, OR 97214",
+      phone: "+1 (503) 555-0182",
+      maskType: "AirFit F20 - Medium",
+    },
+    evidence: "Patient reported 'Severe mask discomfort and skin irritation' via the mobile app support tool.",
+    aiNote: "Correlates with 3:15 AM mask removal. High probability of poor seal causing pressure points.",
+    suggestedAction: "In-person mask refit required. Bring sensitive skin liners.",
+    status: "pending",
   },
   {
-    id: 4,
-    patientName: "James Wilson",
-    dropoutRisk: 45,
-    usageHours: 6.2,
-    usageCategory: "4+ hrs",
-    postalCode: "97214",
-    lastContact: "2026-04-05",
-    action: "Routine Check-in",
+    id: 101,
+    type: "Mask Leak",
+    severity: "high",
+    detectedAt: "2026-04-19T07:30:00",
+    patient: {
+      name: "Robert Chen",
+      patientId: 2,
+      address: "842 Oak Avenue, Portland, OR 97203",
+      phone: "+1 (503) 555-0234",
+      maskType: "AirFit N20 - Small",
+    },
+    evidence: "Mask leak exceeded 24 L/min on 3 consecutive nights. Peak leak recorded at 38 L/min.",
+    aiNote: "Pattern is consistent with mask seal degradation or incorrect fit.",
+    suggestedAction: "Dispatch replacement mask kit.",
+    status: "pending",
   },
 ];
 
@@ -395,4 +466,53 @@ export const videoData = {
       rating: null,
     },
   ],
+};
+
+// AI Weekly State — Physician Reference Tab
+export const aiWeeklyState = {
+  weekOf: "2026-04-14",
+  compositeRiskScore: 8.2,
+  previousRiskScore: 6.7,
+  riskTier: "Critical",
+  phaseLabel: "Optimization",
+  confidenceLevel: 84,
+  daysToPredictedDropout: 12,
+
+  clusterAssignment: {
+    current: "Attempting",
+    previous: "Adherent",
+    changedThisWeek: true,
+    description: "Patient has been reclassified from Adherent to Attempting due to sustained usage decline and increasing residual AHI variance.",
+  },
+
+  sevenDayRolling: [
+    { day: "Mon Apr 14", usageHours: 6.1, leakRate: 14.2, ahi: 4.1 },
+    { day: "Tue Apr 15", usageHours: 5.4, leakRate: 19.8, ahi: 5.3 },
+    { day: "Wed Apr 16", usageHours: 3.8, leakRate: 28.4, ahi: 7.8 },
+    { day: "Thu Apr 17", usageHours: 2.1, leakRate: 34.1, ahi: 10.2 },
+    { day: "Fri Apr 18", usageHours: 1.9, leakRate: 36.7, ahi: 11.4 },
+    { day: "Sat Apr 19", usageHours: 2.4, leakRate: 31.2, ahi: 9.8 },
+    { day: "Sun Apr 20", usageHours: 1.2, leakRate: 38.0, ahi: 12.4 },
+  ],
+
+  riskFactorBreakdown: [
+    { factor: "Usage Decay",         contribution: 32, direction: "worsening" },
+    { factor: "Mask Leak Instability", contribution: 28, direction: "worsening" },
+    { factor: "Residual AHI Burden",  contribution: 22, direction: "worsening" },
+    { factor: "ESS Score (12/24)",    contribution: 10, direction: "stable"    },
+    { factor: "PSQI Score (8/21)",    contribution: 8,  direction: "stable"    },
+  ],
+
+  activeFlags: [
+    { label: "Leak Instability",    severity: "high"   },
+    { label: "Usage Decay",         severity: "high"   },
+    { label: "Residual AHI Burden", severity: "medium" },
+  ],
+
+  nextBestAction: {
+    type: "Physician Escalation",
+    deliveryMode: "Exception-Based Inbox",
+    rationale: "Three consecutive failed technician interventions with no improvement. Composite risk score has crossed the clinical threshold (≥8). AI has escalated to physician for clinical pathway review.",
+    reassessmentWindow: "7 days post-intervention",
+  },
 };

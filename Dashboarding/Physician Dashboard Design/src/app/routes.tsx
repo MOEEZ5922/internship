@@ -10,8 +10,10 @@ import PhysicianBiomarkers from "./pages/physician/Biomarkers";
 import PhysicianInterventions from "./pages/physician/Interventions";
 import PhysicianSurveys from "./pages/physician/Surveys";
 import PhysicianCPAP from "./pages/physician/CPAP";
+import PhysicianSummary from "./pages/physician/Summary";
 import PhysicianHelp from "./pages/physician/Help";
 import PhysicianDirectory from "./pages/physician/Directory";
+import PhysicianAIAnalysis from "./pages/physician/AIAnalysis";
 import TechnicianHome from "./pages/technician/Home";
 import TechnicianCPAP from "./pages/technician/CPAP";
 import TechnicianInterventions from "./pages/technician/Interventions";
@@ -41,10 +43,12 @@ export const router = createBrowserRouter([
         path: "patient/:patientId",
         Component: PhysicianPatientLayout,
         children: [
-          { index: true, Component: PhysicianCPAP },
+          { index: true, Component: PhysicianSummary },
+          { path: "trends", Component: PhysicianCPAP },
           { path: "biomarkers", Component: PhysicianBiomarkers },
           { path: "interventions", Component: PhysicianInterventions },
           { path: "surveys", Component: PhysicianSurveys },
+          { path: "ai-analysis", Component: PhysicianAIAnalysis },
         ],
       },
     ],

@@ -13,10 +13,12 @@ export default function PhysicianPatientLayout() {
   };
 
   const tabs = [
-    { name: 'CPAP Trends', href: `/physician/patient/${patientId}` },
+    { name: 'Summary', href: `/physician/patient/${patientId}` },
+    { name: 'Trends', href: `/physician/patient/${patientId}/trends` },
     { name: 'Biomarkers', href: `/physician/patient/${patientId}/biomarkers` },
     { name: 'Interventions', href: `/physician/patient/${patientId}/interventions` },
     { name: 'Medical Surveys', href: `/physician/patient/${patientId}/surveys` },
+    { name: 'AI Analysis', href: `/physician/patient/${patientId}/ai-analysis` },
   ];
 
   return (

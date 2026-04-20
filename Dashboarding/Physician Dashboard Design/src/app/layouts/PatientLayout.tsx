@@ -44,14 +44,14 @@ export default function PatientLayout() {
               <Link
                 key={item.name}
                 to={item.href}
-                className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[70px] ${
+                className={`flex flex-col items-center gap-1.5 px-4 py-3 rounded-xl transition-all min-w-[80px] ${
                   isActive
                     ? 'text-[#6A994E]'
-                    : 'text-[#5A6B7C]'
+                    : 'text-[#414D5B]'
                 }`}
               >
-                <Icon className={`w-6 h-6 ${isActive ? 'scale-110' : ''} transition-transform`} />
-                <span className="text-xs font-medium">{item.name}</span>
+                <Icon className={`w-7 h-7 ${isActive ? 'scale-110' : ''} transition-transform`} />
+                <span className="text-[13px] font-semibold">{item.name}</span>
               </Link>
             );
           })}

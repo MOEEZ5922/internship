@@ -13,104 +13,99 @@ export default function PatientHome() {
   const weeklyAverage = cpapData.averageHours;
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl mx-auto">
-      {/* Auto-Triggered Video Banner */}
-      {showVideoBanner && (
-        <div className="bg-[#0A1128] text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-          <button 
-            onClick={() => setShowVideoBanner(false)}
-            className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 bg-[#E76F51]/20 rounded-2xl flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer">
-              <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=150" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity" />
-              <Play className="w-6 h-6 text-white relative z-10" />
+    <div className="p-6 space-y-8 max-w-2xl mx-auto pb-24">
+      {/* 2-Minute Objective: Action Center */}
+      <div className="space-y-4">
+        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest px-2">Ready for Action</h2>
+        
+        {/* Persistent AI Trigger (Non-dismissible for completeness) */}
+        <div className="bg-[#0A1128] text-white rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border-2 border-white/10">
+          <div className="flex items-start gap-6">
+            <div className="w-16 h-16 bg-[#E76F51]/20 rounded-[1.25rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer shadow-lg">
+              <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=150" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all scale-110 group-hover:scale-100" />
+              <div className="absolute inset-0 bg-[#E76F51]/20 group-hover:bg-transparent transition-all" />
+              <Play className="w-8 h-8 text-white relative z-10 drop-shadow-md" />
             </div>
             <div>
-              <div className="flex items-center gap-2 mb-1">
-                <AlertCircle className="w-4 h-4 text-[#E76F51]" />
-                <span className="text-[#E76F51] font-semibold text-xs uppercase tracking-wider">Mask Leak Detected</span>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-[#E76F51] animate-pulse" />
+                <span className="text-[#E76F51] font-bold text-xs uppercase tracking-widest">Priority Task: Mask Leak</span>
               </div>
-              <h3 className="text-lg font-medium mb-3">Watch this 60s fix for your mask</h3>
-              <button 
-                onClick={() => setShowVideoBanner(false)}
-                className="text-sm border border-white/30 px-4 py-1.5 rounded-full hover:bg-white hover:text-[#0A1128] transition-colors"
-              >
-                Watch Now
-              </button>
+              <h3 className="text-xl font-bold mb-4 leading-tight">We detected a leak yesterday. Let's fix it now with a 60s guide.</h3>
+              <div className="flex gap-3">
+                <button 
+                  className="bg-[#E76F51] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#d6654b] transition-all shadow-lg active:scale-95"
+                >
+                  Watch Now
+                </button>
+                <button className="text-white/60 text-sm hover:text-white transition-colors">
+                  Check Mask Settings →
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      )}
 
-      {/* 1-Tap Micro-Survey Toast */}
-      {showMicroSurvey && (
-        <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-[#E8EEF2] relative">
-          <button 
-            onClick={() => setShowMicroSurvey(false)}
-            className="absolute top-4 right-4 text-[#5A6B7C] hover:text-[#0A1128] transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-[#2D9596]/10 rounded-full flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-[#2D9596]" />
-            </div>
+        {/* Persistent Survey Reminder */}
+        <div className="bg-gradient-to-br from-[#6A994E] to-[#2D9596] rounded-[2rem] p-8 text-white shadow-xl">
+          <div className="flex items-start justify-between mb-6">
             <div>
-              <h3 className="text-[#0A1128] font-medium">Quick Check-in</h3>
-              <p className="text-sm text-[#5A6B7C]">How did your new mask feel last night?</p>
+              <div className="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest inline-block mb-2">Required Survey</div>
+              <h2 className="text-2xl font-bold italic">"How is your sleep tonight?"</h2>
+            </div>
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center shadow-inner">
+              <FileText className="w-7 h-7" />
             </div>
           </div>
-          
-          <div className="flex gap-3">
-            {['Good 👍', 'Okay 😐', 'Bad 👎'].map((rating) => (
-              <button
-                key={rating}
-                onClick={() => {
-                  setSurveyResponse(rating);
-                  setTimeout(() => setShowMicroSurvey(false), 1500);
-                }}
-                className={`flex-1 py-3 rounded-xl border-2 transition-all font-medium text-sm ${
-                  surveyResponse === rating 
-                    ? 'border-[#2D9596] bg-[#2D9596]/10 text-[#2D9596]' 
-                    : 'border-[#E8EEF2] text-[#5A6B7C] hover:border-[#2D9596]/50'
-                }`}
-              >
-                {rating}
-              </button>
-            ))}
-          </div>
-          {surveyResponse && (
-            <p className="text-center text-sm text-[#6A994E] font-medium mt-4 animate-pulse">
-              Thanks! Your care team has been updated.
-            </p>
-          )}
+          <p className="text-white/90 mb-6 leading-relaxed">
+            Your clinical team needs this survey to calibrate your therapy. <br/>
+            <span className="font-bold">Due in 3 days.</span>
+          </p>
+          <Link
+            to="/patient/surveys"
+            className="flex items-center justify-center gap-3 w-full bg-white text-[#2D9596] py-5 rounded-2xl font-bold hover:bg-[#f0f9f9] transition-all shadow-xl active:scale-98"
+          >
+            Finish Survey
+            <ChevronRight className="w-6 h-6" />
+          </Link>
         </div>
-      )}
-      {/* Next Step Card - Prominent */}
-      <div className="bg-gradient-to-br from-[#6A994E] to-[#2D9596] rounded-3xl p-8 text-white shadow-xl">
-        <div className="flex items-start justify-between mb-4">
+      </div>
+
+      {/* 1-Tap Micro-Check (State of the Art Micro-UX) */}
+      <div className="bg-white rounded-[2rem] p-8 shadow-sm border-2 border-[#E8EEF2] relative group hover:border-[#2D9596]/30 transition-all">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 bg-[#2D9596]/10 rounded-[1.25rem] flex items-center justify-center group-hover:rotate-12 transition-transform">
+            <Sparkles className="w-6 h-6 text-[#2D9596]" />
+          </div>
           <div>
-            <p className="text-white/90 text-sm mb-1">Your Next Step</p>
-            <h2 className="text-2xl font-bold">1-Month Check-In Survey</h2>
-          </div>
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <FileText className="w-6 h-6" />
+            <h3 className="text-[#0A1128] font-bold text-lg">Daily Pulse</h3>
+            <p className="text-sm text-[#414D5B]">Did you feel rested this morning?</p>
           </div>
         </div>
-        <p className="text-white/90 mb-6">
-          Due in 3 days • 8 quick questions • Takes ~5 minutes
-        </p>
-        <Link
-          to="/patient/surveys"
-          className="flex items-center justify-center gap-2 w-full bg-white text-[#2D9596] py-4 rounded-xl font-semibold hover:bg-white/95 transition-all shadow-md"
-        >
-          Start Survey
-          <ChevronRight className="w-5 h-5" />
-        </Link>
+        
+        <div className="flex gap-3">
+          {['Good 👍', 'Okay 😐', 'Bad 👎'].map((rating) => (
+            <button
+              key={rating}
+              onClick={() => {
+                setSurveyResponse(rating);
+                setTimeout(() => setShowMicroSurvey(false), 1500);
+              }}
+              className={`flex-1 py-4 rounded-xl border-2 transition-all font-bold text-sm ${
+                surveyResponse === rating 
+                  ? 'border-[#2D9596] bg-[#2D9596]/10 text-[#2D9596]' 
+                  : 'border-[#E8EEF2] text-[#414D5B] hover:border-[#2D9596]/50 shadow-sm'
+              }`}
+            >
+              {rating}
+            </button>
+          ))}
+        </div>
+        {surveyResponse && (
+          <p className="text-center text-sm text-[#6A994E] font-bold mt-4 animate-pulse">
+            Thanks! Your care team has been updated.
+          </p>
+        )}
       </div>
 
       {/* Sleep Progress Rings */}

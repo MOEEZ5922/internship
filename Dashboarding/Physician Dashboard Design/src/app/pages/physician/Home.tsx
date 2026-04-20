@@ -1,175 +1,166 @@
 import { physicianQueue } from '../../data/mockData';
-import { AlertTriangle, Calendar, ChevronRight } from 'lucide-react';
+import { AlertTriangle, Calendar, ChevronRight, Activity, Search, Filter } from 'lucide-react';
 import { Link } from 'react-router';
 import { useState } from 'react';
+import SummaryContent from '../../components/SummaryContent';
 
 export default function PhysicianHome() {
   const [activeTab, setActiveTab] = useState<'urgent' | 'annual'>('urgent');
+  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(physicianQueue.urgent[0]?.id || null);
+
   const getRiskColor = (score: number) => {
-    if (score >= 80) return 'bg-[#E76F51] text-white';
-    if (score >= 70) return 'bg-[#F4A261] text-white';
-    return 'bg-[#6A994E] text-white';
+    if (score >= 80) return 'text-[#E76F51]';
+    if (score >= 70) return 'text-[#F4A261]';
+    return 'text-[#6A994E]';
   };
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl text-[#0A1128] mb-2">Exception-Based Inbox</h1>
-        <p className="text-[#5A6B7C]">
-          Clinical escalations only. All routine cases are filtered out.
-        </p>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="flex bg-[#E8EEF2] p-1 rounded-lg">
-        <button
-          onClick={() => setActiveTab('urgent')}
-          className={`flex-1 py-3 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'urgent' ? 'bg-white shadow text-[#E76F51]' : 'text-[#5A6B7C] hover:text-[#0A1128]'}`}
-        >
-          <AlertTriangle className="w-4 h-4" /> Urgent Actions ({physicianQueue.urgent.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('annual')}
-          className={`flex-1 py-3 text-sm font-semibold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'annual' ? 'bg-white shadow text-[#2D9596]' : 'text-[#5A6B7C] hover:text-[#0A1128]'}`}
-        >
-          <Calendar className="w-4 h-4" /> Annual Reviews ({physicianQueue.annualReviews.length})
-        </button>
-      </div>
-
-      {activeTab === 'urgent' && (
-      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
-        {/* Urgent Actions Section */}
-        <div className="bg-[#E76F51] px-6 py-4 flex items-center gap-3">
-          <AlertTriangle className="w-6 h-6 text-white" />
+    <div className="flex h-full bg-[#FAFAFA] overflow-hidden">
+      
+      {/* Left Pane: Patient List (Master) */}
+      <div className="w-1/3 xl:w-1/4 border-r border-[#E8EEF2] bg-white flex flex-col min-w-[380px]">
+        {/* Header with Search/Filter */}
+        <div className="p-6 border-b border-[#E8EEF2] space-y-4">
           <div>
-            <h2 className="text-xl text-white">Urgent Actions</h2>
-            <p className="text-white/90 text-sm">
-              Risk Score ≥8 or Complex AHI Patterns
-            </p>
+            <h1 className="text-xl font-bold text-[#0A1128]">Exception Inbox</h1>
+            <p className="text-xs text-[#5A6B7C]">AI-filtered clinical escalations</p>
           </div>
-          <div className="ml-auto">
-            <span className="bg-white text-[#E76F51] px-4 py-1 rounded-full font-semibold">
-              {physicianQueue.urgent.length} Patients
-            </span>
+          
+          <div className="flex gap-2 bg-[#E8EEF2]/50 p-1 rounded-lg">
+            <button
+              onClick={() => {
+                setActiveTab('urgent');
+                setSelectedPatientId(physicianQueue.urgent[0]?.id || null);
+              }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'urgent' ? 'bg-white shadow text-[#E76F51]' : 'text-[#5A6B7C]'}`}
+            >
+              <AlertTriangle className="w-3.5 h-3.5" /> Urgent ({physicianQueue.urgent.length})
+            </button>
+            <button
+              onClick={() => {
+                setActiveTab('annual');
+                setSelectedPatientId(physicianQueue.annualReviews[0]?.id || null);
+              }}
+              className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'annual' ? 'bg-white shadow text-[#2D9596]' : 'text-[#5A6B7C]'}`}
+            >
+              <Calendar className="w-3.5 h-3.5" /> Reviews ({physicianQueue.annualReviews.length})
+            </button>
           </div>
         </div>
 
-        <div className="divide-y divide-[#E8EEF2]">
-          {physicianQueue.urgent.map((patient) => (
-            <div
-              key={patient.id}
-              className="p-6 hover:bg-[#FAFAFA] transition-colors cursor-pointer"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg text-[#0A1128] font-medium">
-                      {patient.patientName}
-                    </h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRiskColor(patient.riskScore)}`}>
-                      Risk: {patient.riskScore}
+        {/* Scrollable List */}
+        <div className="flex-1 overflow-auto">
+          {activeTab === 'urgent' ? (
+            <div className="divide-y divide-[#E8EEF2]">
+              {physicianQueue.urgent.map((patient) => (
+                <div
+                  key={patient.id}
+                  onClick={() => setSelectedPatientId(patient.id)}
+                  className={`p-5 cursor-pointer transition-all border-l-4 ${
+                    selectedPatientId === patient.id 
+                      ? 'bg-[#E8EEF2]/30 border-[#E76F51]' 
+                      : 'border-transparent hover:bg-[#FAFAFA]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-[#0A1128]">{patient.patientName}</h3>
+                    <span className={`text-xs font-bold ${getRiskColor(patient.riskScore)}`}>
+                      {patient.riskScore}/100
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#E8EEF2] text-[#5A6B7C]">
+                  </div>
+                  <p className="text-xs text-[#E76F51] font-medium mb-2 line-clamp-1">
+                    {patient.reason}
+                  </p>
+                  <div className="flex items-center justify-between text-[10px] text-[#5A6B7C]">
+                    <span>Escalated {patient.daysActive}d ago</span>
+                    <span className="bg-[#E8EEF2] px-2 py-0.5 rounded font-medium uppercase tracking-tight">
                       {patient.category}
                     </span>
                   </div>
-                  <p className="text-[#E76F51] font-medium mb-2">
-                    {patient.reason}
-                  </p>
-                  <div className="flex items-center gap-4 text-sm text-[#5A6B7C]">
-                    <span>Last Review: {new Date(patient.lastReview).toLocaleDateString()}</span>
-                    {patient.daysActive > 0 && (
-                      <span className="text-[#E76F51] font-medium">
-                        Escalated {patient.daysActive} days ago
-                      </span>
-                    )}
-                  </div>
                 </div>
-                <Link
-                  to={`/physician/patient/${patient.id}`}
-                  className="flex items-center gap-2 px-4 py-2 bg-[#2D9596] text-white rounded-lg hover:bg-[#2D9596]/90 transition-colors"
-                >
-                  Review
-                  <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-      )}
-
-      {activeTab === 'annual' && (
-      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
-        {/* Annual Reviews Section */}
-        <div className="bg-[#2D9596] px-6 py-4 flex items-center gap-3">
-          <Calendar className="w-6 h-6 text-white" />
-          <div>
-            <h2 className="text-xl text-white">Annual Reviews</h2>
-            <p className="text-white/90 text-sm">
-              Patients due for yearly assessment
-            </p>
-          </div>
-          <div className="ml-auto">
-            <span className="bg-white text-[#2D9596] px-4 py-1 rounded-full font-semibold">
-              {physicianQueue.annualReviews.length} Patients
-            </span>
-          </div>
-        </div>
-
-        <div className="divide-y divide-[#E8EEF2]">
-          {physicianQueue.annualReviews.map((patient) => (
-            <div
-              key={patient.id}
-              className="p-6 hover:bg-[#FAFAFA] transition-colors cursor-pointer"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-lg text-[#0A1128] font-medium">
-                      {patient.patientName}
-                    </h3>
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      patient.status === 'Overdue'
-                        ? 'bg-[#E76F51] text-white'
-                        : 'bg-[#F4A261] text-white'
+          ) : (
+            <div className="divide-y divide-[#E8EEF2]">
+               {physicianQueue.annualReviews.map((patient) => (
+                <div
+                  key={patient.id}
+                  onClick={() => setSelectedPatientId(patient.id)}
+                  className={`p-5 cursor-pointer transition-all border-l-4 ${
+                    selectedPatientId === patient.id 
+                      ? 'bg-[#E8EEF2]/30 border-[#2D9596]' 
+                      : 'border-transparent hover:bg-[#FAFAFA]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-bold text-[#0A1128]">{patient.patientName}</h3>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      patient.status === 'Overdue' ? 'bg-[#E76F51] text-white' : 'bg-[#F4A261] text-white'
                     }`}>
                       {patient.status}
                     </span>
-                    <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#E8EEF2] text-[#5A6B7C]">
-                      Risk: {patient.riskScore}
-                    </span>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-[#5A6B7C]">
-                    <span>Therapy Start: {new Date(patient.therapyStart).toLocaleDateString()}</span>
-                    <span>
-                      {patient.daysUntilDue < 0
-                        ? `${Math.abs(patient.daysUntilDue)} days overdue`
-                        : `Due in ${patient.daysUntilDue} days`}
-                    </span>
+                  <div className="flex items-center justify-between text-[10px] text-[#5A6B7C]">
+                    <span>Due in {patient.daysUntilDue}d</span>
+                    <span className="font-medium">Risk: {patient.riskScore}</span>
                   </div>
                 </div>
-                <button className="flex items-center gap-2 px-4 py-2 bg-[#2D9596] text-white rounded-lg hover:bg-[#2D9596]/90 transition-colors">
-                  Schedule
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
+              ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
-      )}
 
-      {/* Info Box */}
-      <div className="bg-[#E8EEF2] rounded-xl p-6">
-        <h3 className="text-[#0A1128] font-medium mb-2">ℹ️ About This View</h3>
-        <p className="text-[#5A6B7C] text-sm">
-          This exception-based inbox hides all routine patients and mechanical noise. You only see
-          patients requiring clinical escalation (Risk ≥8), complex AHI patterns (central vs.
-          obstructive), or annual review deadlines. AI Weekly State data is already baked into the
-          sorting algorithm.
-        </p>
+      {/* Right Pane: Quick Review Detail (Detail) */}
+      <div className="flex-1 bg-white flex flex-col overflow-hidden">
+        {selectedPatientId ? (
+          <div className="h-full flex flex-col animate-in fade-in slide-in-from-right-4 duration-500">
+            {/* Split Pane Header */}
+            <div className="p-6 border-b border-[#E8EEF2] flex items-center justify-between bg-white shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#2D9596]/10 rounded-full flex items-center justify-center">
+                  <Activity className="w-6 h-6 text-[#2D9596]" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-[#0A1128]">
+                    {activeTab === 'urgent' 
+                      ? physicianQueue.urgent.find(p => p.id === selectedPatientId)?.patientName 
+                      : physicianQueue.annualReviews.find(p => p.id === selectedPatientId)?.patientName}
+                  </h2>
+                  <p className="text-xs text-[#5A6B7C]">
+                    Clinical Decision Support Overview
+                  </p>
+                </div>
+              </div>
+              <Link
+                to={`/physician/patient/${selectedPatientId}`}
+                className="flex items-center gap-2 px-4 py-2 bg-[#2D9596] text-white rounded-lg hover:bg-[#247a7b] transition-all font-bold text-sm shadow-md"
+              >
+                Full Patient View
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+            
+            {/* Embedded Summary Content */}
+            <div className="flex-1 overflow-auto bg-[#FAFAFA]">
+              <SummaryContent patientId={selectedPatientId.toString()} isCompact={true} />
+              
+              <div className="p-8 pb-12">
+                 <p className="text-[10px] text-center text-[#5A6B7C] uppercase tracking-widest leading-relaxed">
+                   AI Exception Filtering Active • Lindē Clinical Platform v4.0
+                 </p>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-[#5A6B7C]">
+            <Activity className="w-16 h-16 opacity-10 mb-6" />
+            <h2 className="text-xl font-bold text-[#0A1128] mb-2">No Patient Selected</h2>
+            <p className="text-sm max-w-xs leading-relaxed">
+              Select a patient from the exception list to start your 2-minute clinical review.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

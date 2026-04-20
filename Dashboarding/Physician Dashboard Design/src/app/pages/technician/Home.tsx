@@ -1,179 +1,317 @@
-import { technicianQueue } from '../../data/mockData';
-import { AlertTriangle, MapPin, Clock, ChevronRight, PackageCheck } from 'lucide-react';
+import { useState } from 'react';
+import { technicianEvents, technicianQueue } from '../../data/mockData';
+import { 
+  AlertTriangle, 
+  Droplets, 
+  Moon, 
+  Wrench, 
+  CheckCircle, 
+  XCircle, 
+  Phone, 
+  MapPin, 
+  ChevronDown, 
+  ChevronUp, 
+  Clock, 
+  Users, 
+  Search, 
+  Filter, 
+  ChevronRight,
+  MessageSquare,
+  Package as PackageIcon
+} from 'lucide-react';
 import { Link } from 'react-router';
+import VisitPrepCard from '../../components/VisitPrepCard';
+
+type EventStatus = 'pending' | 'confirmed' | 'dismissed';
+
+const eventTypeConfig: Record<string, { icon: React.ReactNode; color: string; bg: string }> = {
+  'Mask Leak':           { icon: <Droplets className="w-5 h-5" />,      color: 'text-[#E76F51]', bg: 'bg-[#E76F51]' },
+  'Usage Drop':          { icon: <Moon className="w-5 h-5" />,          color: 'text-[#F4A261]', bg: 'bg-[#F4A261]' },
+  'Missed Nights':       { icon: <AlertTriangle className="w-5 h-5" />, color: 'text-[#F4A261]', bg: 'bg-[#F4A261]' },
+  'Equipment Alert':     { icon: <Wrench className="w-5 h-5" />,        color: 'text-[#2D9596]', bg: 'bg-[#2D9596]' },
+  'Patient Self-Report': { icon: <MessageSquare className="w-5 h-5" />, color: 'text-[#2D9596]', bg: 'bg-[#2D9596]' },
+};
+
+const dismissReasons = [
+  'Patient confirmed no issue on call',
+  'Data transmission error — not a real event',
+  'Patient recently self-resolved',
+  'Known calibration anomaly',
+  'Other',
+];
 
 export default function TechnicianHome() {
-  const getRiskColor = (risk: number) => {
-    if (risk >= 80) return 'bg-[#E76F51] text-white';
-    if (risk >= 60) return 'bg-[#F4A261] text-white';
-    return 'bg-[#6A994E] text-white';
+  const [activeTab, setActiveTab] = useState<'events' | 'queue'>('events');
+  const [statusMap, setStatusMap] = useState<Record<number, EventStatus>>(
+    Object.fromEntries(technicianEvents.map(e => [e.id, 'pending']))
+  );
+  const [selectedEventId, setSelectedEventId] = useState<number | null>(technicianEvents.filter(e => statusMap[e.id] === 'pending')[0]?.id || null);
+  const [selectedQueuePatientId, setSelectedQueuePatientId] = useState<number | null>(technicianQueue[0]?.id || null);
+  
+  const [dismissingId, setDismissingId] = useState<number | null>(null);
+  const [dismissReason, setDismissReason] = useState('');
+
+  const pending   = technicianEvents.filter(e => statusMap[e.id] === 'pending');
+  const confirmed = technicianEvents.filter(e => statusMap[e.id] === 'confirmed');
+
+  const handleConfirm = (id: number) => {
+    setStatusMap(prev => ({ ...prev, [id]: 'confirmed' }));
+    const nextPending = pending.find(e => e.id !== id);
+    setSelectedEventId(nextPending?.id || null);
   };
 
-  const getUsageBadge = (category: string) => {
-    if (category === '<2 hrs') return 'bg-[#E76F51] text-white';
-    if (category === '2-4 hrs') return 'bg-[#F4A261] text-white';
-    return 'bg-[#6A994E] text-white';
+  const handleDismiss = (id: number) => {
+    if (!dismissReason) return;
+    setStatusMap(prev => ({ ...prev, [id]: 'dismissed' }));
+    setDismissingId(null);
+    setDismissReason('');
+    const nextPending = pending.find(e => e.id !== id);
+    setSelectedEventId(nextPending?.id || null);
   };
+
+  const formatTime = (iso: string) => {
+    const date = new Date(iso);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  };
+
+  const selectedEvent = technicianEvents.find(e => e.id === selectedEventId);
+  const selectedQueuePatient = technicianQueue.find(p => p.id === selectedQueuePatientId);
 
   return (
-    <div className="p-8 space-y-8">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl text-[#0A1128] mb-2">Unified Priority Queue</h1>
-        <p className="text-[#5A6B7C]">
-          Sorted strictly by Dropout Risk and Usage Hours. Tackle high-risk, low-usage patients first.
-        </p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-4 gap-6">
-        <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-[#5A6B7C]">Critical (&lt;2 hrs)</p>
-            <AlertTriangle className="w-5 h-5 text-[#E76F51]" />
-          </div>
-          <p className="text-3xl font-semibold text-[#0A1128]">
-            {technicianQueue.filter(p => p.usageCategory === '<2 hrs').length}
-          </p>
+    <div className="flex flex-col h-full bg-[#FAFAFA] overflow-hidden">
+      
+      {/* Top Header / Stats Row */}
+      <div className="bg-white border-b border-[#E8EEF2] px-8 py-4 flex items-center justify-between shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-[#0A1128]">Technician Workbench</h1>
+          <p className="text-xs text-[#5A6B7C]">Linde Clinical Logistics Platform v4.0</p>
         </div>
-        <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-[#5A6B7C]">At Risk (2-4 hrs)</p>
-            <Clock className="w-5 h-5 text-[#F4A261]" />
-          </div>
-          <p className="text-3xl font-semibold text-[#0A1128]">
-            {technicianQueue.filter(p => p.usageCategory === '2-4 hrs').length}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-[#5A6B7C]">Stable (4+ hrs)</p>
-            <Clock className="w-5 h-5 text-[#6A994E]" />
-          </div>
-          <p className="text-3xl font-semibold text-[#0A1128]">
-            {technicianQueue.filter(p => p.usageCategory === '4+ hrs').length}
-          </p>
-        </div>
-        <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-[#5A6B7C]">Total Queue</p>
-            <MapPin className="w-5 h-5 text-[#2D9596]" />
-          </div>
-          <p className="text-3xl font-semibold text-[#0A1128]">
-            {technicianQueue.length}
-          </p>
+        
+        <div className="flex gap-4">
+           {[
+             { label: 'Pending Triage', val: pending.length, color: 'text-[#E76F51]' },
+             { label: 'Retention Queue', val: technicianQueue.length, color: 'text-[#2D9596]' },
+             { label: 'Maintenance Cycle', val: technicianQueue.filter(p => p.interventionHistory.length > 1).length, color: 'text-[#F4A261]' }
+           ].map(stat => (
+             <div key={stat.label} className="bg-[#FAFAFA] px-4 py-2 rounded-lg border border-[#E8EEF2]">
+               <p className="text-[10px] uppercase font-bold text-[#5A6B7C] tracking-wide">{stat.label}</p>
+               <p className={`text-lg font-bold ${stat.color}`}>{stat.val}</p>
+             </div>
+           ))}
         </div>
       </div>
 
-      {/* Priority Queue Table */}
-      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-[#F4A261] text-white">
-                <th className="text-left py-4 px-6 font-medium">Priority</th>
-                <th className="text-left py-4 px-6 font-medium">Patient Name</th>
-                <th className="text-left py-4 px-6 font-medium">Dropout Risk</th>
-                <th className="text-left py-4 px-6 font-medium">Usage (hrs)</th>
-                <th className="text-left py-4 px-6 font-medium">Category</th>
-                <th className="text-left py-4 px-6 font-medium">Postal Code</th>
-                <th className="text-left py-4 px-6 font-medium">Last Contact</th>
-                <th className="text-left py-4 px-6 font-medium">Action Required</th>
-                <th className="text-left py-4 px-6 font-medium"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#E8EEF2]">
-              {technicianQueue.map((patient, index) => (
-                <tr
-                  key={patient.id}
-                  className="hover:bg-[#FAFAFA] transition-colors"
-                >
-                  <td className="py-4 px-6 text-center">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#E8EEF2] text-[#0A1128] font-semibold">
-                      {index + 1}
-                    </div>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className="text-[#0A1128] font-medium">
-                      {patient.patientName}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getRiskColor(patient.dropoutRisk)}`}>
-                      {patient.dropoutRisk}%
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-[#0A1128] font-medium">
-                    {patient.usageHours.toFixed(1)}
-                  </td>
-                  <td className="py-4 px-6">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getUsageBadge(patient.usageCategory)}`}>
-                      {patient.usageCategory}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2 text-[#5A6B7C]">
-                      <MapPin className="w-4 h-4" />
-                      <span>{patient.postalCode}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-6 text-[#5A6B7C]">
-                    {new Date(patient.lastContact).toLocaleDateString()}
-                  </td>
-                  <td className="py-4 px-6 text-[#E76F51] font-medium">
-                    {patient.action}
-                  </td>
-                  <td className="py-4 px-6">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        to={`/technician/patient/${patient.id}`}
-                        className="flex items-center gap-2 px-4 py-2 bg-[#F4A261] text-white rounded-lg hover:bg-[#F4A261]/90 transition-colors text-xs font-medium whitespace-nowrap"
-                      >
-                        Prep Visit
-                        <ChevronRight className="w-4 h-4" />
-                      </Link>
-                      <button
-                        title="Quick Log Dispatch"
-                        className="flex items-center justify-center w-8 h-8 rounded-lg bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596] hover:text-white transition-all shadow-sm flex-shrink-0"
-                      >
-                        <PackageCheck className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Tab Switcher */}
+      <div className="px-8 pt-4 bg-white border-b border-[#E8EEF2] shrink-0">
+        <div className="flex gap-8">
+          <button
+            onClick={() => setActiveTab('events')}
+            className={`pb-4 text-sm font-bold transition-all border-b-2 ${activeTab === 'events' ? 'border-[#E76F51] text-[#E76F51]' : 'border-transparent text-[#5A6B7C] hover:text-[#0A1128]'}`}
+          >
+            Mechanical/Self-Report Inbox ({pending.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('queue')}
+            className={`pb-4 text-sm font-bold transition-all border-b-2 ${activeTab === 'queue' ? 'border-[#2D9596] text-[#2D9596]' : 'border-transparent text-[#5A6B7C] hover:text-[#0A1128]'}`}
+          >
+            Therapy Retention Queue ({technicianQueue.length})
+          </button>
         </div>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-3 gap-6">
-        <button className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm hover:shadow-md transition-all text-left">
-          <h3 className="text-lg text-[#0A1128] font-medium mb-2">
-            📦 Schedule Bulk Dispatch
-          </h3>
-          <p className="text-sm text-[#5A6B7C]">
-            Group equipment deliveries by postal code
-          </p>
-        </button>
-        <button className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm hover:shadow-md transition-all text-left">
-          <h3 className="text-lg text-[#0A1128] font-medium mb-2">
-            📞 Call List Export
-          </h3>
-          <p className="text-sm text-[#5A6B7C]">
-            Download priority call list for today
-          </p>
-        </button>
-        <button className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm hover:shadow-md transition-all text-left">
-          <h3 className="text-lg text-[#0A1128] font-medium mb-2">
-            🗺️ Route Optimizer
-          </h3>
-          <p className="text-sm text-[#5A6B7C]">
-            Plan home visits by geographic area
-          </p>
-        </button>
+      <div className="flex-1 overflow-hidden">
+        {activeTab === 'events' ? (
+          <div className="flex h-full animate-in fade-in duration-500">
+            {/* Master List (Events) */}
+            <div className="w-1/3 border-r border-[#E8EEF2] bg-white flex flex-col overflow-hidden">
+               <div className="flex-1 overflow-auto divide-y divide-[#E8EEF2]">
+                  {pending.length > 0 ? (
+                    pending.map(event => {
+                      const config = eventTypeConfig[event.type] || eventTypeConfig['Equipment Alert'];
+                      return (
+                        <div 
+                          key={event.id} 
+                          onClick={() => setSelectedEventId(event.id)}
+                          className={`p-6 cursor-pointer transition-all border-l-4 ${selectedEventId === event.id ? 'bg-[#E8EEF2]/30 border-[#E76F51]' : 'border-transparent hover:bg-[#FAFAFA]'}`}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                             <div className={`p-1.5 rounded-lg ${config.bg}/10 ${config.color}`}>
+                                {config.icon}
+                             </div>
+                             <span className="text-[10px] text-[#5A6B7C]">{formatTime(event.detectedAt)}</span>
+                          </div>
+                          <p className="text-sm font-bold text-[#0A1128] mb-1">{event.patient.name}</p>
+                          <p className="text-xs text-[#E76F51] font-semibold uppercase tracking-wide">{event.type}</p>
+                        </div>
+                      )
+                    })
+                  ) : (
+                    <div className="p-12 text-center text-[#5A6B7C]">
+                       <CheckCircle className="w-12 h-12 mx-auto mb-4 opacity-10" />
+                       <p className="text-sm font-bold">Event Inbox Cleared</p>
+                    </div>
+                  )}
+               </div>
+            </div>
+
+            {/* Detail Pane (Events) */}
+            <div className="flex-1 bg-white overflow-auto">
+               {selectedEvent ? (
+                 <div className="p-10 animate-in slide-in-from-right-4 duration-500">
+                    <div className="flex items-start justify-between mb-8">
+                       <div>
+                          <div className="flex items-center gap-3 mb-2">
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${selectedEvent.severity === 'high' ? 'bg-[#E76F51] text-white' : 'bg-[#F4A261] text-white'}`}>
+                              {selectedEvent.severity} Severity
+                            </span>
+                            <span className="text-sm text-[#5A6B7C]">Detected {formatTime(selectedEvent.detectedAt)}</span>
+                          </div>
+                          <h2 className="text-3xl font-bold text-[#0A1128]">{selectedEvent.patient.name}</h2>
+                       </div>
+                       <Link to={`/technician/patient/${selectedEvent.patient.patientId}`} className="px-6 py-3 border-2 border-[#E8EEF2] rounded-xl font-bold text-sm hover:bg-[#FAFAFA] transition-all">
+                          Full Clinical View
+                       </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-8 mb-10">
+                       <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2] shadow-inner">
+                          <h3 className="text-xs font-bold text-[#5A6B7C] uppercase tracking-widest mb-4">
+                             {selectedEvent.type === 'Patient Self-Report' ? 'Patient-Reported Symptom' : 'AI Evidence Package'}
+                          </h3>
+                          <p className={`text-lg text-[#0A1128] leading-relaxed mb-4 ${selectedEvent.type === 'Patient Self-Report' ? 'bg-[#2D9596]/10 p-4 rounded-xl border border-[#2D9596]/20' : ''}`}>
+                             "{selectedEvent.evidence}"
+                          </p>
+                          <div className="p-4 bg-white/50 rounded-xl border border-[#E8EEF2] italic text-sm text-[#5A6B7C]">
+                             <span className="font-bold text-[10px] uppercase block mb-1 opacity-50">
+                                {selectedEvent.type === 'Patient Self-Report' ? 'AI Support Context' : 'AI Analysis'}
+                             </span>
+                             {selectedEvent.aiNote}
+                          </div>
+                       </div>
+
+
+                       <div className="bg-[#2D9596]/5 p-8 rounded-[2rem] border border-[#2D9596]/20">
+                          <h3 className="text-xs font-bold text-[#2D9596] uppercase tracking-widest mb-4">Suggested Resolution</h3>
+                          <p className="text-lg text-[#0A1128] leading-relaxed font-medium">
+                             {selectedEvent.suggestedAction}
+                          </p>
+                       </div>
+                    </div>
+
+                    {/* Action Bar */}
+                    {selectedEvent.type !== 'Patient Self-Report' && dismissingId === selectedEvent.id ? (
+                      <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2]">
+                         <h3 className="text-lg font-bold text-[#0A1128] mb-6">Why is this a False Positive?</h3>
+                         <div className="grid grid-cols-2 gap-4 mb-8">
+                            {dismissReasons.map(reason => (
+                              <button key={reason} onClick={() => setDismissReason(reason)} className={`p-4 rounded-xl border-2 transition-all text-left text-sm font-medium ${dismissReason === reason ? 'border-[#5A6B7C] bg-[#5A6B7C] text-white' : 'border-[#E8EEF2] text-[#5A6B7C] hover:border-[#5A6B7C]/50'}`}>
+                                {reason}
+                              </button>
+                            ))}
+                         </div>
+                         <div className="flex gap-4">
+                            <button onClick={() => { setDismissingId(null); setDismissReason(''); }} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl">Cancel</button>
+                            <button onClick={() => handleDismiss(selectedEvent.id)} disabled={!dismissReason} className="flex-2 py-4 bg-[#5A6B7C] text-white font-bold rounded-xl disabled:opacity-40">Confirm False Positive</button>
+                         </div>
+                      </div>
+                    ) : (
+                      <div className="flex gap-6">
+                        <button onClick={() => handleConfirm(selectedEvent.id)} className={`py-6 bg-[#F4A261] text-white text-xl font-bold rounded-3xl shadow-xl transition-all flex items-center justify-center gap-3 ${selectedEvent.type === 'Patient Self-Report' ? 'flex-1' : 'flex-2'}`}>
+                           <CheckCircle className="w-6 h-6" /> Confirm — Initiate Action
+                        </button>
+                        {selectedEvent.type !== 'Patient Self-Report' && (
+                          <button onClick={() => setDismissingId(selectedEvent.id)} className="flex-1 py-6 bg-[#E8EEF2] text-[#5A6B7C] text-lg font-bold rounded-3xl hover:bg-[#d6dfe6] transition-all">
+                             Mark as False Positive
+                          </button>
+                        )}
+                      </div>
+                    )}
+
+                 </div>
+               ) : (
+                 <div className="h-full flex flex-col items-center justify-center text-[#5A6B7C] opacity-20">
+                    <Droplets className="w-24 h-24 mb-4" />
+                    <p className="text-2xl font-bold uppercase">No Event Selected</p>
+                 </div>
+               )}
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-full animate-in fade-in duration-500 bg-white">
+             {/* Master List (Queue) */}
+             <div className="w-1/3 xl:w-1/4 border-r border-[#E8EEF2] flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-[#E8EEF2] bg-[#FAFAFA]">
+                   <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#5A6B7C]" />
+                      <input type="text" placeholder="Search queue..." className="w-full bg-white border border-[#E8EEF2] rounded-lg py-2 pl-9 pr-4 text-xs focus:ring-2 focus:ring-[#2D9596] outline-none" />
+                   </div>
+                </div>
+                <div className="flex-1 overflow-auto divide-y divide-[#E8EEF2]">
+                   {technicianQueue.map(patient => (
+                     <div 
+                       key={patient.id} 
+                       onClick={() => setSelectedQueuePatientId(patient.id)}
+                       className={`p-5 cursor-pointer transition-all border-l-4 ${selectedQueuePatientId === patient.id ? 'bg-[#E8EEF2]/30 border-[#2D9596]' : 'border-transparent hover:bg-[#FAFAFA]'}`}
+                     >
+                       <div className="flex items-center justify-between mb-1">
+                          <h3 className="text-sm font-bold text-[#0A1128]">{patient.patientName}</h3>
+                          <div className="flex items-center gap-2">
+                             {patient.interventionHistory.length > 1 && (
+                                <span className="bg-[#F4A261]/10 text-[#F4A261] text-[8px] px-1 py-0.5 rounded font-bold border border-[#F4A261]/20">REPEAT FIX</span>
+                             )}
+                             <span className={`text-[10px] font-bold ${patient.dropoutRisk > 70 ? 'text-[#E76F51]' : 'text-[#6A994E]'}`}>
+                                Risk: {patient.dropoutRisk}%
+                             </span>
+                          </div>
+                       </div>
+                       <div className="flex items-center justify-between text-[11px] text-[#5A6B7C]">
+                          <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {patient.postalCode}</span>
+                          <div className="flex items-center gap-1.5">
+                             {patient.interventionHistory.length > 0 && <Clock className="w-3 h-3 text-[#2D9596]" />}
+                             <span className="bg-[#E8EEF2] px-1.5 py-0.5 rounded font-bold uppercase tracking-tight">{patient.behavioralCluster}</span>
+                          </div>
+                       </div>
+                     </div>
+                   ))}
+                </div>
+             </div>
+
+             {/* Detail Pane (Queue -> Visit Prep Card) */}
+             <div className="flex-1 overflow-auto">
+                {selectedQueuePatient ? (
+                  <VisitPrepCard patient={selectedQueuePatient} />
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-[#5A6B7C] opacity-20">
+                     <Users className="w-24 h-24 mb-4" />
+                     <p className="text-2xl font-bold uppercase">Select Patient for Prep</p>
+                  </div>
+                )}
+             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom Tactics Toolbar (Persists across tabs) */}
+      <div className="bg-white border-t border-[#E8EEF2] p-4 flex items-center justify-center gap-8 shrink-0">
+         {[
+           { icon: <PackageIcon className="w-4 h-4" />, label: 'Bulk Shipping' },
+           { icon: <Phone className="w-4 h-4" />, label: 'Voice Dialler' },
+           { icon: <MapPin className="w-4 h-4" />, label: 'Route Optimizer' },
+           { icon: <Clock className="w-4 h-4" />, label: 'History Log' }
+         ].map(tool => (
+           <button key={tool.label} className="flex items-center gap-2 px-4 py-2 hover:bg-[#FAFAFA] rounded-xl transition-all text-[#5A6B7C] hover:text-[#0A1128] group">
+              <div className="p-1.5 bg-[#FAFAFA] rounded-lg group-hover:bg-[#E8EEF2] transition-colors">{tool.icon}</div>
+              <span className="text-xs font-bold uppercase tracking-wider">{tool.label}</span>
+           </button>
+         ))}
       </div>
     </div>
   );
 }
+
+
+// Mock placeholder for components that might be missing in older Lucide versions
+function PackageFallback({ className }: { className?: string }) {
+  return <Users className={className} />;
+}
+
