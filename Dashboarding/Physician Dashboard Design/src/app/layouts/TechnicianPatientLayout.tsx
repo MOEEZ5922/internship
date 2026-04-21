@@ -7,9 +7,13 @@ export default function TechnicianPatientLayout() {
   const { patientId } = useParams();
 
   const tabs = [
-    { name: 'Visit Prep (CPAP)', href: `/technician/patient/${patientId}` },
-    { name: 'Dispatch Hardware', href: `/technician/patient/${patientId}/interventions` },
-    { name: 'Post-Visit Logs', href: `/technician/patient/${patientId}/surveys` },
+    { name: 'Clinical Summary', href: `/technician/patient/${patientId}` },
+    { name: 'Trends', href: `/technician/patient/${patientId}/trends` },
+    { name: 'Biomarkers', href: `/technician/patient/${patientId}/biomarkers` },
+    { name: 'Interventions', href: `/technician/patient/${patientId}/interventions` },
+    { name: 'Surveys', href: `/technician/patient/${patientId}/surveys` },
+    { name: 'AI Analysis', href: `/technician/patient/${patientId}/ai-analysis` },
+    { name: 'Logistics Cabinet', href: `/technician/patient/${patientId}/logistics` },
   ];
 
   return (

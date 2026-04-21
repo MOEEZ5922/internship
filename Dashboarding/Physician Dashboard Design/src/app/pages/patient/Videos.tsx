@@ -53,7 +53,7 @@ export default function PatientVideos() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl mx-auto">
+    <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
 
       {/* Header */}
       <div>

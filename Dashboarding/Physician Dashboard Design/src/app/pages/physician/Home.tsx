@@ -8,7 +8,8 @@ export default function PhysicianHome() {
   const [activeTab, setActiveTab] = useState<'urgent' | 'annual'>('urgent');
   const [selectedPatientId, setSelectedPatientId] = useState<number | null>(physicianQueue.urgent[0]?.id || null);
 
-  const getRiskColor = (score: number) => {
+  const getRiskColor = (score: number, category?: string) => {
+    if (category === 'Tech Escalation') return 'text-[#9b59b6]';
     if (score >= 80) return 'text-[#E76F51]';
     if (score >= 70) return 'text-[#F4A261]';
     return 'text-[#6A994E]';
@@ -20,11 +21,25 @@ export default function PhysicianHome() {
       {/* Left Pane: Patient List (Master) */}
       <div className="w-1/3 xl:w-1/4 border-r border-[#E8EEF2] bg-white flex flex-col min-w-[380px]">
         {/* Header with Search/Filter */}
-        <div className="p-6 border-b border-[#E8EEF2] space-y-4">
+        <div className="p-6 border-b border-[#E8EEF2] flex items-center justify-between bg-white shrink-0">
           <div>
             <h1 className="text-xl font-bold text-[#0A1128]">Exception Inbox</h1>
             <p className="text-xs text-[#5A6B7C]">AI-filtered clinical escalations</p>
           </div>
+          
+          <div className="flex gap-4">
+             <div className="bg-[#6A994E]/10 px-3 py-1.5 rounded-lg border border-[#6A994E]/20 text-center">
+                <p className="text-[8px] font-bold text-[#6A994E] uppercase tracking-wider">AI Confidence</p>
+                <p className="text-sm font-bold text-[#6A994E]">91%</p>
+             </div>
+             <div className="bg-[#0A1128]/5 px-3 py-1.5 rounded-lg border border-[#0A1128]/10 text-center">
+                <p className="text-[8px] font-bold text-[#0A1128] uppercase tracking-wider">Adherence</p>
+                <p className="text-sm font-bold text-[#0A1128]">84%</p>
+             </div>
+          </div>
+        </div>
+
+        <div className="p-6 border-b border-[#E8EEF2] space-y-4">
           
           <div className="flex gap-2 bg-[#E8EEF2]/50 p-1 rounded-lg">
             <button
@@ -64,16 +79,18 @@ export default function PhysicianHome() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-sm font-bold text-[#0A1128]">{patient.patientName}</h3>
-                    <span className={`text-xs font-bold ${getRiskColor(patient.riskScore)}`}>
+                    <span className={`text-xs font-bold ${getRiskColor(patient.riskScore, patient.category)}`}>
                       {patient.riskScore}/100
                     </span>
                   </div>
-                  <p className="text-xs text-[#E76F51] font-medium mb-2 line-clamp-1">
+                  <p className={`text-xs font-medium mb-2 line-clamp-1 ${patient.category === 'Tech Escalation' ? 'text-[#9b59b6]' : 'text-[#E76F51]'}`}>
                     {patient.reason}
                   </p>
                   <div className="flex items-center justify-between text-[10px] text-[#5A6B7C]">
                     <span>Escalated {patient.daysActive}d ago</span>
-                    <span className="bg-[#E8EEF2] px-2 py-0.5 rounded font-medium uppercase tracking-tight">
+                    <span className={`px-2 py-0.5 rounded font-bold uppercase tracking-tight ${
+                      patient.category === 'Tech Escalation' ? 'bg-[#9b59b6]/10 text-[#9b59b6]' : 'bg-[#E8EEF2]'
+                    }`}>
                       {patient.category}
                     </span>
                   </div>

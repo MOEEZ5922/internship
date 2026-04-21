@@ -15,6 +15,7 @@ import PhysicianHelp from "./pages/physician/Help";
 import PhysicianDirectory from "./pages/physician/Directory";
 import PhysicianAIAnalysis from "./pages/physician/AIAnalysis";
 import TechnicianHome from "./pages/technician/Home";
+import TechnicianSummary from "./pages/technician/Summary";
 import TechnicianCPAP from "./pages/technician/CPAP";
 import TechnicianInterventions from "./pages/technician/Interventions";
 import TechnicianSurveys from "./pages/technician/Surveys";
@@ -64,9 +65,14 @@ export const router = createBrowserRouter([
         path: "patient/:patientId",
         Component: TechnicianPatientLayout,
         children: [
-          { index: true, Component: TechnicianCPAP },
-          { path: "interventions", Component: TechnicianInterventions },
-          { path: "surveys", Component: TechnicianSurveys },
+          { index: true, Component: TechnicianSummary },
+          { path: "summary", Component: TechnicianSummary },
+          { path: "trends", Component: TechnicianCPAP },
+          { path: "interventions", Component: PhysicianInterventions },
+          { path: "surveys", Component: PhysicianSurveys },
+          { path: "biomarkers", Component: PhysicianBiomarkers },
+          { path: "ai-analysis", Component: PhysicianAIAnalysis },
+          { path: "logistics", Component: TechnicianInventory },
         ],
       },
     ],

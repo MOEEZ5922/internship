@@ -5,7 +5,8 @@ export default function PatientCPAP() {
   const percentComplete = (cpapData.averageHours / 8) * 100;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
+
       {/* Sleep Ring */}
       <div className="bg-white rounded-2xl p-8 text-center shadow-sm">
         <p className="text-[#5A6B7C] mb-2">Last Night</p>

@@ -19,7 +19,7 @@ export default function PatientHelp() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl mx-auto">
+    <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
       {/* Self-Reporting Tool - Prominent */}
       <div className="bg-gradient-to-br from-[#2D9596] to-[#1a7273] text-white rounded-3xl p-8 shadow-xl">
         <div className="flex items-start gap-4 mb-6">

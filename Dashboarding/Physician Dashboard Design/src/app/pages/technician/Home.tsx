@@ -15,12 +15,14 @@ import {
   Users, 
   Search, 
   Filter, 
+  Activity,
   ChevronRight,
   MessageSquare,
   Package as PackageIcon
 } from 'lucide-react';
 import { Link } from 'react-router';
 import VisitPrepCard from '../../components/VisitPrepCard';
+import SummaryContent from '../../components/SummaryContent';
 
 type EventStatus = 'pending' | 'confirmed' | 'dismissed';
 
@@ -89,9 +91,9 @@ export default function TechnicianHome() {
         
         <div className="flex gap-4">
            {[
-             { label: 'Pending Triage', val: pending.length, color: 'text-[#E76F51]' },
+             { label: 'AI Resolved (24h)', val: '88%', color: 'text-[#6A994E]' },
              { label: 'Retention Queue', val: technicianQueue.length, color: 'text-[#2D9596]' },
-             { label: 'Maintenance Cycle', val: technicianQueue.filter(p => p.interventionHistory.length > 1).length, color: 'text-[#F4A261]' }
+             { label: 'Escalated Risks', val: technicianQueue.filter(p => p.dropoutRisk > 80).length, color: 'text-[#E76F51]' }
            ].map(stat => (
              <div key={stat.label} className="bg-[#FAFAFA] px-4 py-2 rounded-lg border border-[#E8EEF2]">
                <p className="text-[10px] uppercase font-bold text-[#5A6B7C] tracking-wide">{stat.label}</p>
@@ -157,77 +159,77 @@ export default function TechnicianHome() {
             {/* Detail Pane (Events) */}
             <div className="flex-1 bg-white overflow-auto">
                {selectedEvent ? (
-                 <div className="p-10 animate-in slide-in-from-right-4 duration-500">
-                    <div className="flex items-start justify-between mb-8">
-                       <div>
-                          <div className="flex items-center gap-3 mb-2">
-                            <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${selectedEvent.severity === 'high' ? 'bg-[#E76F51] text-white' : 'bg-[#F4A261] text-white'}`}>
-                              {selectedEvent.severity} Severity
-                            </span>
-                            <span className="text-sm text-[#5A6B7C]">Detected {formatTime(selectedEvent.detectedAt)}</span>
-                          </div>
-                          <h2 className="text-3xl font-bold text-[#0A1128]">{selectedEvent.patient.name}</h2>
-                       </div>
-                       <Link to={`/technician/patient/${selectedEvent.patient.patientId}`} className="px-6 py-3 border-2 border-[#E8EEF2] rounded-xl font-bold text-sm hover:bg-[#FAFAFA] transition-all">
-                          Full Clinical View
-                       </Link>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-8 mb-10">
-                       <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2] shadow-inner">
-                          <h3 className="text-xs font-bold text-[#5A6B7C] uppercase tracking-widest mb-4">
-                             {selectedEvent.type === 'Patient Self-Report' ? 'Patient-Reported Symptom' : 'AI Evidence Package'}
-                          </h3>
-                          <p className={`text-lg text-[#0A1128] leading-relaxed mb-4 ${selectedEvent.type === 'Patient Self-Report' ? 'bg-[#2D9596]/10 p-4 rounded-xl border border-[#2D9596]/20' : ''}`}>
-                             "{selectedEvent.evidence}"
-                          </p>
-                          <div className="p-4 bg-white/50 rounded-xl border border-[#E8EEF2] italic text-sm text-[#5A6B7C]">
-                             <span className="font-bold text-[10px] uppercase block mb-1 opacity-50">
-                                {selectedEvent.type === 'Patient Self-Report' ? 'AI Support Context' : 'AI Analysis'}
-                             </span>
-                             {selectedEvent.aiNote}
-                          </div>
-                       </div>
-
-
-                       <div className="bg-[#2D9596]/5 p-8 rounded-[2rem] border border-[#2D9596]/20">
-                          <h3 className="text-xs font-bold text-[#2D9596] uppercase tracking-widest mb-4">Suggested Resolution</h3>
-                          <p className="text-lg text-[#0A1128] leading-relaxed font-medium">
-                             {selectedEvent.suggestedAction}
-                          </p>
-                       </div>
-                    </div>
-
-                    {/* Action Bar */}
-                    {selectedEvent.type !== 'Patient Self-Report' && dismissingId === selectedEvent.id ? (
-                      <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2]">
-                         <h3 className="text-lg font-bold text-[#0A1128] mb-6">Why is this a False Positive?</h3>
-                         <div className="grid grid-cols-2 gap-4 mb-8">
-                            {dismissReasons.map(reason => (
-                              <button key={reason} onClick={() => setDismissReason(reason)} className={`p-4 rounded-xl border-2 transition-all text-left text-sm font-medium ${dismissReason === reason ? 'border-[#5A6B7C] bg-[#5A6B7C] text-white' : 'border-[#E8EEF2] text-[#5A6B7C] hover:border-[#5A6B7C]/50'}`}>
-                                {reason}
-                              </button>
-                            ))}
+                  <>
+                    <div className="p-10 animate-in slide-in-from-right-4 duration-500">
+                      <div className="flex items-start justify-between mb-8">
+                         <div>
+                            <div className="flex items-center gap-3 mb-2">
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-bold uppercase tracking-widest ${selectedEvent.severity === 'high' ? 'bg-[#E76F51] text-white' : 'bg-[#F4A261] text-white'}`}>
+                                {selectedEvent.severity} Severity
+                              </span>
+                              <span className="text-sm text-[#5A6B7C]">Detected {formatTime(selectedEvent.detectedAt)}</span>
+                            </div>
+                            <h2 className="text-3xl font-bold text-[#0A1128]">{selectedEvent.patient.name}</h2>
                          </div>
-                         <div className="flex gap-4">
-                            <button onClick={() => { setDismissingId(null); setDismissReason(''); }} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl">Cancel</button>
-                            <button onClick={() => handleDismiss(selectedEvent.id)} disabled={!dismissReason} className="flex-2 py-4 bg-[#5A6B7C] text-white font-bold rounded-xl disabled:opacity-40">Confirm False Positive</button>
+                         <Link to={`/technician/patient/${selectedEvent.patient.patientId}`} className="px-6 py-3 border-2 border-[#E8EEF2] rounded-xl font-bold text-sm hover:bg-[#FAFAFA] transition-all">
+                            Full Clinical View
+                         </Link>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-8 mb-10">
+                         <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2] shadow-inner">
+                            <h3 className="text-xs font-bold text-[#5A6B7C] uppercase tracking-widest mb-4">
+                               {selectedEvent.type === 'Patient Self-Report' ? 'Patient-Reported Symptom' : 'AI Evidence Package'}
+                            </h3>
+                            <p className={`text-lg text-[#0A1128] leading-relaxed mb-4 ${selectedEvent.type === 'Patient Self-Report' ? 'bg-[#2D9596]/10 p-4 rounded-xl border border-[#2D9596]/20' : ''}`}>
+                               "{selectedEvent.evidence}"
+                            </p>
+                            <div className="p-4 bg-white/50 rounded-xl border border-[#E8EEF2] italic text-sm text-[#5A6B7C]">
+                               <span className="font-bold text-[10px] uppercase block mb-1 opacity-50">
+                                  {selectedEvent.type === 'Patient Self-Report' ? 'AI Support Context' : 'AI Analysis'}
+                               </span>
+                               {selectedEvent.aiNote}
+                            </div>
+                         </div>
+
+                         {/* Unified Clinical Evidence (Synced Source) */}
+                         <div className="bg-[#fdf2f0] rounded-[2rem] border border-[#E76F51]/20 p-8 mb-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <div className="flex items-center justify-between mb-6">
+                               <h3 className="text-xs font-bold text-[#E76F51] uppercase tracking-widest flex items-center gap-2">
+                                 <Activity className="w-3.5 h-3.5" /> High-Fidelity Clinical Rationale
+                               </h3>
+                               <span className="text-[10px] bg-[#E76F51]/10 text-[#E76F51] px-2 py-0.5 rounded font-bold uppercase tracking-tighter">Unified Physician View</span>
+                            </div>
+                            
+                            <SummaryContent patientId={selectedEvent.patient.patientId} isCompact={true} role="technician" hideHeader={true} />
                          </div>
                       </div>
-                    ) : (
-                      <div className="flex gap-6">
-                        <button onClick={() => handleConfirm(selectedEvent.id)} className={`py-6 bg-[#F4A261] text-white text-xl font-bold rounded-3xl shadow-xl transition-all flex items-center justify-center gap-3 ${selectedEvent.type === 'Patient Self-Report' ? 'flex-1' : 'flex-2'}`}>
-                           <CheckCircle className="w-6 h-6" /> Confirm — Initiate Action
-                        </button>
-                        {selectedEvent.type !== 'Patient Self-Report' && (
+
+                      {/* Hardware Control Bar (Specialized) */}
+                      {dismissingId === selectedEvent.id ? (
+                        <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2]">
+                           <h3 className="text-lg font-bold text-[#0A1128] mb-6">Why is this a False Positive?</h3>
+                           <div className="grid grid-cols-2 gap-4 mb-8">
+                              {dismissReasons.map(reason => (
+                                <button key={reason} onClick={() => setDismissReason(reason)} className={`p-4 rounded-xl border-2 transition-all text-left text-sm font-medium ${dismissReason === reason ? 'border-[#5A6B7C] bg-[#5A6B7C] text-white' : 'border-[#E8EEF2] text-[#5A6B7C] hover:border-[#5A6B7C]/50'}`}>
+                                  {reason}
+                                </button>
+                              ))}
+                           </div>
+                           <div className="flex gap-4">
+                              <button onClick={() => { setDismissingId(null); setDismissReason(''); }} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl">Cancel</button>
+                              <button onClick={() => handleDismiss(selectedEvent.id)} disabled={!dismissReason} className="flex-2 py-4 bg-[#5A6B7C] text-white font-bold rounded-xl disabled:opacity-40">Confirm False Positive</button>
+                           </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-6">
                           <button onClick={() => setDismissingId(selectedEvent.id)} className="flex-1 py-6 bg-[#E8EEF2] text-[#5A6B7C] text-lg font-bold rounded-3xl hover:bg-[#d6dfe6] transition-all">
-                             Mark as False Positive
+                             Mark Hardware False Positive
                           </button>
-                        )}
-                      </div>
-                    )}
-
-                 </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
                ) : (
                  <div className="h-full flex flex-col items-center justify-center text-[#5A6B7C] opacity-20">
                     <Droplets className="w-24 h-24 mb-4" />
@@ -256,8 +258,8 @@ export default function TechnicianHome() {
                        <div className="flex items-center justify-between mb-1">
                           <h3 className="text-sm font-bold text-[#0A1128]">{patient.patientName}</h3>
                           <div className="flex items-center gap-2">
-                             {patient.interventionHistory.length > 1 && (
-                                <span className="bg-[#F4A261]/10 text-[#F4A261] text-[8px] px-1 py-0.5 rounded font-bold border border-[#F4A261]/20">REPEAT FIX</span>
+                             {patient.id === 10 && (
+                                <span className="bg-[#9b59b6]/10 text-[#9b59b6] text-[8px] px-1 py-0.5 rounded font-bold border border-[#9b59b6]/20 uppercase">Survey Delinquent</span>
                              )}
                              <span className={`text-[10px] font-bold ${patient.dropoutRisk > 70 ? 'text-[#E76F51]' : 'text-[#6A994E]'}`}>
                                 Risk: {patient.dropoutRisk}%
@@ -309,9 +311,6 @@ export default function TechnicianHome() {
   );
 }
 
-
-// Mock placeholder for components that might be missing in older Lucide versions
 function PackageFallback({ className }: { className?: string }) {
   return <Users className={className} />;
 }
-

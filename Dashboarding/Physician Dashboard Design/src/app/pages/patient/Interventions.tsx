@@ -5,7 +5,8 @@ export default function PatientInterventions() {
   const delivery = interventionData.patient.upcomingDelivery;
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
+
       {/* Delivery Status Card */}
       <div className="bg-white rounded-2xl p-6 shadow-sm">
         <div className="flex items-start gap-4 mb-6">

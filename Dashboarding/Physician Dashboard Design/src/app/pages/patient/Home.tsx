@@ -13,7 +13,7 @@ export default function PatientHome() {
   const weeklyAverage = cpapData.averageHours;
 
   return (
-    <div className="p-6 space-y-8 max-w-2xl mx-auto pb-24">
+    <div className="p-6 space-y-8 max-w-2xl mx-auto pb-32">
       {/* 2-Minute Objective: Action Center */}
       <div className="space-y-4">
         <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest px-2">Ready for Action</h2>

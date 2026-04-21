@@ -90,8 +90,8 @@ export default function PatientSurveys() {
 
   if (showCompletion) {
     return (
-      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center p-6">
-        <div className="text-center max-w-md">
+      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center p-6 max-w-2xl mx-auto pb-32">
+        <div className="text-center w-full">
           <div className="w-24 h-24 bg-gradient-to-br from-[#6A994E] to-[#2D9596] rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl">
             <CheckCircle className="w-12 h-12 text-white" />
           </div>
@@ -111,7 +111,7 @@ export default function PatientSurveys() {
 
   if (inSurvey) {
     return (
-      <div className="min-h-[calc(100vh-200px)] flex flex-col p-6">
+      <div className="min-h-[calc(100vh-200px)] flex flex-col p-6 max-w-2xl mx-auto pb-32">
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
@@ -197,7 +197,7 @@ export default function PatientSurveys() {
   }
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl mx-auto">
+    <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
       {/* Next Check-In */}
       <div className="bg-gradient-to-br from-[#6A994E] to-[#4a7a35] rounded-3xl p-8 text-white shadow-lg">
         <div className="flex items-start gap-4 mb-4">
@@ -216,6 +216,34 @@ export default function PatientSurveys() {
                 <FileText className="w-4 h-4" />
                 <span>{nextSurvey.questions} questions</span>
               </div>
+            </div>
+
+            {/* Persistence Timeline */}
+            <div className="mt-6 pt-6 border-t border-white/10">
+               <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-3">Survey Adherence Timeline</p>
+               <div className="flex items-center justify-between relative px-2">
+                  <div className="absolute left-4 right-4 h-0.5 bg-white/20 top-[11px] z-0" />
+                  {[
+                    { label: 'Invited', date: 'May 1', status: 'done' },
+                    { label: 'Nudge 1', date: 'May 5', status: 'active' },
+                    { label: 'Final SMS', date: 'May 8', status: 'pending' },
+                  ].map((step, idx) => (
+                    <div key={idx} className="relative z-10 flex flex-col items-center">
+                       <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                         step.status === 'done' ? 'bg-white border-white text-[#6A994E]' :
+                         step.status === 'active' ? 'bg-[#F4A261] border-[#F4A261] text-white animate-pulse' :
+                         'bg-[#6A994E] border-white/30 text-white/30'
+                       }`}>
+                          {step.status === 'done' ? <CheckCircle className="w-3.5 h-3.5" /> : <span className="text-[10px] font-bold">{idx + 1}</span>}
+                       </div>
+                       <span className="text-[10px] mt-1.5 font-bold uppercase tracking-tighter opacity-80">{step.label}</span>
+                       <span className="text-[8px] opacity-40">{step.date}</span>
+                    </div>
+                  ))}
+               </div>
+               <p className="text-[10px] text-center mt-4 bg-black/20 py-1 rounded-full text-white/80 font-medium italic">
+                  Current Status: {nextSurvey.persistence.status}
+               </p>
             </div>
           </div>
         </div>

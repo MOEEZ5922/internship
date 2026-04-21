@@ -3,7 +3,7 @@ export const patientInfo = {
   dob: "1978-06-15",
   riskScore: 72,
   therapyStatus: "Active - CPAP",
-  address: "1425 Maple Street, Portland, OR 97214",
+  address: "22 Rue de la Paix, 75002 Paris",
   machineSerial: "CPAP-2024-8745",
   maskType: "AirFit F20 - Medium",
 };
@@ -38,6 +38,15 @@ export const physicianQueue = {
       lastReview: "2026-04-01",
       daysActive: 0,
     },
+    {
+      id: 10,
+      patientName: "James Wilson",
+      riskScore: 95,
+      reason: "Technician Escalation: Manual intervention failed 3x. Patient reports clinical chest pain.",
+      category: "Tech Escalation",
+      lastReview: "2026-04-20",
+      daysActive: 0,
+    },
   ],
   annualReviews: [
     {
@@ -67,7 +76,7 @@ export const technicianQueue = [
     dropoutRisk: 85,
     usageHours: 1.2,
     usageCategory: "<2 hrs",
-    postalCode: "97214",
+    postalCode: "75002",
     lastContact: "2026-04-10",
     action: "Titration Review",
     behavioralCluster: "Attempting",
@@ -84,7 +93,14 @@ export const technicianQueue = [
     monitoringSurveys: [
       { id: "M1", question: "Mask Comfort (1-10)", answer: "4 (Hurts nose bridge)" },
       { id: "M2", question: "Ease of Cleaning", answer: "Good" },
-    ]
+    ],
+    biomarkers: {
+      ahi: { current: 12.4, baseline: 4.2 },
+      spo2: { mean: 94, nadir: 88 },
+      odi: 15.2,
+      hrv: 42,
+      oai: 5.1
+    }
   },
   {
     id: 2,
@@ -92,7 +108,7 @@ export const technicianQueue = [
     dropoutRisk: 72,
     usageHours: 3.5,
     usageCategory: "2-4 hrs",
-    postalCode: "97203",
+    postalCode: "69003",
     lastContact: "2026-04-08",
     action: "Motivational Call",
     behavioralCluster: "Struggling",
@@ -108,7 +124,14 @@ export const technicianQueue = [
     monitoringSurveys: [
       { id: "M1", question: "Morning Headache?", answer: "Occasional" },
       { id: "M2", question: "Device Noise", answer: "Acceptable" },
-    ]
+    ],
+    biomarkers: {
+      ahi: { current: 5.2, baseline: 3.8 },
+      spo2: { mean: 96, nadir: 91 },
+      odi: 6.5,
+      hrv: 58,
+      oai: 1.2
+    }
   },
   {
     id: 3,
@@ -116,7 +139,7 @@ export const technicianQueue = [
     dropoutRisk: 68,
     usageHours: 1.8,
     usageCategory: "<2 hrs",
-    postalCode: "97212",
+    postalCode: "33000",
     lastContact: "2026-04-12",
     action: "Home Visit Prep",
     behavioralCluster: "Non-Adherent",
@@ -130,9 +153,17 @@ export const technicianQueue = [
       { date: "2026-02-10", type: "Humidifier Repair", result: "Resolved", tech: "J. Doe" },
     ],
     monitoringSurveys: [
-      { id: "M1", question: "Skin Rash?", answer: "Yes (Cheeks)" },
-      { id: "M2", question: "Dry Mouth?", answer: "Severe" },
-    ]
+      { id: "M1", question: "Mask Comfort (1-10)", answer: "4 (Hurts nose bridge)", author: "J. Doe", role: "Technician", date: "2026-04-10" },
+      { id: "M2", question: "Ease of Cleaning", answer: "Good", author: "A. Smith", role: "Technician", date: "2026-03-25" },
+      { id: "M3", question: "Physical Skin Status", answer: "Redness observed on bridge", author: "J. Doe", role: "Technician", date: "2026-04-10" },
+    ],
+    biomarkers: {
+      ahi: { current: 15.5, baseline: 5.8 },
+      spo2: { mean: 92, nadir: 84 },
+      odi: 22.1,
+      hrv: 35,
+      oai: 7.4
+    }
   },
 ];
 
@@ -146,8 +177,8 @@ export const technicianEvents = [
     patient: {
       name: "Sarah Mitchell",
       patientId: 1,
-      address: "1425 Maple Street, Portland, OR 97214",
-      phone: "+1 (503) 555-0182",
+      address: "22 Rue de la Paix, 75002 Paris",
+      phone: "+33 1 42 61 50 00",
       maskType: "AirFit F20 - Medium",
     },
     evidence: "Patient reported 'Severe mask discomfort and skin irritation' via the mobile app support tool.",
@@ -163,8 +194,8 @@ export const technicianEvents = [
     patient: {
       name: "Robert Chen",
       patientId: 2,
-      address: "842 Oak Avenue, Portland, OR 97203",
-      phone: "+1 (503) 555-0234",
+      address: "45 Boulevard de la Liberté, 69003 Lyon",
+      phone: "+33 4 72 10 30 30",
       maskType: "AirFit N20 - Small",
     },
     evidence: "Mask leak exceeded 24 L/min on 3 consecutive nights. Peak leak recorded at 38 L/min.",
@@ -315,9 +346,15 @@ export const surveyData = {
   ],
   patient: {
     next: {
-      name: "1-Month Check-In",
-      dueDate: "2026-04-18",
+      name: "3-Month Full Medical Review",
+      dueDate: "2026-05-10",
       questions: 8,
+      persistence: {
+        lastNudge: "2 days ago",
+        status: "Nudge 1 (Day 4) Sent",
+        automationActive: true,
+        daysOverdue: 0
+      }
     },
     history: [
       { name: "Initial Assessment", completed: "2026-03-01", score: "Complete" },
