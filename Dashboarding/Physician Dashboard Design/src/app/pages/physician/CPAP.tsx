@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { cpapData } from '../../data/mockData';
-import { TrendingDown, Activity } from 'lucide-react';
+import { TrendingDown, Activity, Wind } from 'lucide-react';
 
 export default function PhysicianCPAP() {
   const [chartPeriod, setChartPeriod] = useState<'30' | '60' | '90'>('30');
@@ -10,7 +10,7 @@ export default function PhysicianCPAP() {
   return (
     <div className="p-8 space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-3 gap-6">
         <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -52,6 +52,24 @@ export default function PhysicianCPAP() {
             </p>
           </div>
         </div>
+
+        <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <p className="text-sm text-[#5A6B7C] mb-1">Mask Interface</p>
+              <p className="text-lg font-bold text-[#0A1128]">AirFit F20</p>
+              <p className="text-sm text-[#5A6B7C]">Medium (Full Face)</p>
+            </div>
+            <div className="w-12 h-12 bg-[#F4A261]/10 rounded-lg flex items-center justify-center">
+              <Wind className="w-6 h-6 text-[#F4A261]" />
+            </div>
+          </div>
+          <div className="mt-4 pt-4 border-t border-[#E8EEF2]">
+            <p className="text-xs text-[#5A6B7C]">
+              Mask leak is often tied to fit integrity. Full-face masks have higher tolerances.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* AHI Trend Chart */}
@@ -62,42 +80,38 @@ export default function PhysicianCPAP() {
             <div className="flex gap-2">
               <button
                 onClick={() => setChartPeriod('30')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  chartPeriod === '30'
+                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '30'
                     ? 'bg-[#2D9596] text-white'
                     : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
-                }`}
+                  }`}
               >
                 30 Days
               </button>
               <button
                 onClick={() => setChartPeriod('60')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  chartPeriod === '60'
+                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '60'
                     ? 'bg-[#2D9596] text-white'
                     : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
-                }`}
+                  }`}
               >
                 60 Days
               </button>
               <button
                 onClick={() => setChartPeriod('90')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  chartPeriod === '90'
+                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '90'
                     ? 'bg-[#2D9596] text-white'
                     : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
-                }`}
+                  }`}
               >
                 90 Days
               </button>
             </div>
             <button
               onClick={() => setShowApneaTypes(!showApneaTypes)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                showApneaTypes
+              className={`px-4 py-2 rounded-lg text-sm transition-colors ${showApneaTypes
                   ? 'bg-[#F4A261] text-white'
                   : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#F4A261]/10'
-              }`}
+                }`}
             >
               {showApneaTypes ? 'Show Total AHI' : 'Show Central vs. Obstructive'}
             </button>

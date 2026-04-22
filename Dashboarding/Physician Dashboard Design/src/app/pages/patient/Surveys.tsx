@@ -225,7 +225,7 @@ export default function PatientSurveys() {
                   <div className="absolute left-4 right-4 h-0.5 bg-white/20 top-[11px] z-0" />
                   {[
                     { label: 'Invited', date: 'May 1', status: 'done' },
-                    { label: 'Nudge 1', date: 'May 5', status: 'active' },
+                    { label: 'Reminder 1', date: 'May 5', status: 'active' },
                     { label: 'Final SMS', date: 'May 8', status: 'pending' },
                   ].map((step, idx) => (
                     <div key={idx} className="relative z-10 flex flex-col items-center">

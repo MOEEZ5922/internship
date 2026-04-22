@@ -1,14 +1,15 @@
 import { Link } from 'react-router';
-import { 
-  aiWeeklyState, 
-  cpapData, 
-  patientInfo 
+import {
+  aiWeeklyState,
+  cpapData,
+  patientInfo,
+  technicianQueue
 } from '../data/mockData';
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  Activity, 
-  Calendar, 
+import {
+  AlertTriangle,
+  CheckCircle,
+  Activity,
+  Calendar,
   ArrowRight,
   TrendingUp,
   Brain,
@@ -18,8 +19,14 @@ import {
   Truck,
   Stethoscope,
   XCircle,
-  FileText
+  FileText,
+  History,
+  FileSignature,
+  Plus,
+  Send,
+  Zap
 } from 'lucide-react';
+import { useState } from 'react';
 
 interface SummaryContentProps {
   patientId?: string;
@@ -29,22 +36,39 @@ interface SummaryContentProps {
   showActions?: boolean;
 }
 
-export default function SummaryContent({ 
-  patientId, 
-  isCompact = false, 
+export default function SummaryContent({
+  patientId,
+  isCompact = false,
   role = 'physician',
   hideHeader = false,
   showActions = true
 }: SummaryContentProps) {
+  const [showLogConfirmation, setShowLogConfirmation] = useState(false);
+  const [showOrderModal, setShowOrderModal] = useState(false);
+  const [activePathway, setActivePathway] = useState<'app_iah' | 'alt_therapy'>('app_iah');
+  const [selectedTherapy, setSelectedTherapy] = useState('');
+  const [clinicalNotes, setClinicalNotes] = useState('');
+  const [escalationSource, setEscalationSource] = useState<'ai' | 'technician'>('ai');
+  const [appIahNotes, setAppIahNotes] = useState('');
+
+  const handleAuthorize = () => {
+    setShowLogConfirmation(true);
+  };
+
+  const handleOrderSubmit = () => {
+    setShowOrderModal(false);
+    alert(`Clinical Order Logged: ${appIahNotes}`);
+  };
+
   // Ultra-resilient data mapping
   const nextAction = aiWeeklyState?.nextBestAction || { type: 'Monitoring', rationale: 'No active clinical exception.' };
   const currentAHI = cpapData?.currentAHI || 0;
   const usage = cpapData?.averageHours || 0;
   const leak = cpapData?.percentileLeak || 0;
-  
+
   return (
     <div className={`space-y-6 ${isCompact ? 'p-0' : 'p-8 max-w-6xl mx-auto'} animate-in fade-in duration-500`}>
-      
+
       {/* 1. Universal Evidence Workspace: AI Core */}
       {!hideHeader && (
         <div className="bg-[#0A1128] text-white rounded-2xl p-6 shadow-xl border-l-8 border-[#E76F51]">
@@ -112,17 +136,30 @@ export default function SummaryContent({
 
           <div className="bg-white rounded-2xl border border-[#E8EEF2] p-5 shadow-sm">
             <h3 className="text-xs font-bold text-[#0A1128] uppercase tracking-wider mb-4 flex items-center gap-2">
-              <ClipboardList className="w-3.5 h-3.5 text-[#2D9596]" />
-              Intervention Log
+              <History className="w-3.5 h-3.5 text-[#2D9596]" />
+              Intervention History
             </h3>
             <div className="space-y-3">
-              <div className="flex items-start gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-[#E8EEF2]">
-                <CheckCircle className="w-4 h-4 text-[#6A994E] mt-0.5" />
-                <div>
-                  <p className="text-xs font-bold text-[#0A1128]">MAD Pathway Authorized</p>
-                  <p className="text-[10px] text-[#5A6B7C]">Apr 18, 2026</p>
+              {(technicianQueue[0]?.interventionHistory || []).slice(0, 3).map((item, idx) => (
+                <div key={idx} className="flex items-start gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-[#E8EEF2] hover:border-[#2D9596]/30 transition-all group">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    item.result === 'Success' ? 'bg-[#6A994E]/10 text-[#6A994E]' : 
+                    item.result === 'Pending' ? 'bg-[#F4A261]/10 text-[#F4A261]' : 
+                    'bg-[#E76F51]/10 text-[#E76F51]'
+                  }`}>
+                    {item.result === 'Success' ? <CheckCircle className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start">
+                      <p className="text-[11px] font-bold text-[#0A1128] group-hover:text-[#2D9596] transition-colors">{item.type}</p>
+                      <span className="text-[8px] font-mono bg-white px-1.5 py-0.5 rounded border border-[#E8EEF2] text-[#5A6B7C]">{item.code}</span>
+                    </div>
+                    <p className="text-[9px] text-[#5A6B7C] flex items-center gap-1 mt-0.5">
+                      {item.date} • {item.tech}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
@@ -133,13 +170,78 @@ export default function SummaryContent({
             <div className={`bg-white rounded-2xl border-2 ${role === 'physician' ? 'border-[#2D9596]' : 'border-[#F4A261]'} p-6 shadow-lg`}>
               <h3 className="text-base font-bold text-[#0A1128] mb-6 flex items-center gap-2">
                 <Activity className={role === 'physician' ? 'text-[#2D9596]' : 'text-[#F4A261]'} />
-                 {role === 'physician' ? 'Clinical Action' : 'Technical Action'}
+                {role === 'physician' ? 'Clinical Action' : 'Technical Action'}
               </h3>
-              
+
               {role === 'physician' ? (
-                <div className="space-y-3">
-                  <button className="w-full bg-[#2D9596] text-white font-bold py-4 rounded-xl shadow-lg text-sm">Authorize Intervention</button>
-                  <button className="w-full bg-white border-2 border-[#E8EEF2] text-[#0A1128] font-bold py-4 rounded-xl text-sm">Dismiss</button>
+                <div className="space-y-6">
+                  {/* Pathway Toggle */}
+                  <div className="flex bg-[#FAFAFA] p-1 rounded-xl border border-[#E8EEF2]">
+                    <button 
+                      onClick={() => setActivePathway('app_iah')}
+                      className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all ${activePathway === 'app_iah' ? 'bg-white shadow-sm text-[#0A1128] border border-[#E8EEF2]' : 'text-[#5A6B7C]'}`}
+                    >
+                      APPEL IAH
+                    </button>
+                      <button 
+                        onClick={() => setActivePathway('alt_therapy')}
+                        className={`flex-1 py-2 text-[10px] font-bold rounded-lg transition-all ${activePathway === 'alt_therapy' ? 'bg-white shadow-sm text-[#0A1128] border border-[#E8EEF2]' : 'text-[#5A6B7C]'}`}
+                      >
+                        MAD/HNS PATH
+                      </button>
+                  </div>
+
+                  {activePathway === 'app_iah' ? (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div className="p-3 bg-[#2D9596]/5 border border-[#2D9596]/20 rounded-xl">
+                        <div className="flex justify-between items-center mb-2">
+                           <span className="text-[10px] font-bold text-[#2D9596] uppercase tracking-tighter flex items-center gap-1">
+                             <Zap className="w-3 h-3" /> Escalation Source
+                           </span>
+                           <button onClick={() => setEscalationSource(escalationSource === 'ai' ? 'technician' : 'ai')} className="text-[10px] text-[#5A6B7C] hover:underline">Switch</button>
+                        </div>
+                        <p className="text-[11px] text-[#0A1128] leading-snug">
+                          {escalationSource === 'ai' 
+                            ? 'AI identified sustained AHI variance exceeding clinical thresholds.' 
+                            : 'Technician flagged case for clinical pathway adjustment via O5 protocol.'}
+                        </p>
+                      </div>
+                      <button 
+                        onClick={() => setShowOrderModal(true)}
+                        className="w-full bg-[#0A1128] text-white font-bold py-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2 hover:bg-black transition-all"
+                      >
+                        <FileSignature className="w-4 h-4 text-[#F4A261]" /> Issue Clinical Order
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 animate-in fade-in duration-300">
+                      <div className="grid grid-cols-2 gap-2">
+                        {['MAD', 'HNS'].map(t => (
+                          <button 
+                            key={t}
+                            onClick={() => setSelectedTherapy(t)}
+                            title={t === 'MAD' ? 'Oral appliance used to manage airway collapse' : "Surgically implanted device placed under the skin on the patient's chest"}
+                            className={`py-3 rounded-lg border-2 text-[10px] font-bold transition-all ${selectedTherapy === t ? 'border-[#2D9596] bg-[#2D9596]/5 text-[#2D9596]' : 'border-[#E8EEF2] text-[#5A6B7C]'}`}
+                          >
+                            {t === 'MAD' ? 'Oral Appliance (MAD)' : 'Chest Implant (HNS)'}
+                          </button>
+                        ))}
+                      </div>
+                      <textarea 
+                        value={clinicalNotes}
+                        onChange={(e) => setClinicalNotes(e.target.value)}
+                        placeholder="Rationale..."
+                        className="w-full h-20 bg-[#FAFAFA] border border-[#E8EEF2] rounded-xl p-3 text-[11px] focus:ring-1 focus:ring-[#2D9596] outline-none"
+                      />
+                      <button 
+                        onClick={handleAuthorize}
+                        disabled={!selectedTherapy || !clinicalNotes}
+                        className="w-full bg-[#2D9596] text-white font-bold py-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2 disabled:opacity-40"
+                      >
+                        Authorize Transition
+                      </button>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -149,7 +251,12 @@ export default function SummaryContent({
                   <button className="w-full bg-[#0A1128] text-white font-bold py-4 rounded-xl shadow-lg text-sm flex items-center justify-center gap-2">
                     <Truck className="w-4 h-4" /> Dispatch Asset
                   </button>
-                  <button className="w-full bg-white border-2 border-[#E8EEF2] text-[#0A1128] font-bold py-4 rounded-xl text-sm">Schedule Visit</button>
+                  <button className="w-full bg-white border-2 border-[#E8EEF2] text-[#0A1128] font-bold py-4 rounded-xl text-sm flex items-center justify-center gap-2">
+                    <Calendar className="w-4 h-4 text-[#F4A261]" /> Schedule Visit
+                  </button>
+                  <button className="w-full bg-white border-2 border-[#E76F51]/30 text-[#E76F51] font-bold py-4 rounded-xl text-sm flex items-center justify-center gap-2 hover:bg-[#E76F51]/5 transition-all mt-4">
+                    <Stethoscope className="w-4 h-4" /> Escalate to Physician
+                  </button>
                 </div>
               )}
 
@@ -163,6 +270,69 @@ export default function SummaryContent({
           </div>
         )}
       </div>
+
+      {showOrderModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0A1128]/40 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-[#0A1128] mb-2">Issue Clinical Order</h3>
+            <p className="text-xs text-[#5A6B7C] mb-6">Log the next clinical step in the patient's record.</p>
+            <textarea 
+              value={appIahNotes}
+              onChange={(e) => setAppIahNotes(e.target.value)}
+              placeholder="Order details..."
+              className="w-full h-32 bg-[#FAFAFA] border border-[#E8EEF2] rounded-xl p-4 text-sm focus:ring-2 focus:ring-[#2D9596] outline-none mb-6"
+            />
+            <div className="flex gap-3">
+              <button onClick={() => setShowOrderModal(false)} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl text-xs">Cancel</button>
+              <button onClick={() => {
+                setShowOrderModal(false);
+                setSelectedTherapy('Clinical Order');
+                setShowLogConfirmation(true);
+              }} disabled={!appIahNotes} className="flex-2 py-4 bg-[#2D9596] text-white font-bold rounded-xl text-xs shadow-lg shadow-[#2D9596]/20">Sign & Log Order</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showLogConfirmation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0A1128]/40 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border-t-8 border-[#2D9596]">
+            <div className="w-16 h-16 bg-[#2D9596]/10 rounded-2xl flex items-center justify-center mb-6">
+              <ShieldCheck className="w-8 h-8 text-[#2D9596]" />
+            </div>
+            <h3 className="text-2xl font-bold text-[#0A1128] mb-2">Transition Authorized</h3>
+            <p className="text-sm text-[#5A6B7C] mb-8 leading-relaxed">
+              Therapy transition to <strong>{selectedTherapy}</strong> has been clinically authorized and synced to the care team.
+            </p>
+
+            {/* Digital Signature Block */}
+            <div className="bg-[#FAFAFA] border-2 border-dashed border-[#E8EEF2] rounded-2xl p-5 mb-8 relative overflow-hidden group">
+               <div className="absolute top-[-10px] right-[-10px] opacity-10 group-hover:rotate-12 transition-transform">
+                  <ShieldCheck className="w-20 h-20 text-[#2D9596]" />
+               </div>
+               <p className="text-[9px] font-black text-[#2D9596] uppercase tracking-[0.2em] mb-3 flex items-center gap-2">
+                  <CheckCircle className="w-3 h-3" /> Digital Clinical Seal
+               </p>
+               <div className="space-y-1">
+                  <p className="text-sm font-serif italic text-[#0A1128] border-b border-[#E8EEF2] pb-1">Dr. Sarah Mitchell, MD</p>
+                  <p className="text-[8px] text-[#5A6B7C] font-mono">ID: LINDE-AUTH-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                  <p className="text-[8px] text-[#5A6B7C] font-mono">DATE: {new Date().toLocaleString()}</p>
+               </div>
+            </div>
+
+            <button 
+              onClick={() => {
+                setShowLogConfirmation(false);
+                setSelectedTherapy('');
+                setClinicalNotes('');
+              }}
+              className="w-full bg-[#0A1128] text-white py-5 rounded-2xl font-bold shadow-lg hover:shadow-[#0A1128]/20 transition-all active:scale-95"
+            >
+              Return to Cockpit
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

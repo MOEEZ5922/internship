@@ -85,7 +85,7 @@ export default function PhysicianBiomarkers() {
           </div>
           <div>
              <h3 className="text-[#0A1128] font-bold mb-1">AI Pathway Summary</h3>
-             <p className="text-[#5A6B7C] text-sm">SpO2 is somewhat stable, but <span className="font-semibold text-[#0A1128]">HRV is trending down</span> alongside high mask leak rates. Recommend reviewing patient for Alternative Therapy Authorization.</p>
+             <p className="text-[#5A6B7C] text-sm">SpO2 is somewhat stable, but <span className="font-semibold text-[#0A1128]">HRV is trending down</span> alongside high mask leak rates. Recommend reviewing patient for MAD/HNS Transition Path.</p>
           </div>
         </div>
       </div>

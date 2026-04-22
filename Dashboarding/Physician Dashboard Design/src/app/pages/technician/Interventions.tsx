@@ -1,114 +1,184 @@
+import { useState } from 'react';
+import { Package, Phone, Home, Settings, Plus, AlertCircle, FileSignature, Activity, ShieldCheck } from 'lucide-react';
 import { interventionData } from '../../data/mockData';
-import { Clock, Truck, CheckCircle } from 'lucide-react';
 
 export default function TechnicianInterventions() {
-  const columns = ['To Dispatch', 'In Transit', 'Delivered'];
+  const [showTechActionModal, setShowTechActionModal] = useState(false);
+  const [techActionType, setTechActionType] = useState('');
+  const [techActionNote, setTechActionNote] = useState('');
 
-  const getColumnIcon = (status: string) => {
-    if (status === 'To Dispatch') return <Clock className="w-5 h-5" />;
-    if (status === 'In Transit') return <Truck className="w-5 h-5" />;
-    return <CheckCircle className="w-5 h-5" />;
-  };
-
-  const getColumnColor = (status: string) => {
-    if (status === 'To Dispatch') return 'bg-[#F4A261]/10 border-[#F4A261]/20 text-[#F4A261]';
-    if (status === 'In Transit') return 'bg-[#2D9596]/10 border-[#2D9596]/20 text-[#2D9596]';
-    return 'bg-[#6A994E]/10 border-[#6A994E]/20 text-[#6A994E]';
-  };
-
-  const getPriorityColor = (priority: string) => {
-    if (priority === 'High') return 'bg-[#E76F51] text-white';
-    if (priority === 'Medium') return 'bg-[#F4A261] text-white';
-    return 'bg-[#5A6B7C] text-white';
+  const handleTechActionSubmit = () => {
+    alert(`Technician Intervention Logged:\n\nType: ${techActionType}\nNote: ${techActionNote}`);
+    setShowTechActionModal(false);
   };
 
   return (
-    <div className="p-8">
-      <div className="mb-6">
-        <h2 className="text-2xl text-[#0A1128] mb-2">Equipment Dispatch Board</h2>
-        <p className="text-[#5A6B7C]">Track and manage patient equipment deliveries</p>
-      </div>
-
-      {/* Kanban Board */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {columns.map((column) => {
-          const tasks = interventionData.technician.tasks.filter((task) => task.status === column);
-          const Icon = column === 'To Dispatch' ? Clock : column === 'In Transit' ? Truck : CheckCircle;
-          const headerColor = column === 'To Dispatch' ? 'bg-[#F4A261]' : column === 'In Transit' ? 'bg-[#2D9596]' : 'bg-[#6A994E]';
-
-          return (
-            <div key={column} className="bg-[#E8EEF2] rounded-xl p-4">
-              <div className={`${headerColor} text-white rounded-lg p-4 mb-4 flex items-center justify-between`}>
-                <div className="flex items-center gap-2">
-                  <Icon className="w-5 h-5" />
-                  <h3 className="font-medium">{column}</h3>
-                </div>
-                <span className="bg-white/20 px-2 py-1 rounded text-sm">{tasks.length}</span>
-              </div>
-
-              <div className="space-y-3">
-                {tasks.map((task) => (
-                  <div key={task.id} className="bg-white rounded-lg p-4 shadow-sm border border-[#E8EEF2]">
-                    <div className="flex items-start justify-between mb-3">
-                      <h4 className="text-[#0A1128] font-medium">{task.item}</h4>
-                      <span className={`text-xs px-2 py-1 rounded ${getPriorityColor(task.priority)}`}>
-                        {task.priority}
-                      </span>
-                    </div>
-                    <div className="space-y-2 text-sm text-[#5A6B7C]">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4" />
-                        <span>{new Date(task.scheduledDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {tasks.length === 0 && (
-                  <div className="text-center py-8 text-[#5A6B7C] text-sm">
-                    No items in this column
-                  </div>
-                )}
-              </div>
+    <div className="p-8 max-w-5xl space-y-8 pb-20 animate-in fade-in duration-500">
+      
+      {/* Role-Specific Action Banner */}
+      <div className="p-6 rounded-2xl border-2 bg-[#F4A261]/5 border-[#F4A261]/30 flex items-center justify-between">
+         <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-[#F4A261] text-white flex items-center justify-center shadow-lg shadow-[#F4A261]/20">
+               <Package />
             </div>
-          );
-        })}
+            <div>
+               <h2 className="text-xl font-bold text-[#0A1128]">Field Intervention Cockpit</h2>
+               <p className="text-sm text-[#5A6B7C]">Log equipment dispatches, calls, and technical touchpoints.</p>
+            </div>
+         </div>
+         
+         <button 
+            onClick={() => setShowTechActionModal(true)}
+            className="bg-[#F4A261] text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-[#e39350] transition-all flex items-center gap-2 active:scale-95"
+         >
+            <Plus className="w-5 h-5" /> Log New Intervention
+         </button>
       </div>
 
-      {/* Quick Actions */}
-      <div className="mt-6 bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
-        <h3 className="text-lg text-[#0A1128] mb-4">Quick Actions</h3>
-        <div className="flex gap-4">
-          <button className="px-6 py-3 bg-[#F4A261] text-white rounded-lg hover:bg-[#e39350] transition-colors">
-            + New Dispatch Order
-          </button>
-          <button className="px-6 py-3 bg-[#E8EEF2] text-[#0A1128] rounded-lg hover:bg-[#d5dce3] transition-colors">
-            View Delivery History
-          </button>
-          <button className="px-6 py-3 bg-[#E8EEF2] text-[#0A1128] rounded-lg hover:bg-[#d5dce3] transition-colors">
-            Equipment Inventory
-          </button>
+      <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm p-8">
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="bg-[#5A6B7C]/10 text-[#5A6B7C] px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest border border-[#5A6B7C]/20">
+               Unified Evidence Log
+            </span>
+          </div>
+          <h3 className="text-xl text-[#0A1128] mb-2 font-semibold">Intervention Viability History</h3>
+          <p className="text-[#5A6B7C] text-sm">
+            All clinical and technical activities logged for this patient profile.
+          </p>
+        </div>
+
+        <div className="space-y-8">
+          {/* Viability Log Table */}
+          <div className="bg-[#FAFAFA] rounded-xl border border-[#E8EEF2] overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-[#E8EEF2] text-[#5A6B7C]">
+                <tr>
+                  <th className="text-left py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Date</th>
+                  <th className="text-left py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Stakeholder Action</th>
+                  <th className="text-left py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Outcome</th>
+                  <th className="text-left py-4 px-6 font-bold uppercase text-[10px] tracking-widest">Actor & Role</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[#E8EEF2]">
+                <tr className="hover:bg-white transition-colors">
+                  <td className="py-4 px-6 text-[#5A6B7C]">2026-04-18</td>
+                  <td className="py-4 px-6">
+                     <p className="font-bold text-[#0A1128]">Authorized MAD/HNS Transition Consult</p>
+                     <p className="text-[10px] text-[#5A6B7C]">Path: MAD/HNS Referral for CPAP Refractory AHI</p>
+                  </td>
+                  <td className="py-4 px-6">
+                    <span className="flex items-center gap-1.5 text-[#6A994E] font-bold">
+                      Pending Clinical Intake
+                    </span>
+                  </td>
+                  <td className="py-4 px-6">
+                     <span className="flex items-center gap-2 text-[10px] font-bold bg-[#6A994E]/10 text-[#6A994E] border border-[#6A994E]/20 px-2 py-1 rounded-full uppercase tracking-widest">
+                        <FileSignature className="w-3 h-3"/> Clinician: Dr. Sarah
+                     </span>
+                  </td>
+                </tr>
+                <tr className="hover:bg-white transition-colors">
+                  <td className="py-4 px-6 text-[#5A6B7C]">2026-04-12</td>
+                  <td className="py-4 px-6">
+                     <p className="font-bold text-[#0A1128]">Remote Pressure Calibration</p>
+                     <p className="text-[10px] text-[#5A6B7C]">Pressure increased to 11.5 cmH2O</p>
+                  </td>
+                  <td className="py-4 px-6 text-[#6A994E] font-bold">Success - AHI Stabilized</td>
+                  <td className="py-4 px-6 text-[#5A6B7C] font-medium italic">Auto-System (AI)</td>
+                </tr>
+                <tr className="hover:bg-white transition-colors">
+                  <td className="py-4 px-6 text-[#5A6B7C]">2026-03-15</td>
+                  <td className="py-4 px-6 font-bold text-[#0A1128]">
+                     Dispatch: AirFit N20 Mask (Nasal)
+                     <span className="block text-[10px] text-[#F4A261] font-normal italic">Job Code: EX-DISP</span>
+                  </td>
+                  <td className="py-4 px-6">
+                    <span className="flex items-center gap-1.5 text-[#E76F51] font-bold">
+                      <AlertCircle className="w-3.5 h-3.5" /> Failed - Skin Irritation
+                    </span>
+                  </td>
+                  <td className="py-4 px-6">
+                     <span className="flex items-center gap-2 text-[10px] font-bold bg-[#F4A261]/10 text-[#F4A261] border border-[#F4A261]/20 px-2 py-1 rounded-full uppercase tracking-widest">
+                        <Package className="w-3 h-3"/> Tech: J. Mitchell
+                     </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="bg-[#F4A261]/5 border-2 border-dashed border-[#F4A261]/20 rounded-2xl p-8 text-center">
+            <h4 className="text-[#0A1128] font-bold mb-6">Technician Command Center</h4>
+            <button 
+              onClick={() => setShowTechActionModal(true)}
+              className="bg-white border-2 border-[#F4A261] text-[#F4A261] px-8 py-3 rounded-xl font-bold hover:bg-[#F4A261] hover:text-white transition-all shadow-sm"
+            >
+              Log New Field Activity
+            </button>
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
 
-function Calendar({ className }: { className: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-      />
-    </svg>
+      {/* Technician Action Modal */}
+      {showTechActionModal && (
+         <div className="fixed inset-0 bg-[#0A1128]/60 flex items-center justify-center z-50 animate-in fade-in duration-200 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-xl w-full animate-in zoom-in-95 duration-200">
+               <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-[#F4A261]/10 rounded-lg flex items-center justify-center">
+                     <Plus className="w-6 h-6 text-[#F4A261]" />
+                  </div>
+                  <div>
+                     <h3 className="text-xl font-bold text-[#0A1128]">Log Field Intervention</h3>
+                     <p className="text-xs text-[#5A6B7C] uppercase font-bold tracking-tighter">Unified Service History Sync</p>
+                  </div>
+               </div>
+
+               <div className="grid grid-cols-2 gap-4 mb-8">
+                  {[
+                     { id: 'disp', label: 'Equipment Dispatch', icon: <Package />, sub: 'Send new mask/hardware' },
+                     { id: 'call', label: 'Remote Call', icon: <Phone />, sub: 'Adherence motivation' },
+                     { id: 'visit', label: 'Home Visit', icon: <Home />, sub: 'Full refit & calibration' },
+                     { id: 'adj', label: 'Pressure Adjust', icon: <Settings />, sub: 'Manual O3 update' }
+                  ].map(action => (
+                     <button 
+                        key={action.id}
+                        onClick={() => setTechActionType(action.label)}
+                        className={`p-4 rounded-xl border-2 text-left transition-all ${techActionType === action.label ? 'border-[#F4A261] bg-[#F4A261]/5' : 'border-[#E8EEF2] hover:border-[#F4A261]/30'}`}
+                     >
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center mb-3 ${techActionType === action.label ? 'bg-[#F4A261] text-white' : 'bg-[#FAFAFA] text-[#5A6B7C]'}`}>
+                           {action.icon}
+                        </div>
+                        <p className="text-sm font-bold text-[#0A1128]">{action.label}</p>
+                        <p className="text-[10px] text-[#5A6B7C]">{action.sub}</p>
+                     </button>
+                  ))}
+               </div>
+
+               <label className="block text-xs font-bold text-[#5A6B7C] uppercase tracking-widest mb-2">Intervention Detail / Outcome</label>
+               <textarea 
+                  value={techActionNote}
+                  onChange={(e) => setTechActionNote(e.target.value)}
+                  placeholder="Record what was done and the immediate outcome..."
+                  className="w-full h-24 p-4 bg-[#FAFAFA] border border-[#E8EEF2] rounded-xl mb-6 text-sm focus:ring-2 focus:ring-[#F4A261] outline-none transition-all"
+               />
+
+               <div className="flex gap-4">
+                  <button onClick={() => setShowTechActionModal(false)} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl active:scale-95 transition-transform">Cancel</button>
+                  <button onClick={handleTechActionSubmit} disabled={!techActionType || !techActionNote} className="flex-2 py-4 bg-[#F4A261] text-white font-bold rounded-xl shadow-lg shadow-[#F4A261]/20 disabled:opacity-40 disabled:cursor-not-allowed active:scale-95 transition-transform">
+                     Log Intervention & Sync
+                  </button>
+               </div>
+            </div>
+         </div>
+      )}
+
+      <div className="text-center">
+         <p className="text-[10px] text-[#5A6B7C] uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+            <ShieldCheck className="w-3 h-3" /> Blockchain-Verified Clinical-Technical Audit Trail Active
+         </p>
+      </div>
+
+    </div>
   );
 }

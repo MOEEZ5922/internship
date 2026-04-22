@@ -87,12 +87,13 @@ export const technicianQueue = [
     leakProfile: { p50: 12.4, p95: 28.5, max: 42.1 },
     assetTracking: { serial: "LND-7742-XP", assetTag: "TAG-991" },
     interventionHistory: [
-      { date: "2026-04-01", type: "Remote Pressure Alt", result: "Success (AHI Down)", tech: "J. Doe" },
-      { date: "2026-03-15", type: "Mask Size Swap", result: "Failed (Leak Same)", tech: "A. Smith" },
+      { date: "2026-04-18", type: "MAD/HNS Transition Consult", result: "Pending", tech: "Dr. Sarah", code: "SL-REF" },
+      { date: "2026-04-12", type: "Remote Pressure Calibration", result: "Success", tech: "AI-System", code: "VK-AUTO" },
+      { date: "2026-03-15", type: "Dispatch: AirFit N20 Mask (Nasal)", result: "Failed - Irritation", tech: "J. Mitchell", code: "EX-DISP" },
     ],
     monitoringSurveys: [
-      { id: "M1", question: "Mask Comfort (1-10)", answer: "4 (Hurts nose bridge)" },
-      { id: "M2", question: "Ease of Cleaning", answer: "Good" },
+      { id: "M1", question: "Mask Comfort (AirFit N20)", answer: "4 (Hurts nose bridge)" },
+      { id: "M2", question: "Ease of Cleaning (VK Protocol)", answer: "Good" },
     ],
     biomarkers: {
       ahi: { current: 12.4, baseline: 4.2 },
@@ -155,14 +156,32 @@ export const technicianQueue = [
     monitoringSurveys: [
       { id: "M1", question: "Mask Comfort (1-10)", answer: "4 (Hurts nose bridge)", author: "J. Doe", role: "Technician", date: "2026-04-10" },
       { id: "M2", question: "Ease of Cleaning", answer: "Good", author: "A. Smith", role: "Technician", date: "2026-03-25" },
-      { id: "M3", question: "Physical Skin Status", answer: "Redness observed on bridge", author: "J. Doe", role: "Technician", date: "2026-04-10" },
     ],
+  },
+  {
+    id: 10,
+    patientName: "James Wilson",
+    dropoutRisk: 45,
+    usageHours: 5.2,
+    usageCategory: "4-6 hrs",
+    postalCode: "13001",
+    lastContact: "2026-04-15",
+    action: "Survey Follow-up",
+    behavioralCluster: "Adherent",
+    phase: "Maintenance",
+    maskType: "AirFit P10 - Large",
+    lastMaskChange: "2026-01-20",
+    equipmentNeed: [],
+    leakProfile: { p50: 5.1, p95: 12.4, max: 18.2 },
+    assetTracking: { serial: "LND-8832-WW", assetTag: "TAG-112" },
+    interventionHistory: [],
+    monitoringSurveys: [],
     biomarkers: {
-      ahi: { current: 15.5, baseline: 5.8 },
-      spo2: { mean: 92, nadir: 84 },
-      odi: 22.1,
-      hrv: 35,
-      oai: 7.4
+      ahi: { current: 3.2, baseline: 3.0 },
+      spo2: { mean: 97, nadir: 94 },
+      odi: 4.2,
+      hrv: 62,
+      oai: 0.8
     }
   },
 ];
@@ -206,10 +225,12 @@ export const technicianEvents = [
 ];
 
 export const cpapData = {
-  currentAHI: 4.2,
-  percentileLeak: 12.5,
-  averageHours: 6.8,
-  lastMaskChange: "2026-02-10",
+  currentAHI: 12.4,
+  percentileLeak: 38.5,
+  averageHours: 1.2,
+  lastMaskChange: "2026-03-15",
+  currentMask: "AirFit N20 (Nasal)",
+  jobCode: "EX-VK",
   pressureSettings: {
     min: 6,
     max: 14,
@@ -350,8 +371,8 @@ export const surveyData = {
       dueDate: "2026-05-10",
       questions: 8,
       persistence: {
-        lastNudge: "2 days ago",
-        status: "Nudge 1 (Day 4) Sent",
+        lastReminder: "2 days ago",
+        status: "Reminder 1 (Day 4) Sent",
         automationActive: true,
         daysOverdue: 0
       }
@@ -412,7 +433,7 @@ export const videoData = {
     },
     {
       id: 3,
-      title: "Alternative Therapy Options",
+      title: "Therapy Transition (MAD/HNS) Overview",
       duration: "12:40",
       category: "Treatment Options",
       thumbnail: "clinical",

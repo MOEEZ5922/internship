@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import RoleSelector from "./pages/RoleSelector";
 import PhysicianLayout from "./layouts/PhysicianLayout";
 import TechnicianLayout from "./layouts/TechnicianLayout";
@@ -21,6 +21,7 @@ import TechnicianInterventions from "./pages/technician/Interventions";
 import TechnicianSurveys from "./pages/technician/Surveys";
 import TechnicianHelp from "./pages/technician/Help";
 import TechnicianInventory from "./pages/technician/Inventory";
+import TechnicianDevices from "./pages/technician/Devices";
 import PatientHome from "./pages/patient/Home";
 import PatientCPAP from "./pages/patient/CPAP";
 import PatientSurveys from "./pages/patient/Surveys";
@@ -68,11 +69,12 @@ export const router = createBrowserRouter([
           { index: true, Component: TechnicianSummary },
           { path: "summary", Component: TechnicianSummary },
           { path: "trends", Component: TechnicianCPAP },
-          { path: "interventions", Component: PhysicianInterventions },
-          { path: "surveys", Component: PhysicianSurveys },
+          { path: "interventions", Component: TechnicianInterventions },
+          { path: "surveys", Component: TechnicianSurveys },
           { path: "biomarkers", Component: PhysicianBiomarkers },
           { path: "ai-analysis", Component: PhysicianAIAnalysis },
-          { path: "logistics", Component: TechnicianInventory },
+          { path: "devices", Component: TechnicianDevices },
+          { path: "logistics", element: <Navigate to="devices" replace /> },
         ],
       },
     ],

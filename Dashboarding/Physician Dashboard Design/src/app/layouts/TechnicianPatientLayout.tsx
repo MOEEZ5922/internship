@@ -13,7 +13,7 @@ export default function TechnicianPatientLayout() {
     { name: 'Interventions', href: `/technician/patient/${patientId}/interventions` },
     { name: 'Surveys', href: `/technician/patient/${patientId}/surveys` },
     { name: 'AI Analysis', href: `/technician/patient/${patientId}/ai-analysis` },
-    { name: 'Logistics Cabinet', href: `/technician/patient/${patientId}/logistics` },
+    { name: 'Biomarker Devices', href: `/technician/patient/${patientId}/devices` },
   ];
 
   return (

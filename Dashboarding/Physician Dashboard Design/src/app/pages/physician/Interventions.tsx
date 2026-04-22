@@ -90,7 +90,7 @@ export default function PhysicianInterventions() {
                   <tr className="hover:bg-white transition-colors">
                     <td className="py-4 px-6 text-[#5A6B7C]">2026-04-18</td>
                     <td className="py-4 px-6">
-                       <p className="font-bold text-[#0A1128]">Authorized Alternative Therapy Consult</p>
+                       <p className="font-bold text-[#0A1128]">Authorized MAD/HNS Transition Consult</p>
                        <p className="text-[10px] text-[#5A6B7C]">Path: MAD/HNS Referral for CPAP Refractory AHI</p>
                     </td>
                     <td className="py-4 px-6">
@@ -159,7 +159,7 @@ export default function PhysicianInterventions() {
                   onClick={() => setActivePathway('alt_therapy')}
                   className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activePathway === 'alt_therapy' ? 'bg-white shadow-md text-[#0A1128]' : 'text-[#5A6B7C] hover:text-[#0A1128]'}`}
                 >
-                  Alternative Therapy Authorization
+                  MAD/HNS Transition Authorization
                 </button>
               </div>
 
@@ -205,7 +205,7 @@ export default function PhysicianInterventions() {
                             <input type="radio" value={therapy} checked={selectedTherapy === therapy} onChange={(e) => setSelectedTherapy(e.target.value)} className="w-5 h-5 mt-0.5 text-[#2D9596]" />
                             <div>
                               <span className="text-[#0A1128] font-bold block">{therapy === 'MAD' ? 'Mandibular Advancement Device' : 'Hypoglossal Nerve Stimulation'}</span>
-                              <span className="text-xs text-[#5A6B7C]">{therapy === 'MAD' ? 'Mechanical Airway Dilation' : 'Surgical Implant Consultation'}</span>
+                              <span className="text-xs text-[#5A6B7C]">{therapy === 'MAD' ? 'An oral appliance used to manage airway collapse' : "A surgically implanted device placed under the skin on the patient's chest"}</span>
                             </div>
                           </label>
                         ))}

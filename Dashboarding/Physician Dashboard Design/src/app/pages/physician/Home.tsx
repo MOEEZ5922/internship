@@ -26,17 +26,6 @@ export default function PhysicianHome() {
             <h1 className="text-xl font-bold text-[#0A1128]">Exception Inbox</h1>
             <p className="text-xs text-[#5A6B7C]">AI-filtered clinical escalations</p>
           </div>
-          
-          <div className="flex gap-4">
-             <div className="bg-[#6A994E]/10 px-3 py-1.5 rounded-lg border border-[#6A994E]/20 text-center">
-                <p className="text-[8px] font-bold text-[#6A994E] uppercase tracking-wider">AI Confidence</p>
-                <p className="text-sm font-bold text-[#6A994E]">91%</p>
-             </div>
-             <div className="bg-[#0A1128]/5 px-3 py-1.5 rounded-lg border border-[#0A1128]/10 text-center">
-                <p className="text-[8px] font-bold text-[#0A1128] uppercase tracking-wider">Adherence</p>
-                <p className="text-sm font-bold text-[#0A1128]">84%</p>
-             </div>
-          </div>
         </div>
 
         <div className="p-6 border-b border-[#E8EEF2] space-y-4">
