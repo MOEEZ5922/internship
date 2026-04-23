@@ -269,6 +269,15 @@ export const biomarkerData = {
     day: i + 1,
     value: 93 + Math.random() * 4,
   })),
+  deepSleep: Array.from({ length: 30 }, (_, i) => ({
+    day: i + 1,
+    value: 60 + Math.random() * 40,
+  })),
+  bp: Array.from({ length: 30 }, (_, i) => ({
+    day: i + 1,
+    systolic: 120 + Math.random() * 20,
+    diastolic: 80 + Math.random() * 10,
+  })),
   status: {
     vitals: "green",
     general: "Good",

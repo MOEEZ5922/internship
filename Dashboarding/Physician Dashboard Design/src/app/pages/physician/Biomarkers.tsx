@@ -6,7 +6,7 @@ import { ChevronDown, AlertCircle } from 'lucide-react';
 const rvoData = biomarkerData.odi.map((d, i) => ({ day: d.day, value: 12 + Math.sin(i) * 3 }));
 const oaiData = biomarkerData.odi.map((d, i) => ({ day: d.day, value: 4 + Math.cos(i) * 2 }));
 
-type BiomarkerType = 'ODI' | 'HRV' | 'SpO2' | 'RVO' | 'OAI';
+type BiomarkerType = 'ODI' | 'HRV' | 'SpO2' | 'RVO' | 'OAI' | 'DeepSleep' | 'BP';
 
 export default function PhysicianBiomarkers() {
   const [activeChart, setActiveChart] = useState<BiomarkerType>('ODI');
@@ -15,6 +15,7 @@ export default function PhysicianBiomarkers() {
     ODI: {
       name: 'Oxygen Desaturation Index (ODI)',
       color: '#F4A261',
+      source: 'Masimo MightySat Rx',
       data: biomarkerData.odi,
       unit: '',
       current: '11.2',
@@ -26,6 +27,7 @@ export default function PhysicianBiomarkers() {
     HRV: {
       name: 'Heart Rate Variability (HRV)',
       color: '#2D9596',
+      source: 'Hexoskin Smart Shirt',
       data: biomarkerData.hrv,
       unit: ' ms',
       current: '58 ms',
@@ -37,6 +39,7 @@ export default function PhysicianBiomarkers() {
     SpO2: {
       name: 'Blood Oxygen Saturation (SpO2)',
       color: '#6A994E',
+      source: 'Masimo / Withings Watch',
       data: biomarkerData.spo2,
       unit: '%',
       current: '96%',
@@ -48,6 +51,7 @@ export default function PhysicianBiomarkers() {
     RVO: {
       name: 'Respiratory Effort Variability (RVO)',
       color: '#8B5CF6',
+      source: 'Hexoskin Smart Shirt',
       data: rvoData,
       unit: '',
       current: '14.2',
@@ -59,6 +63,7 @@ export default function PhysicianBiomarkers() {
     OAI: {
       name: 'Obstructive Apnea Index (OAI)',
       color: '#EF4444',
+      source: 'Somno-Art Analysis',
       data: oaiData,
       unit: '',
       current: '5.1',
@@ -66,6 +71,31 @@ export default function PhysicianBiomarkers() {
       status: 'Elevated',
       statusColor: 'text-[#E76F51]',
       domain: ['auto', 'auto']
+    },
+    DeepSleep: {
+      name: 'Deep Sleep Duration (N3)',
+      color: '#1D4ED8',
+      source: 'Somno-Art / Löwenstein',
+      data: (biomarkerData as any).deepSleep,
+      unit: ' min',
+      current: '72 min',
+      avg: '65 min',
+      status: 'Optimal',
+      statusColor: 'text-[#6A994E]',
+      domain: ['auto', 'auto']
+    },
+    BP: {
+      name: 'Blood Pressure (SYS/DIA)',
+      color: '#E11D48',
+      source: 'Withings BPM Core',
+      data: (biomarkerData as any).bp,
+      unit: ' mmHg',
+      current: '128/82',
+      avg: '124/80',
+      status: 'Normal',
+      statusColor: 'text-[#6A994E]',
+      domain: ['auto', 'auto'],
+      isMultiLine: true
     }
   };
 
@@ -106,6 +136,8 @@ export default function PhysicianBiomarkers() {
             <option value="SpO2">Blood Oxygen Saturation (SpO2)</option>
             <option value="RVO">Respiratory Effort Variability (RVO)</option>
             <option value="OAI">Obstructive Apnea Index (OAI)</option>
+            <option value="DeepSleep">Deep Sleep Duration (N3)</option>
+            <option value="BP">Blood Pressure (SYS/DIA)</option>
           </select>
           <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-[#5A6B7C]">
             <ChevronDown className="w-5 h-5" />
@@ -115,9 +147,14 @@ export default function PhysicianBiomarkers() {
 
       {/* Dynamic Active Chart Area */}
       <div className="bg-white rounded-xl border border-[#E8EEF2] shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
-        <div className="bg-[#FAFAFA] p-6 border-b border-[#E8EEF2] flex items-center gap-4">
-           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: activeConfig.color }} />
-           <h3 className="text-xl font-bold text-[#0A1128]">{activeConfig.name}</h3>
+        <div className="bg-[#FAFAFA] p-6 border-b border-[#E8EEF2] flex items-center justify-between">
+           <div className="flex items-center gap-4">
+             <div className="w-4 h-4 rounded-full" style={{ backgroundColor: (activeConfig as any).color }} />
+             <h3 className="text-xl font-bold text-[#0A1128]">{(activeConfig as any).name}</h3>
+           </div>
+           <div className="px-3 py-1 bg-[#2D9596]/10 text-[#2D9596] text-xs font-bold rounded-full uppercase tracking-widest border border-[#2D9596]/20">
+             Source: {(activeConfig as any).source}
+           </div>
         </div>
         
         <div className="px-6 py-6 pb-8">
@@ -150,15 +187,38 @@ export default function PhysicianBiomarkers() {
                   color: '#0A1128'
                 }}
               />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke={activeConfig.color}
-                strokeWidth={3}
-                dot={{ r: 4, fill: activeConfig.color, strokeWidth: 0 }}
-                activeDot={{ r: 6, fill: '#0A1128' }}
-                name={activeConfig.name}
-              />
+              {(activeConfig as any).isMultiLine ? (
+                <>
+                  <Line
+                    type="monotone"
+                    dataKey="systolic"
+                    stroke={(activeConfig as any).color}
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: (activeConfig as any).color, strokeWidth: 0 }}
+                    activeDot={{ r: 6, fill: '#0A1128' }}
+                    name="Systolic"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="diastolic"
+                    stroke="#F4A261"
+                    strokeWidth={3}
+                    dot={{ r: 4, fill: '#F4A261', strokeWidth: 0 }}
+                    activeDot={{ r: 6, fill: '#0A1128' }}
+                    name="Diastolic"
+                  />
+                </>
+              ) : (
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke={(activeConfig as any).color}
+                  strokeWidth={3}
+                  dot={{ r: 4, fill: (activeConfig as any).color, strokeWidth: 0 }}
+                  activeDot={{ r: 6, fill: '#0A1128' }}
+                  name={(activeConfig as any).name}
+                />
+              )}
             </LineChart>
           </ResponsiveContainer>
         </div>

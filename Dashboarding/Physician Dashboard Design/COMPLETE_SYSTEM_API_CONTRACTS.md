@@ -1,9 +1,9 @@
 # COMPLETE SYSTEM API CONTRACTS: SleepCare Platform
 
-**Date:** April 22, 2026  
-**Status:** DEFINITIVE / ZERO-OMISSION VERSION  
-**Owner:** Moeez Ahmed  
-**Technical Stakeholder:** Siamak
+**Date:** April 23, 2026  
+**Version:** 2.0 (FINAL - MULTI-SENSOR INTEGRATED)  
+**Technical Stakeholder:** Siamak  
+**Clinical Owner:** Moeez Ahmed
 
 ---
 
@@ -13,18 +13,19 @@
 
 ```json
 {
-  "id": "int",
+  "id": "uuid",
   "name": "string",
   "dob": "ISO-8601",
   "tenant_id": "string",
   "therapy_status": "string",
   "phase": "enum[Titration, Acclimation, Maintenance]",
   "risk_score": "float",
+  "risk_tier": "enum[Low, Medium, High, Critical]",
   "hardware": {
     "device_brand": "enum[Philips, ResMed, Sefam, Löwenstein]",
     "device_model": "string",
     "serial_number": "string",
-    "mask_interface": "string", // e.g. AirFit N20
+    "mask_interface": "string",
     "last_modem_call": "ISO-8601"
   }
 }
@@ -34,7 +35,7 @@
 
 ## 2. Unified CPAP Trends API
 **Endpoint:** `GET /api/v1/patient/{id}/trends/cpap`  
-**Purpose:** Powers the "Trends" tab. This is the **PIVOTED (WIDE)** record.
+**Purpose:** Powers the "Trends" tab. Aggregated CPAP clinical data.
 
 ```json
 {
@@ -49,11 +50,10 @@
     "ai_total": "float",
     "ai_central": "float",
     "hi_total": "float",
-    "chi_sefam": "float", // Sefam-exclusive
+    "chi_sefam": "float",
     "oai": "float",
     "rera": "float",
-    "csr_percent": "float", // Cheyne-Stokes (ResMed)
-    "fot_classification": "string" // Löwenstein-exclusive
+    "csr_percent": "float"
   },
   "leak_profile": {
     "p95": "float",
@@ -77,35 +77,77 @@
 
 ---
 
-## 3. Advanced Biomarkers API
+## 3. Normalized Clinical Biomarkers API
 **Endpoint:** `GET /api/v1/patient/{id}/biomarkers`  
-**Purpose:** Powers Physiological sub-tabs.
+**Purpose:** Powers the Dynamic Biomarker Monitoring tab. Unified view across all sensors.
 
 ```json
 {
-  "date": "ISO-8601",
-  "spo2": {
-    "mean": "float",
-    "nadir": "float",
-    "minutes_below_88": "float"
+  "timestamp": "ISO-8601",
+  "metrics": {
+    "odi": {
+      "value": "float",
+      "source": "string", // e.g. "Masimo MightySat Rx"
+      "status": "enum[Optimal, Moderate, Elevated]"
+    },
+    "hrv": {
+      "value": "float",
+      "unit": "ms",
+      "source": "string" // e.g. "Hexoskin Smart Shirt"
+    },
+    "spo2": {
+      "mean": "float",
+      "nadir": "float",
+      "source": "string"
+    },
+    "sleep_architecture": {
+      "deep_sleep_duration_min": "float", // N3 duration
+      "rem_duration_min": "float",
+      "efficiency_percent": "float",
+      "source": "string" // e.g. "Somno-Art Analysis"
+    },
+    "cardiovascular": {
+      "systolic_bp": "float",
+      "diastolic_bp": "float",
+      "heart_rate_avg": "float",
+      "source": "string" // e.g. "Withings BPM Core"
+    }
   },
-  "odi": "float", // ResMed native ODI
-  "hrv": "float",
-  "sleep_quality": {
-    "score": "int",
-    "deep_sleep_minutes": "float", // Löwenstein native
-    "deep_sleep_percent": "float",
-    "sel_index": "float", // Sleep Efficiency (Löwenstein)
-    "prisma_recover": "int" // Löwenstein quality score
-  }
+  "analysis_status": "enum[Done, Warning, Partial]"
 }
 ```
 
 ---
 
-## 4. Universal Truth Intervention Log
+## 4. Weekly Clinical Analysis (Feature Store)
+**Endpoint:** `GET /api/v1/patient/{id}/analysis/weekly`  
+**Purpose:** Powers the "AI Analysis" tab. Derived features for risk modeling.
+
+```json
+{
+  "week_start_date": "ISO-8601",
+  "week_end_date": "ISO-8601",
+  "trends": {
+    "usage_delta_hours": "float", // Change from previous week
+    "hrv_delta_ms": "float",
+    "ahi_variance": "float",
+    "leak_instability_score": "float"
+  },
+  "risk_model_output": {
+    "composite_risk": "float",
+    "confidence_score": "float",
+    "risk_horizon_days": "int",
+    "evidence_flags": ["string"] // e.g. ["Sustained Usage Decay", "High ODI Spike"]
+  },
+  "completeness_status": "enum[Complete, Partial, Insufficient]"
+}
+```
+
+---
+
+## 5. Universal Truth Intervention Log
 **Endpoint:** `GET /api/v1/patient/{id}/interventions`  
-**Purpose:** Audit-ready chronological log of all actions.
+**Purpose:** Audit-ready chronological log of all platform actions.
 
 ```json
 {
@@ -120,116 +162,55 @@
   },
   "outcome": "string",
   "notes": "text",
-  "signature_hash": "string" // Generated for Digital Clinical Seal
+  "signature_hash": "string" 
 }
 ```
 
 ---
 
-## 5. Surveys & PROM History
+## 6. Surveys & PROM History
 **Endpoint:** `GET /api/v1/patient/{id}/surveys`  
 **Purpose:** Powers clinical scoring and persistence timeline.
 
 ```json
 {
-  "survey_id": "int",
-  "name": "string", // ESS, PSQI, Mask-Fit, etc.
+  "survey_id": "uuid",
+  "name": "string", // ESS, PSQI, ISI, BDI, SF-36
   "category": "enum[Clinical, Operational, Monitoring]",
+  "execution_date": "ISO-8601",
   "status": "enum[Invited, Reminder_1, SMS_Final, Delinquent, Completed]",
-  "score": "json", // Structured score components
-  "persistence": {
-    "automation_step": "int",
-    "last_nudge_sent": "ISO-8601",
-    "manual_recovery_required": "boolean"
-}
-```
-
----
-
-## 6. Manufacturer Risk Factors (LMD Specific)
-**Endpoint:** `GET /api/v1/patient/{id}/raw-risk-factors`  
-**Purpose:** Captures the "Risk Factors" natively generated by the LMD/Linde system (Section 2.6 of the docs).
-
-```json
-{
-  "patient_id": "int",
-  "risk_factors": [
-    {
-      "id": "int",
-      "factor_type": "string",
-      "name": "string",
-      "value": "string",
-      "creation_date": "ISO-8601"
-    }
+  "score_value": "float",
+  "severity_label": "string",
+  "structured_answers": [
+    { "question_id": "string", "answer": "text" }
   ]
 }
 ```
 
 ---
 
-## 8. Technician Triage & Reactive Alerts
+## 7. Technician Triage & Reactive Alerts
 **Endpoint:** `GET /api/v1/technician/triage/events`  
-**Purpose:** Powers the "Priority Inbox" for technicians. These are events triggered by AI analysis of raw CPAP data or Patient Self-Reports.
+**Purpose:** Powers the "Priority Inbox" for technicians.
 
 ```json
 {
   "event_id": "uuid",
-  "patient_id": "int",
+  "patient_id": "uuid",
   "severity": "enum[Critical, High, Medium]",
   "type": "enum[Self-Report, Mechanical Spike, Adherence Drop]",
   "detected_at": "ISO-8601",
-  "evidence_summary": "text", // e.g. "Mask leak > 24L/min for 3 nights"
-  "ai_analysis": {
-    "probability": "float",
-    "note": "text",
-    "suggested_action": "text"
-  },
+  "evidence_summary": "text",
   "status": "enum[Pending, In-Progress, Resolved, Dismissed]",
-  "dismissal_rationale": "text" // Captured from the free-text field we built
+  "ai_note": "text"
 }
 ```
 
 ---
 
-## 9. Equipment & Logistics Workflow
-**Endpoint:** `GET /api/v1/patient/{id}/equipment`  
-**Purpose:** Tracks hardware dispatches and maintenance.
-
-```json
-{
-  "order_id": "uuid",
-  "item_name": "string", // e.g. "AirFit N20 Cushion"
-  "job_code": "string", // EX-DISP, etc.
-  "status": "enum[Ordered, In-Transit, Delivered, Installed]",
-  "scheduled_date": "ISO-8601",
-  "technician_id": "string",
-  "is_recovery_action": "boolean" // If triggered by a Delinquent Survey
-}
-```
-
----
-
-## 10. Contextual Patient Education
-**Endpoint:** `GET /api/v1/patient/{id}/education/suggested`  
-**Purpose:** Suggests educational videos based on clinical data anomalies (e.g. suggesting "Mask Fitting" when leaks are high).
-
-```json
-{
-  "video_id": "int",
-  "title": "string",
-  "category": "string",
-  "trigger_reason": "string", // e.g. "Mask Leak Detected"
-  "relevance_score": "float",
-  "watched": "boolean",
-  "rating": "int"
-}
-```
-
----
-
-## 11. Clinical Orders & Authorization Status
+## 8. Clinical Orders & Authorization Status
 **Endpoint:** `GET /api/v1/patient/{id}/authorizations`  
-**Purpose:** Tracks the status of clinical transitions (MAD/HNS) and their digital signatures.
+**Purpose:** Tracks clinical transitions (MAD/HNS) and Digital Clinical Seals.
 
 ```json
 {
@@ -237,7 +218,6 @@
   "type": "enum[MAD, HNS, CPAP_MOD]",
   "status": "enum[Pending_Review, Approved, Denied, Signed]",
   "physician_id": "string",
-  "timestamp": "ISO-8601",
   "digital_seal": {
     "seal_hash": "string",
     "visual_id": "string",
@@ -248,16 +228,33 @@
 
 ---
 
-## 12. Technical / Data Integrity Requirements
-Siamak must ensure the following are stored for every raw manufacturer record:
+## 9. Source-Specific Audit Records (Backend Storage)
+Siamak's backend must preserve these structures for full auditability:
 
-*   **`raw_payload` (JSONB):** The complete, unaltered JSON/XML from the manufacturer API.
-*   **`timestamp_received` (TIMESTAMPTZ):** When the backend successfully ingested the data.
-*   **`created_at` (TIMESTAMPTZ):** Database row creation time.
+### 9.1 Hexoskin Record (`db_hexoskin`)
+*   `heart_rate`, `hrv`, `breathing_rate`, `tidal_volume`, `minute_ventilation`, `accelerometer_activity`.
+
+### 9.2 Somno-Art Record (`db_somnoart`)
+*   `tst`, `sleep_efficiency`, `waso`, `sleep_latency`, `rem_latency`, `n1_n2_duration`, `n3_duration`, `rem_duration`.
+
+### 9.3 Masimo Record (`db_masimo`)
+*   `spo2`, `pulse_rate`, `perfusion_index`, `respiration_rate`, `pleth_variability_index`, `siq_flag`.
+
+### 9.4 Withings Record (`db_withings`)
+*   `systolic_bp`, `diastolic_bp`, `afib_result`, `pulse_wave_velocity`, `step_count`, `sleep_score`.
 
 ---
 
-## 11. Formatting Rules
+## 10. Technical / Data Integrity Requirements
+For every record, Siamak must ensure:
+1.  **`raw_payload` (JSONB):** Complete manufacturer JSON stored for re-analysis.
+2.  **`source_platform`:** Traceability (e.g. "Hexoskin OneAPI", "Withings Public API").
+3.  **`created_at` / `updated_at`:** Standard database metadata.
+4.  **`missingness_flag` (JSONB):** Critical for `patient_week` layers to track which sensors were offline.
+
+---
+
+## 11. Global Formatting Rules
 1.  **Dates:** All timestamps MUST be ISO-8601 (UTC).
-2.  **Units:** All pressures in `cmH2O`, Leaks in `L/min`, Durations in `minutes`.
-3.  **Nulls:** Use `null` for missing metrics, but use empty arrays `[]` for lists.
+2.  **Units:** Pressures: `cmH2O`, Leaks: `L/min`, Durations: `minutes`, Biomarkers: `mmHg/ms/bpm/%`.
+3.  **Nulls:** Use `null` for missing clinical metrics; use `[]` for empty lists.
