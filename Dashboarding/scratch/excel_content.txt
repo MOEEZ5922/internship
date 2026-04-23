@@ -1,0 +1,4517 @@
+--- Sheet: cpap ---
+[
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key; source field usually mapped from AtHomePatientId"
+  },
+  {
+    "Field / Item": "tenant_id",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Tenant / platform / country identifier if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: TenantId; useful for multi-tenant / source partitioning"
+  },
+  {
+    "Field / Item": "reference_date",
+    "Type / Source": "DATE",
+    "Meaning / Role": "Main therapy/reference date",
+    "Keep in V1": "Yes",
+    "Note": "Source field: ReferenceDate; main CPAP daily date"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact record time if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Timestamp; may need cleaning/parsing"
+  },
+  {
+    "Field / Item": "device_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "CPAP manufacturer / model family",
+    "Keep in V1": "Yes",
+    "Note": "Source field: DeviceType; manufacturer/model-level traceability"
+  },
+  {
+    "Field / Item": "usage_hours",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Total CPAP usage hours",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Use"
+  },
+  {
+    "Field / Item": "effective_use_hours",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Effective usage hours if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: EffectiveUse"
+  },
+  {
+    "Field / Item": "leaks95",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "95th percentile leak value",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Leaks95"
+  },
+  {
+    "Field / Item": "leaks90",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "90th percentile leak value if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Leaks90"
+  },
+  {
+    "Field / Item": "leaks0",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Baseline / minimum leak-related value if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Leaks0"
+  },
+  {
+    "Field / Item": "leaks_large_percentage",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Percentage of large leaks if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: LeaksLargePercentage"
+  },
+  {
+    "Field / Item": "ahi",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Apnea-Hypopnea Index",
+    "Keep in V1": "Yes",
+    "Note": "Main therapy metric; source field: AHI"
+  },
+  {
+    "Field / Item": "ai_cent",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Central apnea index if available",
+    "Keep in V1": "Yes",
+    "Note": "Source field: AICent"
+  },
+  {
+    "Field / Item": "pressure90",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "90th percentile pressure value",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Presure90"
+  },
+  {
+    "Field / Item": "pressure0",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Baseline / minimum pressure value",
+    "Keep in V1": "Yes",
+    "Note": "Source field: Presure0"
+  },
+  {
+    "Field / Item": "source_platform",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Linde / manufacturer / source label",
+    "Keep in V1": "Yes",
+    "Note": "Traceability of ingestion route: LMD / Philips / ResMed / Sefam / Löwenstein"
+  },
+  {
+    "Field / Item": "raw_payload",
+    "Type / Source": "JSONB",
+    "Meaning / Role": "Optional raw source row",
+    "Keep in V1": "Yes",
+    "Note": "Optional but very useful for traceability and later remapping"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata"
+  }
+]
+--- Sheet: somno art ---
+[
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier",
+    "Field / Item_1": "id",
+    "Type / Source_1": "UUID",
+    "Meaning / Role_1": "PK",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key",
+    "Field / Item_1": "patient_id",
+    "Type / Source_1": "UUID / INT",
+    "Meaning / Role_1": "Local patient identifier",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main join key to patient table"
+  },
+  {
+    "Field / Item": "night_date",
+    "Type / Source": "DATE",
+    "Meaning / Role": "Sleep night date",
+    "Keep in V1": "Yes",
+    "Note": "Main night identifier",
+    "Field / Item_1": "night_date",
+    "Type / Source_1": "DATE",
+    "Meaning / Role_1": "Sleep night date",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main night identifier for one analysis"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact analysis/report time if available",
+    "Keep in V1": "Yes",
+    "Note": "Useful metadata",
+    "Field / Item_1": "timestamp",
+    "Type / Source_1": "TIMESTAMPTZ",
+    "Meaning / Role_1": "Exact analysis/report time if available",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful metadata from report or ingestion"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Always Somno-Art for these rows",
+    "Keep in V1": "Yes",
+    "Note": "Traceability",
+    "Field / Item_1": "source_name",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Always Somno-Art for these rows",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Traceability of source family"
+  },
+  {
+    "Field / Item": "software_version",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Somno-Art software version",
+    "Keep in V1": "Yes",
+    "Note": "Useful reproducibility field",
+    "Field / Item_1": "analysis_status",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Somno-Art analysis result status",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Important quality field: Done / Warning / Partial"
+  },
+  {
+    "Field / Item": "record_id",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Recording identifier",
+    "Keep in V1": "Yes",
+    "Note": "Useful source tracking field",
+    "Field / Item_1": "sleep_state",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Sleep stage or state summary",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep-state summary field"
+  },
+  {
+    "Field / Item": "visit_code",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Visit code if present",
+    "Keep in V1": "Yes",
+    "Note": "Optional but useful",
+    "Field / Item_1": "tst",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Total Sleep Time",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep duration metric"
+  },
+  {
+    "Field / Item": "analysis_status",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Somno-Art analysis result status",
+    "Keep in V1": "Yes",
+    "Note": "Important quality/status field",
+    "Field / Item_1": "sleep_efficiency",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Percent of time in bed spent sleeping",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep quality metric"
+  },
+  {
+    "Field / Item": "lights_off_time",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Start of sleep analysis window",
+    "Keep in V1": "No",
+    "Note": "Analysis window metadata",
+    "Field / Item_1": "waso",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Wake After Sleep Onset",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep fragmentation metric"
+  },
+  {
+    "Field / Item": "lights_on_time",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "End of sleep analysis window",
+    "Keep in V1": "No",
+    "Note": "Analysis window metadata",
+    "Field / Item_1": "sleep_latency",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Time needed to fall asleep",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep onset metric"
+  },
+  {
+    "Field / Item": "sleep_alloc_time_min",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Duration from Lights Off to Lights On",
+    "Keep in V1": "No",
+    "Note": "Time in bed metric",
+    "Field / Item_1": "rem_latency",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Time until first REM sleep",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep architecture metric"
+  },
+  {
+    "Field / Item": "sleep_state",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Sleep stage or state summary",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep-state field",
+    "Field / Item_1": "n1_n2_duration",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Light sleep duration",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main sleep stage duration"
+  },
+  {
+    "Field / Item": "tst",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Total Sleep Time",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep metric",
+    "Field / Item_1": "n3_duration",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "Deep sleep duration",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main deep sleep metric"
+  },
+  {
+    "Field / Item": "sleep_efficiency",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Percent of time in bed spent sleeping",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep metric",
+    "Field / Item_1": "rem_duration",
+    "Type / Source_1": "NUMERIC(6,2)",
+    "Meaning / Role_1": "REM duration",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main REM sleep metric"
+  },
+  {
+    "Field / Item": "sleep_latency",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Time needed to fall asleep",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep metric",
+    "Field / Item_1": "cycle_count",
+    "Type / Source_1": "INT",
+    "Meaning / Role_1": "Number of sleep cycles",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful sleep architecture summary"
+  },
+  {
+    "Field / Item": "waso",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Wake After Sleep Onset",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep fragmentation metric",
+    "Field / Item_1": "nb_awakening",
+    "Type / Source_1": "INT",
+    "Meaning / Role_1": "Number of awakenings during the night",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful sleep fragmentation summary"
+  },
+  {
+    "Field / Item": "waso_pct",
+    "Type / Source": "NUMERIC(5,2)",
+    "Meaning / Role": "WASO percentage",
+    "Keep in V1": "No",
+    "Note": "Extended sleep fragmentation field",
+    "Field / Item_1": "raw_payload",
+    "Type / Source_1": "JSONB",
+    "Meaning / Role_1": "Optional raw/report source row linked to this record",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Optional traceability/debug field"
+  },
+  {
+    "Field / Item": "rem_latency",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Time until first REM sleep",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep metric",
+    "Field / Item_1": "created_at",
+    "Type / Source_1": "TIMESTAMPTZ",
+    "Meaning / Role_1": "Row creation time",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Standard metadata"
+  },
+  {
+    "Field / Item": "sleep_latency_n3",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Lights Off to first N3",
+    "Keep in V1": "No",
+    "Note": "Extended latency field"
+  },
+  {
+    "Field / Item": "sleep_latency_r",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Lights Off to first REM",
+    "Keep in V1": "No",
+    "Note": "Extended latency field"
+  },
+  {
+    "Field / Item": "lps",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Latency to persistent sleep",
+    "Keep in V1": "No",
+    "Note": "Extended sleep continuity field"
+  },
+  {
+    "Field / Item": "wake_duration",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Total wake duration",
+    "Keep in V1": "No",
+    "Note": "Extended wake metric"
+  },
+  {
+    "Field / Item": "n1_n2_duration",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Light sleep duration",
+    "Keep in V1": "Yes",
+    "Note": "Important sleep architecture field"
+  },
+  {
+    "Field / Item": "n3_duration",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Deep sleep duration",
+    "Keep in V1": "Yes",
+    "Note": "Important sleep architecture field"
+  },
+  {
+    "Field / Item": "rem_duration",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "REM duration",
+    "Keep in V1": "Yes",
+    "Note": "Important sleep architecture field",
+    "somnoArt db Schema": "somnoArt raw db Schema",
+    "Field / Item_1": "Field / Item",
+    "Type / Source_1": "Type / Source",
+    "Meaning / Role_1": "Meaning / Role",
+    "Keep in V1_1": "Keep in V1",
+    "Note_1": "Note"
+  },
+  {
+    "Field / Item": "nrem_duration",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Total NREM duration",
+    "Keep in V1": "No",
+    "Note": "Extended sleep architecture field",
+    "Field / Item_1": "id",
+    "Type / Source_1": "UUID",
+    "Meaning / Role_1": "PK",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Unique raw row identifier"
+  },
+  {
+    "Field / Item": "n1_n2_pct",
+    "Type / Source": "NUMERIC(5,2)",
+    "Meaning / Role": "N1+N2 percentage of TST",
+    "Keep in V1": "No",
+    "Note": "Extended sleep architecture field",
+    "Field / Item_1": "patient_id",
+    "Type / Source_1": "UUID / INT",
+    "Meaning / Role_1": "Local patient identifier",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main join key if known at ingestion time"
+  },
+  {
+    "Field / Item": "n3_pct",
+    "Type / Source": "NUMERIC(5,2)",
+    "Meaning / Role": "N3 percentage of TST",
+    "Keep in V1": "No",
+    "Note": "Extended sleep architecture field",
+    "Field / Item_1": "night_date",
+    "Type / Source_1": "DATE",
+    "Meaning / Role_1": "Sleep night date",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main night identifier if available in source"
+  },
+  {
+    "Field / Item": "rem_pct",
+    "Type / Source": "NUMERIC(5,2)",
+    "Meaning / Role": "REM percentage of TST",
+    "Keep in V1": "No",
+    "Note": "Extended sleep architecture field",
+    "Field / Item_1": "timestamp",
+    "Type / Source_1": "TIMESTAMPTZ",
+    "Meaning / Role_1": "Exact ingestion / analysis / report time if available",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful technical metadata"
+  },
+  {
+    "Field / Item": "nrem_pct",
+    "Type / Source": "NUMERIC(5,2)",
+    "Meaning / Role": "NREM percentage of TST",
+    "Keep in V1": "No",
+    "Note": "Extended sleep architecture field",
+    "Field / Item_1": "source_name",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Always Somno-Art for these rows",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Traceability of source family"
+  },
+  {
+    "Field / Item": "cycle_count",
+    "Type / Source": "INT",
+    "Meaning / Role": "Number of sleep cycles",
+    "Keep in V1": "Yes",
+    "Note": "Useful sleep architecture summary",
+    "Field / Item_1": "file_type",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Type of Somno-Art file",
+    "Keep in V1_1": "Yes",
+    "Note_1": "SLEEP_PARAMS / EXTRA_PARAMS / HYPNO / RR / MV / report"
+  },
+  {
+    "Field / Item": "nb_awakening",
+    "Type / Source": "INT",
+    "Meaning / Role": "Number of awakenings during the night",
+    "Keep in V1": "Yes",
+    "Note": "Useful sleep fragmentation field",
+    "Field / Item_1": "file_name",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Original file name",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Important for file traceability"
+  },
+  {
+    "Field / Item": "nb_awakenings_gt15s",
+    "Type / Source": "INT",
+    "Meaning / Role": "Number of awakenings greater than 15 seconds",
+    "Keep in V1": "No",
+    "Note": "Extended sleep fragmentation field",
+    "Field / Item_1": "source_path",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Shared folder / deposit path / origin path",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful ingestion tracking field"
+  },
+  {
+    "Field / Item": "nb_stage_changes",
+    "Type / Source": "INT",
+    "Meaning / Role": "Total number of sleep stage transitions",
+    "Keep in V1": "No",
+    "Note": "Extended architecture instability field",
+    "Field / Item_1": "software_version",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Somno-Art software version",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful reproducibility field"
+  },
+  {
+    "Field / Item": "nb_movements",
+    "Type / Source": "INT",
+    "Meaning / Role": "Total individualised movements",
+    "Keep in V1": "No",
+    "Note": "Movement summary field",
+    "Field / Item_1": "analysis_status",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Somno-Art analysis result status",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Quality/status from source output"
+  },
+  {
+    "Field / Item": "nb_cardiac_arousals",
+    "Type / Source": "INT",
+    "Meaning / Role": "Total cardiac arousals",
+    "Keep in V1": "No",
+    "Note": "Cardiac arousal summary field",
+    "Field / Item_1": "record_id",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Recording identifier from filename or report",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful source tracking field"
+  },
+  {
+    "Field / Item": "cardiac_arousal_ampl_bpm",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Average cardiac arousal amplitude",
+    "Keep in V1": "No",
+    "Note": "Extended cardiac arousal field",
+    "Field / Item_1": "visit_code",
+    "Type / Source_1": "TEXT",
+    "Meaning / Role_1": "Visit code if present",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Optional source tracking field"
+  },
+  {
+    "Field / Item": "raw_payload",
+    "Type / Source": "JSONB",
+    "Meaning / Role": "Optional raw/report source row or full parsed content",
+    "Keep in V1": "Yes",
+    "Note": "Optional but useful",
+    "Field / Item_1": "raw_payload",
+    "Type / Source_1": "JSONB",
+    "Meaning / Role_1": "Full raw parsed row or extracted source content",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Main raw preservation field"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata",
+    "Field / Item_1": "ingested_at",
+    "Type / Source_1": "TIMESTAMPTZ",
+    "Meaning / Role_1": "Backend ingestion timestamp",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Useful ETL metadata"
+  },
+  {
+    "Field / Item_1": "created_at",
+    "Type / Source_1": "TIMESTAMPTZ",
+    "Meaning / Role_1": "Row creation time",
+    "Keep in V1_1": "Yes",
+    "Note_1": "Standard metadata"
+  },
+  {
+    "somnoArt full fields": "- db_somnoart = main table for useful backend/API/dashboard nightly sleep metrics"
+  },
+  {
+    "somnoArt full fields": "- db_somnoart_raw = ingestion and traceability table for files and full parsed source content"
+  },
+  {
+    "somnoArt full fields": "- somnoArt full fields = full confirmed source field list, not necessarily the physical API-facing main table"
+  }
+]
+--- Sheet: hexoskin ---
+[
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact measurement time",
+    "Keep in V1": "Yes",
+    "Note": "Main time field"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Always Hexoskin for these rows",
+    "Keep in V1": "Yes",
+    "Note": "Traceability"
+  },
+  {
+    "Field / Item": "device_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Hexoskin device model / garment type",
+    "Keep in V1": "Yes",
+    "Note": "Useful source/device traceability"
+  },
+  {
+    "Field / Item": "heart_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Heart rate",
+    "Keep in V1": "Yes",
+    "Note": "Main derived cardiac metric; datatype 19"
+  },
+  {
+    "Field / Item": "hrv",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "Heart rate variability",
+    "Keep in V1": "Yes",
+    "Note": "Main derived metric; exact computation/project use to confirm"
+  },
+  {
+    "Field / Item": "rr_intervals",
+    "Type / Source": "JSONB or TEXT",
+    "Meaning / Role": "RR interval sequence / values",
+    "Keep in V1": "Yes",
+    "Note": "Can stay semi-raw in V1; datatype 18"
+  },
+  {
+    "Field / Item": "ecg_quality_flag",
+    "Type / Source": "INT",
+    "Meaning / Role": "ECG quality / reliability bit flags",
+    "Keep in V1": "Yes",
+    "Note": "Documented quality field; useful for filtering unreliable data"
+  },
+  {
+    "Field / Item": "breathing_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Breathing rate",
+    "Keep in V1": "Yes",
+    "Note": "Main respiration metric; datatype 33"
+  },
+  {
+    "Field / Item": "tidal_volume",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "Volume of air inhaled/exhaled with each breath",
+    "Keep in V1": "Yes",
+    "Note": "Documented Hexoskin field; project use to confirm"
+  },
+  {
+    "Field / Item": "minute_ventilation",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "Total volume of air breathed per minute",
+    "Keep in V1": "Yes",
+    "Note": "Documented field; datatype 36; project use to confirm"
+  },
+  {
+    "Field / Item": "respiration_quality",
+    "Type / Source": "TEXT or JSONB",
+    "Meaning / Role": "Respiration quality/support flags",
+    "Keep in V1": "Yes",
+    "Note": "Documented quality field; export/use to confirm"
+  },
+  {
+    "Field / Item": "accelerometer_activity",
+    "Type / Source": "NUMERIC(8,3) or JSONB",
+    "Meaning / Role": "Activity / actigraphy summary",
+    "Keep in V1": "Yes",
+    "Note": "Main movement/activity field; datatype 49"
+  },
+  {
+    "Field / Item": "step_count",
+    "Type / Source": "INT",
+    "Meaning / Role": "Number of steps",
+    "Keep in V1": "Yes",
+    "Note": "Documented Hexoskin field; datatype 52"
+  },
+  {
+    "Field / Item": "cadence",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Pace of steps / walking frequency",
+    "Keep in V1": "Yes",
+    "Note": "Documented Hexoskin field; project use to confirm"
+  },
+  {
+    "Field / Item": "sleep_state",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Sleep-related output if used",
+    "Keep in V1": "Yes",
+    "Note": "Documented/source field; depends on activitytype/range configuration"
+  },
+  {
+    "Field / Item": "sleep_efficiency",
+    "Type / Source": "NUMERIC(5,4)",
+    "Meaning / Role": "Sleep efficiency if sleep range is available",
+    "Keep in V1": "Yes",
+    "Note": "Documented metric 1038; use depends on sleep range configuration"
+  },
+  {
+    "Field / Item": "sleep_total_time_s",
+    "Type / Source": "INT",
+    "Meaning / Role": "Total sleep time in seconds if sleep range is available",
+    "Keep in V1": "Yes",
+    "Note": "Documented metric 1032; use depends on sleep range configuration"
+  },
+  {
+    "Field / Item": "hrv_lf",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "HRV low frequency component",
+    "Keep in V1": "Yes",
+    "Note": "Documented HRV metric; use depends on sleep/rest range configuration"
+  },
+  {
+    "Field / Item": "hrv_hf",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "HRV high frequency component",
+    "Keep in V1": "Yes",
+    "Note": "Documented HRV metric; use depends on sleep/rest range configuration"
+  },
+  {
+    "Field / Item": "hrv_sdnn",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "HRV SDNN metric",
+    "Keep in V1": "Yes",
+    "Note": "Documented HRV metric; use depends on sleep/rest range configuration"
+  },
+  {
+    "Field / Item": "record_id",
+    "Type / Source": "INT",
+    "Meaning / Role": "Hexoskin record identifier",
+    "Keep in V1": "Yes",
+    "Note": "Important for OneAPI record-based retrieval"
+  },
+  {
+    "Field / Item": "range_id",
+    "Type / Source": "INT",
+    "Meaning / Role": "Hexoskin range identifier if activity/sleep ranges are used",
+    "Keep in V1": "Yes",
+    "Note": "Useful if sleep/HRV metrics come from ranges"
+  },
+  {
+    "Field / Item": "raw_payload",
+    "Type / Source": "JSONB",
+    "Meaning / Role": "Optional raw source row or export content",
+    "Keep in V1": "Yes",
+    "Note": "Optional but very useful for traceability and later remapping"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata"
+  },
+  {
+    "Hexoskin db Schema": "ancien db Schema",
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes to all",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Note": "Main join key"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact measurement time",
+    "Note": "Main time field"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Always Hexoskin for these rows",
+    "Note": "Traceability"
+  },
+  {
+    "Field / Item": "heart_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Heart rate",
+    "Note": "Main derived metric"
+  },
+  {
+    "Field / Item": "hrv",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "Heart rate variability",
+    "Note": "Main derived metric"
+  },
+  {
+    "Field / Item": "rr_intervals",
+    "Type / Source": "JSONB or TEXT",
+    "Meaning / Role": "RR interval sequence / values",
+    "Note": "Can stay semi-raw in V1"
+  },
+  {
+    "Field / Item": "breathing_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Breathing rate",
+    "Note": "Main respiration metric"
+  },
+  {
+    "Field / Item": "tidal_volume",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": "Volume of air inhaled/exhaled with each breath",
+    "Note": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "Field / Item": "minute_ventilation",
+    "Type / Source": "NUMERIC(8,3)",
+    "Meaning / Role": " Total volume of air breathed per minute",
+    "Note": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "Field / Item": "respiration_quality",
+    "Type / Source": "TEXT or JSONB",
+    "Meaning / Role": "Respiration quality/support flags",
+    "Note": "Documented Hexoskin field, export/use to confirm"
+  },
+  {
+    "Field / Item": "accelerometer_activity",
+    "Type / Source": "NUMERIC(8,3) or JSONB",
+    "Meaning / Role": "Activity / actigraphy summary",
+    "Note": "Main movement/activity field"
+  },
+  {
+    "Field / Item": "step_count",
+    "Type / Source": "INT",
+    "Meaning / Role": "number of steps",
+    "Note": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "Field / Item": "cadence",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "pace of steps / walking frequency",
+    "Note": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "Field / Item": "sleep_state",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Sleep-related output if used",
+    "Note": "Documented/source field, project use to confirm"
+  },
+  {
+    "Field / Item": "raw_payload",
+    "Type / Source": "JSONB",
+    "Meaning / Role": "Optional raw source row or export content",
+    "Note": "Optional but useful"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Note": "Standard metadata"
+  },
+  {
+    "Hexoskin db Schema": "I do not know yet which exact Hexoskin fields dashboard will want in final APIs."
+  },
+  {
+    "Hexoskin db Schema": "I also do not know yet whether sleep ranges/activitytype=12 are already configured in the real project workflow."
+  },
+  {
+    "Hexoskin db Schema": "So these fields are reasonable from the documentation, but some still need real project confirmation."
+  }
+]
+--- Sheet: Withings ---
+[
+  {
+    "id": "patient_id",
+    "UUID": "UUID/INT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "FK → patients"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "exact sync time"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "always 'withings'"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "watch model/family",
+    "__EMPTY_2": "Withings db Schema",
+    "__EMPTY_3": "Field / Item",
+    "__EMPTY_4": "Type / Source",
+    "__EMPTY_5": "Meaning / Role",
+    "__EMPTY_6": "Keep in V1",
+    "__EMPTY_7": "Device / Scope",
+    "__EMPTY_8": "Note"
+  },
+  {
+    "id": "source_type",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "activity/sleep/intraday",
+    "__EMPTY_3": "id",
+    "__EMPTY_4": "UUID",
+    "__EMPTY_5": "PK",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Unique record identifier"
+  },
+  {
+    "id": "step_count",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "steps",
+    "__EMPTY_3": "patient_id",
+    "__EMPTY_4": "UUID / INT",
+    "__EMPTY_5": "Local patient identifier",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Main join key"
+  },
+  {
+    "id": "distance",
+    "UUID": "NUMERIC(8,3)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "meters",
+    "__EMPTY_3": "timestamp",
+    "__EMPTY_4": "TIMESTAMPTZ",
+    "__EMPTY_5": "Exact measurement / sync time",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Main time field"
+  },
+  {
+    "id": "calories",
+    "UUID": "NUMERIC(8,3)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "active calories",
+    "__EMPTY_3": "source_name",
+    "__EMPTY_4": "TEXT",
+    "__EMPTY_5": "Always Withings for these rows",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Traceability"
+  },
+  {
+    "id": "activity_value",
+    "UUID": "JSONB",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "full activity block",
+    "__EMPTY_3": "device_type",
+    "__EMPTY_4": "TEXT",
+    "__EMPTY_5": "Watch / BPM Core / other Withings device",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Needed to separate device families"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "average HR",
+    "__EMPTY_3": "heart_rate",
+    "__EMPTY_4": "NUMERIC(6,2)",
+    "__EMPTY_5": "Heart rate / pulse",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Main shared cardiac field"
+  },
+  {
+    "id": "hr_min",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "min HR",
+    "__EMPTY_3": "spo2",
+    "__EMPTY_4": "NUMERIC(6,2)",
+    "__EMPTY_5": "Oxygen saturation if available",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "device-dependent",
+    "__EMPTY_8": "Confirmed in docs but depends on device / feature"
+  },
+  {
+    "id": "hr_max",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "max HR",
+    "__EMPTY_3": "hrv_rmssd",
+    "__EMPTY_4": "NUMERIC(8,3)",
+    "__EMPTY_5": "HRV RMSSD if available",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Confirmed but device / feature dependent"
+  },
+  {
+    "id": "hrv_rmssd",
+    "UUID": "NUMERIC(8,3)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "HRV RMSSD",
+    "__EMPTY_3": "hrv_sdnn1",
+    "__EMPTY_4": "NUMERIC(8,3)",
+    "__EMPTY_5": "HRV SDNN1 if available",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Confirmed in docs; keep if returned"
+  },
+  {
+    "id": "hrv_sdnn1",
+    "UUID": "NUMERIC(8,3)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "HRV SDNN1",
+    "__EMPTY_3": "hrv_quality",
+    "__EMPTY_4": "TEXT or JSONB",
+    "__EMPTY_5": "HRV quality / support flag",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Useful support field"
+  },
+  {
+    "id": "hrv_quality",
+    "UUID": "TEXT/JSONB",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "HRV quality flag",
+    "__EMPTY_3": "respiration_rate",
+    "__EMPTY_4": "NUMERIC(6,2)",
+    "__EMPTY_5": "Respiration rate if available",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Confirmed in sleep / intraday docs"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "device-dependent",
+    "PK": "oxygen saturation",
+    "__EMPTY_3": "activity_value",
+    "__EMPTY_4": "JSONB",
+    "__EMPTY_5": "Activity / movement summary",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch",
+    "__EMPTY_8": "Main activity field"
+  },
+  {
+    "id": "respiration_rate",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "breaths/min",
+    "__EMPTY_3": "step_count",
+    "__EMPTY_4": "INT",
+    "__EMPTY_5": "Number of steps",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch",
+    "__EMPTY_8": "Main activity field"
+  },
+  {
+    "id": "sleep_state",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "sleep stage",
+    "__EMPTY_3": "distance",
+    "__EMPTY_4": "NUMERIC(8,3)",
+    "__EMPTY_5": "Distance travelled",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch",
+    "__EMPTY_8": "Confirmed activity field"
+  },
+  {
+    "id": "sleep_summary_payload",
+    "UUID": "JSONB",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "full sleep summary block",
+    "__EMPTY_3": "calories",
+    "__EMPTY_4": "NUMERIC(8,3)",
+    "__EMPTY_5": "Calories / energy summary",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch",
+    "__EMPTY_8": "Confirmed activity field"
+  },
+  {
+    "id": "total_sleep_time_s",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "total sleep in seconds",
+    "__EMPTY_3": "sleep_state",
+    "__EMPTY_4": "TEXT",
+    "__EMPTY_5": "Sleep state / sleep stage if available",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Depends on sleep output / device"
+  },
+  {
+    "id": "sleep_efficiency",
+    "UUID": "NUMERIC(5,4)",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "ratio sleep/time in bed",
+    "__EMPTY_3": "sleep_summary_payload",
+    "__EMPTY_4": "JSONB",
+    "__EMPTY_5": "Sleep summary object / summary block",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "watch / device-dependent",
+    "__EMPTY_8": "Useful if saving summary directly"
+  },
+  {
+    "id": "apnea_hypopnea_index",
+    "UUID": "NUMERIC(5,2)",
+    "Yes": "Yes",
+    "common": "watch EU",
+    "PK": "⚠️ key OSA field",
+    "__EMPTY_3": "systolic_bp",
+    "__EMPTY_4": "NUMERIC(6,2)",
+    "__EMPTY_5": "Systolic blood pressure",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "BPM Core",
+    "__EMPTY_8": "Main blood pressure field"
+  },
+  {
+    "id": "sleep_score",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "Withings sleep score",
+    "__EMPTY_3": "diastolic_bp",
+    "__EMPTY_4": "NUMERIC(6,2)",
+    "__EMPTY_5": "Diastolic blood pressure",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "BPM Core",
+    "__EMPTY_8": "Main blood pressure field"
+  },
+  {
+    "id": "waso_s",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "wake after sleep onset",
+    "__EMPTY_3": "ecg_flag",
+    "__EMPTY_4": "TEXT or JSONB",
+    "__EMPTY_5": "ECG classification / ECG summary",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "BPM Core / device-dependent",
+    "__EMPTY_8": "Main ECG summary field"
+  },
+  {
+    "id": "wakeup_count",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "watch",
+    "PK": "number of wakeups",
+    "__EMPTY_3": "ecg_signal_id",
+    "__EMPTY_4": "TEXT",
+    "__EMPTY_5": "ECG signal identifier",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "BPM Core / device-dependent",
+    "__EMPTY_8": "Useful if detailed signal is stored separately"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "full API response",
+    "__EMPTY_3": "raw_payload",
+    "__EMPTY_4": "JSONB",
+    "__EMPTY_5": "Optional raw source row or API content",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "row creation time",
+    "__EMPTY_3": "created_at",
+    "__EMPTY_4": "TIMESTAMPTZ",
+    "__EMPTY_5": "Row creation time",
+    "__EMPTY_6": "Yes",
+    "__EMPTY_7": "common",
+    "__EMPTY_8": "Standard metadata"
+  },
+  {
+    "db_withings_watch": "db_withings_bpm_core",
+    "id": "id",
+    "UUID": "UUID",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "PK"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID/INT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "FK → patients"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "exact measurement time"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "always 'withings'"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "BPM Core/family",
+    "__EMPTY_2": "1. keep db_withings_watch and db_withings_bpm_core as the real V1 implementation tables"
+  },
+  {
+    "id": "systolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 10",
+    "__EMPTY_2": "2. keep db_withings only as family/reference layer for now"
+  },
+  {
+    "id": "diastolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 9",
+    "__EMPTY_2": "3. in watch schema, keep source_type because activity/sleep/intraday come from different endpoint families"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "meastype 11",
+    "__EMPTY_2": "4. in bpm core schema, keep afib_result, pulse_wave_velocity, qrs_duration, pr_duration, qt_duration, corrected_qt"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "device-dependent",
+    "PK": "meastype 54",
+    "__EMPTY_2": "5. keep apnea_hypopnea_index but mark clearly as watch EU / availability to confirm"
+  },
+  {
+    "id": "afib_result",
+    "UUID": "INT",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 130",
+    "__EMPTY_2": "6. use JSONB for activity_value and raw_payload"
+  },
+  {
+    "id": "pulse_wave_velocity",
+    "UUID": "NUMERIC(6,3)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 91",
+    "__EMPTY_2": "7. keep spo2 as device/feature dependent in both watch and bpm core"
+  },
+  {
+    "id": "ecg_flag",
+    "UUID": "TEXT/JSONB",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "ECG classification"
+  },
+  {
+    "id": "ecg_signal_id",
+    "UUID": "TEXT",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "link to Heart API signal"
+  },
+  {
+    "id": "qrs_duration",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 135"
+  },
+  {
+    "id": "pr_duration",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 136"
+  },
+  {
+    "id": "qt_duration",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 137"
+  },
+  {
+    "id": "corrected_qt",
+    "UUID": "NUMERIC(6,2)",
+    "Yes": "Yes",
+    "common": "BPM Core",
+    "PK": "meastype 138"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "full API response"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "Yes": "Yes",
+    "common": "common",
+    "PK": "row creation time"
+  }
+]
+--- Sheet: Masimo ---
+[
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact measurement time",
+    "Keep in V1": "Yes",
+    "Note": "Main time field"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Always Masimo for these rows",
+    "Keep in V1": "Yes",
+    "Note": "Traceability"
+  },
+  {
+    "Field / Item": "device_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Masimo device / model label",
+    "Keep in V1": "Yes",
+    "Note": "Distinguishes device family / model"
+  },
+  {
+    "Field / Item": "device_model_pn",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Exact device part number",
+    "Keep in V1": "Yes",
+    "Note": "Project model confirmed: P/N 95162"
+  },
+  {
+    "Field / Item": "spo2",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Functional oxygen saturation of arterial hemoglobin",
+    "Keep in V1": "Yes",
+    "Note": "Main confirmed metric for MightySat Rx"
+  },
+  {
+    "Field / Item": "pulse_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Pulse rate / PR",
+    "Keep in V1": "Yes",
+    "Note": "Main confirmed metric for MightySat Rx"
+  },
+  {
+    "Field / Item": "perfusion_index",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Perfusion Index (Pi) if available",
+    "Keep in V1": "Yes",
+    "Note": "Confirmed for MightySat Rx"
+  },
+  {
+    "Field / Item": "respiration_rate",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Respiration rate from pleth if available",
+    "Keep in V1": "Yes",
+    "Note": "Confirmed for MightySat Rx"
+  },
+  {
+    "Field / Item": "pleth_variability_index",
+    "Type / Source": "NUMERIC(6,2)",
+    "Meaning / Role": "Pleth Variability Index (PVi) if available",
+    "Keep in V1": "Yes",
+    "Note": "Confirmed for MightySat Rx"
+  },
+  {
+    "Field / Item": "siq_flag",
+    "Type / Source": "TEXT or INT",
+    "Meaning / Role": "Signal I.Q. confidence indicator",
+    "Keep in V1": "Yes",
+    "Note": "Useful quality field for filtering unreliable readings"
+  },
+  {
+    "Field / Item": "measurement_quality",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "General measurement quality flag if returned",
+    "Keep in V1": "Yes",
+    "Note": "Keep nullable; exact export/output still to confirm"
+  },
+  {
+    "Field / Item": "session_duration_s",
+    "Type / Source": "INT",
+    "Meaning / Role": "Measurement session duration in seconds if available",
+    "Keep in V1": "Yes",
+    "Note": "Useful session metadata; confirm from real export"
+  },
+  {
+    "Field / Item": "data_source_route",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Source route used for ingestion",
+    "Keep in V1": "Yes",
+    "Note": "Expected values: professional_health_app or safetynet"
+  },
+  {
+    "Field / Item": "raw_payload",
+    "Type / Source": "JSONB",
+    "Meaning / Role": "Optional raw source row or export content",
+    "Keep in V1": "Yes",
+    "Note": "Optional but very useful"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata"
+  },
+  {
+    "Masimo db Schema": "1. keep device_model_pn because project model 95162 is now confirmed"
+  },
+  {
+    "Masimo db Schema": "2. keep siq_flag because it is a real useful quality field from MightySat Rx"
+  },
+  {
+    "Masimo db Schema": "3. keep data_source_route because V1 and long-term routes are different"
+  },
+  {
+    "Masimo db Schema": "4. keep session_duration_s if export gives session/window length"
+  },
+  {
+    "Masimo db Schema": "5. keep measurement_quality only if returned by export/workflow; otherwise nullable"
+  },
+  {
+    "Masimo db Schema": "6. do not add non-confirmed advanced Masimo fields like SpCO / SpMet / ORi / SpHb"
+  }
+]
+--- Sheet: biomarkers ---
+[
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact measurement / sync time",
+    "Keep in V1": "Yes",
+    "Note": "Main time field"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Source family name",
+    "Keep in V1": "Yes",
+    "Note": "Hexoskin / Withings / Masimo / Somno-Art"
+  },
+  {
+    "Field / Item": "device_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Device / model family",
+    "Keep in V1": "Yes",
+    "Note": "Needed to distinguish source/device origin"
+  },
+  {
+    "Field / Item": "heart_rate",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Heart rate if available",
+    "Keep in V1": "Yes",
+    "Note": "Main common cardiac biomarker"
+  },
+  {
+    "Field / Item": "hrv",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Heart rate variability if available",
+    "Keep in V1": "Yes",
+    "Note": "Main common cardiac biomarker"
+  },
+  {
+    "Field / Item": "spo2",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Oxygen saturation if available",
+    "Keep in V1": "Yes",
+    "Note": "Main oxygen biomarker"
+  },
+  {
+    "Field / Item": "odi",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Oxygen desaturation index if available",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep/respiratory biomarker"
+  },
+  {
+    "Field / Item": "respiration_rate",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Respiration rate if available",
+    "Keep in V1": "Yes",
+    "Note": "Main respiratory biomarker"
+  },
+  {
+    "Field / Item": "systolic_bp",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Systolic blood pressure if available",
+    "Keep in V1": "Yes",
+    "Note": "Main BPM Core biomarker"
+  },
+  {
+    "Field / Item": "diastolic_bp",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Diastolic blood pressure if available",
+    "Keep in V1": "Yes",
+    "Note": "Main BPM Core biomarker"
+  },
+  {
+    "Field / Item": "sleep_efficiency",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Sleep efficiency if available",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep summary biomarker"
+  },
+  {
+    "Field / Item": "tst",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Total sleep time if available",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep summary biomarker"
+  },
+  {
+    "Field / Item": "waso",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Wake after sleep onset if available",
+    "Keep in V1": "Yes",
+    "Note": "Main sleep fragmentation biomarker"
+  },
+  {
+    "Field / Item": "sleep_latency",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Sleep latency if available",
+    "Keep in V1": "Yes",
+    "Note": "Useful sleep summary biomarker"
+  },
+  {
+    "Field / Item": "rem_latency",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "REM latency if available",
+    "Keep in V1": "Yes",
+    "Note": "Useful sleep summary biomarker"
+  },
+  {
+    "Field / Item": "activity_value",
+    "Type / Source": "NUMERIC(10,3) or JSONB",
+    "Meaning / Role": "Activity summary if available",
+    "Keep in V1": "Yes",
+    "Note": "Main activity biomarker"
+  },
+  {
+    "Field / Item": "step_count",
+    "Type / Source": "INT",
+    "Meaning / Role": "Number of steps if available",
+    "Keep in V1": "Yes",
+    "Note": "Simple movement/activity biomarker"
+  },
+  {
+    "Field / Item": "quality_flag",
+    "Type / Source": "TEXT or JSONB",
+    "Meaning / Role": "Quality / validity / support flag",
+    "Keep in V1": "Yes",
+    "Note": "Useful if source provides confidence/quality info"
+  },
+  {
+    "Field / Item": "raw_reference",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Optional reference to source-specific row or payload",
+    "Keep in V1": "Yes",
+    "Note": "Keeps traceability to original source table"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Biomarkers db Schema (long)",
+    "Field / Item": "Field / Item",
+    "Type / Source": "Type / Source",
+    "Meaning / Role": "Meaning / Role",
+    "Keep in V1": "Keep in V1",
+    "Note": "Note"
+  },
+  {
+    "Field / Item": "id",
+    "Type / Source": "UUID",
+    "Meaning / Role": "PK",
+    "Keep in V1": "Yes",
+    "Note": "Unique record identifier"
+  },
+  {
+    "Field / Item": "patient_id",
+    "Type / Source": "UUID / INT",
+    "Meaning / Role": "Local patient identifier",
+    "Keep in V1": "Yes",
+    "Note": "Main join key"
+  },
+  {
+    "Field / Item": "timestamp",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Exact measurement / sync time",
+    "Keep in V1": "Yes",
+    "Note": "Main time field"
+  },
+  {
+    "Field / Item": "source_name",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Source family name",
+    "Keep in V1": "Yes",
+    "Note": "Hexoskin / Withings / Masimo / Somno-Art"
+  },
+  {
+    "Field / Item": "device_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Device / model family",
+    "Keep in V1": "Yes",
+    "Note": "Needed to distinguish source/device origin"
+  },
+  {
+    "Field / Item": "biomarker_type",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Type of biomarker",
+    "Keep in V1": "Yes",
+    "Note": "Main normalized biomarker label"
+  },
+  {
+    "Field / Item": "value_numeric",
+    "Type / Source": "NUMERIC(10,3)",
+    "Meaning / Role": "Numeric biomarker value if applicable",
+    "Keep in V1": "Yes",
+    "Note": "Main value field for quantitative biomarkers"
+  },
+  {
+    "Field / Item": "value_text",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Text biomarker value if applicable",
+    "Keep in V1": "Yes",
+    "Note": "Optional support for non-numeric or classified values"
+  },
+  {
+    "Field / Item": "unit",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Measurement unit",
+    "Keep in V1": "Yes",
+    "Note": "bpm, %, mmHg, min, score, events/hour, etc."
+  },
+  {
+    "Field / Item": "quality_flag",
+    "Type / Source": "TEXT or JSONB",
+    "Meaning / Role": "Quality / validity / support flag",
+    "Keep in V1": "Yes",
+    "Note": "Useful if source provides confidence/quality info"
+  },
+  {
+    "Field / Item": "raw_reference",
+    "Type / Source": "TEXT",
+    "Meaning / Role": "Optional reference to source-specific row or payload",
+    "Keep in V1": "Yes",
+    "Note": "Keeps traceability to original source table"
+  },
+  {
+    "Field / Item": "created_at",
+    "Type / Source": "TIMESTAMPTZ",
+    "Meaning / Role": "Row creation time",
+    "Keep in V1": "Yes",
+    "Note": "Standard metadata"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Biomarkers Example (wide)",
+    "Field / Item": "id",
+    "Type / Source": "patient_id",
+    "Meaning / Role": "timestamp",
+    "Keep in V1": "source_name",
+    "Note": "device_type",
+    "__EMPTY": "heart_rate",
+    "__EMPTY_1": "hrv",
+    "__EMPTY_2": "spo2",
+    "__EMPTY_3": "odi",
+    "__EMPTY_4": "respiration_rate",
+    "__EMPTY_5": "systolic_bp",
+    "__EMPTY_6": "diastolic_bp",
+    "__EMPTY_7": "sleep_efficiency",
+    "__EMPTY_8": "tst",
+    "__EMPTY_9": "waso",
+    "__EMPTY_10": "sleep_latency",
+    "__EMPTY_11": "rem_latency",
+    "__EMPTY_12": "activity_value",
+    "__EMPTY_13": "step_count",
+    "__EMPTY_14": "quality_flag",
+    "__EMPTY_15": "raw_reference",
+    "__EMPTY_16": "created_at"
+  },
+  {
+    "Field / Item": 1,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Masimo",
+    "Note": "MightySat Rx",
+    "__EMPTY": "72.000",
+    "__EMPTY_2": "95.000",
+    "__EMPTY_4": "16.000",
+    "__EMPTY_12": "good",
+    "__EMPTY_13": "masimo:1",
+    "__EMPTY_14": "2026-04-10 08:05:00+00"
+  },
+  {
+    "Field / Item": 2,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 09:00:00+00",
+    "Keep in V1": "Withings",
+    "Note": "BPM Core",
+    "__EMPTY": "71.000",
+    "__EMPTY_4": "128.000",
+    "__EMPTY_5": "82.000",
+    "__EMPTY_12": "good",
+    "__EMPTY_13": "withings_bpm:1",
+    "__EMPTY_14": "2026-04-10 09:02:00+00"
+  },
+  {
+    "Field / Item": 3,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY_7": "82.000",
+    "__EMPTY_8": "390.000",
+    "__EMPTY_9": "45.000",
+    "__EMPTY_10": "18.000",
+    "__EMPTY_11": "92.000",
+    "__EMPTY_14": "good",
+    "__EMPTY_15": "somno:1",
+    "__EMPTY_16": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 4,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Hexoskin",
+    "Note": "Smart Shirt",
+    "__EMPTY": "74.000",
+    "__EMPTY_1": "42.500",
+    "__EMPTY_3": "15.000",
+    "__EMPTY_9": "0.820",
+    "__EMPTY_11": "good",
+    "__EMPTY_12": "hexo:1",
+    "__EMPTY_13": "2026-04-10 08:10:00+00"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Biomarkers Example (long)",
+    "Field / Item": "id",
+    "Type / Source": "patient_id",
+    "Meaning / Role": "timestamp",
+    "Keep in V1": "source_name",
+    "Note": "device_type",
+    "__EMPTY": "biomarker_type",
+    "__EMPTY_1": "value_numeric",
+    "__EMPTY_2": "value_text",
+    "__EMPTY_3": "unit",
+    "__EMPTY_4": "quality_flag",
+    "__EMPTY_5": "raw_reference",
+    "__EMPTY_6": "created_at"
+  },
+  {
+    "Field / Item": 1,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Masimo",
+    "Note": "MightySat Rx",
+    "__EMPTY": "heart_rate",
+    "__EMPTY_1": "72.000",
+    "__EMPTY_3": "bpm",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "masimo:1",
+    "__EMPTY_6": "2026-04-10 08:05:00+00"
+  },
+  {
+    "Field / Item": 2,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Masimo",
+    "Note": "MightySat Rx",
+    "__EMPTY": "spo2",
+    "__EMPTY_1": "95.000",
+    "__EMPTY_3": "%",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "masimo:1",
+    "__EMPTY_6": "2026-04-10 08:05:00+00"
+  },
+  {
+    "Field / Item": 3,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Masimo",
+    "Note": "MightySat Rx",
+    "__EMPTY": "respiration_rate",
+    "__EMPTY_1": "16.000",
+    "__EMPTY_3": "rpm",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "masimo:1",
+    "__EMPTY_6": "2026-04-10 08:05:00+00"
+  },
+  {
+    "Field / Item": 4,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 09:00:00+00",
+    "Keep in V1": "Withings",
+    "Note": "BPM Core",
+    "__EMPTY": "heart_rate",
+    "__EMPTY_1": "71.000",
+    "__EMPTY_3": "bpm",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "withings_bpm:1",
+    "__EMPTY_6": "2026-04-10 09:02:00+00"
+  },
+  {
+    "Field / Item": 5,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 09:00:00+00",
+    "Keep in V1": "Withings",
+    "Note": "BPM Core",
+    "__EMPTY": "systolic_bp",
+    "__EMPTY_1": "128.000",
+    "__EMPTY_3": "mmHg",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "withings_bpm:1",
+    "__EMPTY_6": "2026-04-10 09:02:00+00"
+  },
+  {
+    "Field / Item": 6,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 09:00:00+00",
+    "Keep in V1": "Withings",
+    "Note": "BPM Core",
+    "__EMPTY": "diastolic_bp",
+    "__EMPTY_1": "82.000",
+    "__EMPTY_3": "mmHg",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "withings_bpm:1",
+    "__EMPTY_6": "2026-04-10 09:02:00+00"
+  },
+  {
+    "Field / Item": 7,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY": "sleep_efficiency",
+    "__EMPTY_1": "82.000",
+    "__EMPTY_3": "%",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "somno:1",
+    "__EMPTY_6": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 8,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY": "tst",
+    "__EMPTY_1": "390.000",
+    "__EMPTY_3": "min",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "somno:1",
+    "__EMPTY_6": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 9,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY": "waso",
+    "__EMPTY_1": "45.000",
+    "__EMPTY_3": "min",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "somno:1",
+    "__EMPTY_6": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 10,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY": "sleep_latency",
+    "__EMPTY_1": "18.000",
+    "__EMPTY_3": "min",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "somno:1",
+    "__EMPTY_6": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 11,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 07:00:00+00",
+    "Keep in V1": "Somno-Art",
+    "Note": "Somno-Art",
+    "__EMPTY": "rem_latency",
+    "__EMPTY_1": "92.000",
+    "__EMPTY_3": "min",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "somno:1",
+    "__EMPTY_6": "2026-04-10 07:10:00+00"
+  },
+  {
+    "Field / Item": 12,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Hexoskin",
+    "Note": "Smart Shirt",
+    "__EMPTY": "heart_rate",
+    "__EMPTY_1": "74.000",
+    "__EMPTY_3": "bpm",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "hexo:1",
+    "__EMPTY_6": "2026-04-10 08:10:00+00"
+  },
+  {
+    "Field / Item": 13,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Hexoskin",
+    "Note": "Smart Shirt",
+    "__EMPTY": "hrv",
+    "__EMPTY_1": "42.500",
+    "__EMPTY_3": "ms",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "hexo:1",
+    "__EMPTY_6": "2026-04-10 08:10:00+00"
+  },
+  {
+    "Field / Item": 14,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Hexoskin",
+    "Note": "Smart Shirt",
+    "__EMPTY": "respiration_rate",
+    "__EMPTY_1": "15.000",
+    "__EMPTY_3": "rpm",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "hexo:1",
+    "__EMPTY_6": "2026-04-10 08:10:00+00"
+  },
+  {
+    "Field / Item": 15,
+    "Type / Source": 101,
+    "Meaning / Role": "2026-04-10 08:00:00+00",
+    "Keep in V1": "Hexoskin",
+    "Note": "Smart Shirt",
+    "__EMPTY": "activity_value",
+    "__EMPTY_1": "0.820",
+    "__EMPTY_3": "score",
+    "__EMPTY_4": "good",
+    "__EMPTY_5": "hexo:1",
+    "__EMPTY_6": "2026-04-10 08:10:00+00"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Which db_biomarkers shape is better for the project?"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Recommended answer:"
+  },
+  {
+    "Biomarkers db Schema (wide)": "Long format is better as the core backend schema."
+  },
+  {
+    "Biomarkers db Schema (wide)": "Wide format can be added later as a derived view for dashboard/API convenience."
+  }
+]
+--- Sheet: surveys ---
+[
+  {
+    "__EMPTY": "db_surveys_monitoring",
+    "Field": "id",
+    "Type": "UUID",
+    "Meaning": "Unique record identifier",
+    "__EMPTY_2": "This table is for:"
+  },
+  {
+    "Field": "patient_id",
+    "Type": "UUID / INT",
+    "Meaning": "Local patient identifier"
+  },
+  {
+    "Field": "execution_date",
+    "Type": "DATE",
+    "Meaning": "Date when the monitoring survey was answered",
+    "__EMPTY_2": "technician follow-up questions"
+  },
+  {
+    "Field": "questionnaire_id",
+    "Type": "TEXT",
+    "Meaning": "Monitoring survey identifier",
+    "__EMPTY_2": "repeated non-medical operational follow-up"
+  },
+  {
+    "Field": "question_text",
+    "Type": "TEXT",
+    "Meaning": "Question asked to the patient",
+    "__EMPTY_2": "visit / call monitoring"
+  },
+  {
+    "Field": "answer_value",
+    "Type": "TEXT / NUMERIC",
+    "Meaning": "Recorded answer"
+  },
+  {
+    "Field": "completion_status",
+    "Type": "TEXT",
+    "Meaning": "Completed / partial / missing"
+  },
+  {
+    "Field": "source_platform",
+    "Type": "TEXT",
+    "Meaning": "Linde / survey tool / source label",
+    "__EMPTY_2": "aim : operational / follow-up / technician-side repeated questions"
+  },
+  {
+    "Field": "created_at",
+    "Type": "TIMESTAMPTZ",
+    "Meaning": "Row creation time"
+  },
+  {
+    "Field": "Field",
+    "Type": "Type",
+    "Meaning": "Meaning"
+  },
+  {
+    "__EMPTY": "db_surveys_medical",
+    "Field": "id",
+    "Type": "UUID",
+    "Meaning": "Unique record identifier",
+    "__EMPTY_2": "This table is for:"
+  },
+  {
+    "Field": "patient_id",
+    "Type": "UUID / INT",
+    "Meaning": "Local patient identifier"
+  },
+  {
+    "Field": "execution_date",
+    "Type": "DATE",
+    "Meaning": "Date when the medical survey was completed",
+    "__EMPTY_2": "PSQI"
+  },
+  {
+    "Field": "survey_name",
+    "Type": "TEXT",
+    "Meaning": "Name of the questionnaire",
+    "__EMPTY_2": "BDI"
+  },
+  {
+    "Field": "question_id",
+    "Type": "TEXT",
+    "Meaning": "Question identifier",
+    "__EMPTY_2": "ISI"
+  },
+  {
+    "Field": "answer_value",
+    "Type": "TEXT / NUMERIC",
+    "Meaning": "Recorded answer",
+    "__EMPTY_2": "SF-36"
+  },
+  {
+    "Field": "score_value",
+    "Type": "NUMERIC(8,2)",
+    "Meaning": "Computed survey score",
+    "__EMPTY_2": "ESS"
+  },
+  {
+    "Field": "severity_label",
+    "Type": "TEXT",
+    "Meaning": "Interpretation label if available",
+    "__EMPTY_2": "FSS"
+  },
+  {
+    "Field": "clinician_note",
+    "Type": "TEXT",
+    "Meaning": "Optional medical interpretation note"
+  },
+  {
+    "Field": "created_at",
+    "Type": "TIMESTAMPTZ",
+    "Meaning": "Row creation time",
+    "__EMPTY_2": "aim : clinical questionnaires with score and interpretation"
+  },
+  {
+    "__EMPTY": "Monitoring3.csv -> db_surveys_monitoring"
+  },
+  {
+    "__EMPTY": "Clinical questionnaire sources (BDI, ESS, ISI, PSQI, SF-36, FSS)  -> db_surveys_medical"
+  }
+]
+--- Sheet: intervention ---
+[
+  {
+    "__EMPTY": "db_interventions",
+    "Field": "id",
+    "Type": "UUID",
+    "Meaning": "Unique record identifier"
+  },
+  {
+    "Field": "patient_id",
+    "Type": "UUID / INT",
+    "Meaning": "Local patient identifier",
+    "__EMPTY_2": "This table is for:"
+  },
+  {
+    "Field": "reference_date",
+    "Type": "DATE",
+    "Meaning": "Date of the intervention event"
+  },
+  {
+    "Field": "job_type",
+    "Type": "TEXT",
+    "Meaning": "Intervention type / job type code",
+    "__EMPTY_2": "technician interventions"
+  },
+  {
+    "Field": "intervention_mode",
+    "Type": "TEXT",
+    "Meaning": "Visit / call / SMS / other mode if available",
+    "__EMPTY_2": "future reassessment logic"
+  },
+  {
+    "Field": "status",
+    "Type": "TEXT",
+    "Meaning": "Intervention status",
+    "__EMPTY_2": "intervention history"
+  },
+  {
+    "Field": "technician_id",
+    "Type": "TEXT",
+    "Meaning": "Technician identifier",
+    "__EMPTY_2": "intervention timing and type"
+  },
+  {
+    "Field": "outcome_metric",
+    "Type": "TEXT",
+    "Meaning": "Optional effect / result note"
+  },
+  {
+    "Field": "sequence_label",
+    "Type": "TEXT",
+    "Meaning": "Optional intervention sequence label"
+  },
+  {
+    "Field": "notes",
+    "Type": "TEXT",
+    "Meaning": "Extra context"
+  },
+  {
+    "Field": "created_at",
+    "Type": "TIMESTAMPTZ",
+    "Meaning": "Row creation time"
+  },
+  {
+    "__EMPTY": "Intervention3.csv -> db_interventions"
+  },
+  {
+    "__EMPTY": "Interventiondefinition.csv -> support mapping for intervention meaning"
+  }
+]
+--- Sheet: weekly Patient ---
+[
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Yes": "Yes",
+    "Unique record identifier": "Main join key",
+    "id_1": "patient_id",
+    "UUID_1": "UUID / INT",
+    "PK_1": "Local patient identifier",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main join key"
+  },
+  {
+    "id": "week_start_date",
+    "UUID": "DATE",
+    "PK": "Start date of the weekly window",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly reference",
+    "id_1": "week_start_date",
+    "UUID_1": "DATE",
+    "PK_1": "Start date of the weekly window",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly reference"
+  },
+  {
+    "id": "week_end_date",
+    "UUID": "DATE",
+    "PK": "End date of the weekly window",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly reference",
+    "id_1": "week_end_date",
+    "UUID_1": "DATE",
+    "PK_1": "End date of the weekly window",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly reference"
+  },
+  {
+    "id": "cpap_usage_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average CPAP usage hours during the week",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly CPAP feature",
+    "id_1": "cpap_usage_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average CPAP usage hours during the week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_ahi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average residual AHI during the week",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly CPAP feature",
+    "id_1": "cpap_usage_delta",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Change in usage across the week if applicable",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful dynamic CPAP feature"
+  },
+  {
+    "id": "cpap_leak_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average leak value during the week",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly CPAP feature",
+    "id_1": "cpap_ahi_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average residual AHI during the week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly CPAP feature"
+  },
+  {
+    "id": "hrv_avg",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Average HRV during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly biomarker feature",
+    "id_1": "cpap_ahi_max",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Maximum AHI during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful instability feature"
+  },
+  {
+    "id": "spo2_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average SpO2 during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly biomarker feature",
+    "id_1": "cpap_leak_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average leak value during the week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly CPAP feature"
+  },
+  {
+    "id": "odi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average ODI during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly biomarker feature",
+    "id_1": "cpap_leak_max",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Maximum leak value during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful instability feature"
+  },
+  {
+    "id": "respiration_rate_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average respiration rate during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly biomarker feature",
+    "id_1": "hrv_avg",
+    "UUID_1": "NUMERIC(8,3)",
+    "PK_1": "Average HRV during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly biomarker feature"
+  },
+  {
+    "id": "sleep_efficiency_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average sleep efficiency during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly sleep feature",
+    "id_1": "hrv_delta",
+    "UUID_1": "NUMERIC(8,3)",
+    "PK_1": "Change in HRV across the week if applicable",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful dynamic biomarker feature"
+  },
+  {
+    "id": "tst_avg",
+    "UUID": "NUMERIC(8,2)",
+    "PK": "Average total sleep time during the week if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main weekly sleep feature",
+    "id_1": "spo2_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average SpO2 during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly biomarker feature"
+  },
+  {
+    "id": "monitoring_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a monitoring survey exists in this week",
+    "Yes": "Yes",
+    "Unique record identifier": "Simple weekly follow-up indicator",
+    "id_1": "spo2_min",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Minimum SpO2 during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful desaturation warning feature"
+  },
+  {
+    "id": "medical_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a medical survey exists in this week",
+    "Yes": "Yes",
+    "Unique record identifier": "Simple weekly clinical indicator",
+    "id_1": "odi_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average ODI during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly biomarker feature"
+  },
+  {
+    "id": "intervention_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether an intervention occurred in this week",
+    "Yes": "Yes",
+    "Unique record identifier": "Main operational indicator",
+    "id_1": "respiration_rate_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average respiration rate during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly biomarker feature"
+  },
+  {
+    "id": "intervention_count",
+    "UUID": "INT",
+    "PK": "Number of interventions during the week",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful weekly intervention feature",
+    "id_1": "sleep_efficiency_avg",
+    "UUID_1": "NUMERIC(6,2)",
+    "PK_1": "Average sleep efficiency during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly sleep feature"
+  },
+  {
+    "id": "missingness_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "Missing source / incomplete week indicator",
+    "Yes": "Yes",
+    "Unique record identifier": "Important for completeness logic",
+    "id_1": "tst_avg",
+    "UUID_1": "NUMERIC(8,2)",
+    "PK_1": "Average total sleep time during the week if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main weekly sleep feature"
+  },
+  {
+    "id": "recency_delta_days",
+    "UUID": "INT",
+    "PK": "Days since most recent usable source update",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful recency feature",
+    "id_1": "monitoring_survey_flag",
+    "UUID_1": "BOOLEAN",
+    "PK_1": "Whether a monitoring survey exists in this week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Simple weekly follow-up indicator"
+  },
+  {
+    "id": "completeness_status",
+    "UUID": "TEXT",
+    "PK": "Complete / partial / insufficient",
+    "Yes": "Yes",
+    "Unique record identifier": "Supports completeness gateway",
+    "id_1": "medical_survey_flag",
+    "UUID_1": "BOOLEAN",
+    "PK_1": "Whether a medical survey exists in this week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Simple weekly clinical indicator"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Yes": "Yes",
+    "Unique record identifier": "Standard metadata",
+    "id_1": "intervention_flag",
+    "UUID_1": "BOOLEAN",
+    "PK_1": "Whether an intervention occurred in this week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main operational indicator"
+  },
+  {
+    "id_1": "intervention_count",
+    "UUID_1": "INT",
+    "PK_1": "Number of interventions during the week",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful weekly intervention feature"
+  },
+  {
+    "id_1": "missingness_flag",
+    "UUID_1": "TEXT or JSONB",
+    "PK_1": "Missing source / incomplete week indicator",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Important for completeness logic"
+  },
+  {
+    "id_1": "recency_delta_days",
+    "UUID_1": "INT",
+    "PK_1": "Days since most recent usable source update",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful recency feature"
+  },
+  {
+    "id_1": "completeness_status",
+    "UUID_1": "TEXT",
+    "PK_1": "Complete / partial / insufficient",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Supports completeness gateway"
+  },
+  {
+    "id_1": "created_at",
+    "UUID_1": "TIMESTAMPTZ",
+    "PK_1": "Row creation time",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Standard metadata"
+  },
+  {
+    "Patient week db Schema (simple)": "Simple understanding"
+  },
+  {
+    "Patient week db Schema (simple)": "One row = one patient + one week.",
+    "Patient week db Schema (with dynamics)": "Dynamic understanding"
+  },
+  {
+    "Patient week db Schema (simple)": "This version is easier to understand and present, but it mainly keeps weekly averages and simple weekly flags.",
+    "Patient week db Schema (with dynamics)": "This version is still one patient + one week, but it keeps some dynamics such as delta, min, or max for key variables, so weekly instability is less hidden than in a pure average-only table."
+  },
+  {
+    "Patient week db Schema (with dynamics)": "Why this dynamic weekly version?"
+  },
+  {
+    "Patient week db Schema (with dynamics)": "A weekly table based only on averages may hide important instability inside the week."
+  },
+  {
+    "Patient week db Schema (with dynamics)": "For example, a patient may have a strong drop in SpO2, a sudden rise in leak, or a fall in usage, and the weekly average alone may hide that problem."
+  },
+  {
+    "Patient week db Schema (with dynamics)": "This version keeps the weekly summary logic, but also adds selected dynamic indicators such as min, max, or delta for key variables."
+  },
+  {
+    "Patient week db Schema (with dynamics)": "Question to confirm:"
+  },
+  {
+    "Patient week db Schema (with dynamics)": "Should db_patient_week stay as a simple weekly average table, or should it include selected dynamic indicators for important variables?"
+  }
+]
+--- Sheet: Risk Score ---
+[
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Yes": "Yes",
+    "Unique record identifier": "Main join key",
+    "id_1": "patient_id",
+    "UUID_1": "UUID / INT",
+    "PK_1": "Local patient identifier",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main join key"
+  },
+  {
+    "id": "reference_date",
+    "UUID": "DATE",
+    "PK": "Main scoring date",
+    "Yes": "Yes",
+    "Unique record identifier": "Main risk reference date",
+    "id_1": "reference_date",
+    "UUID_1": "DATE",
+    "PK_1": "Main scoring date",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main risk reference date"
+  },
+  {
+    "id": "patient_week_id",
+    "UUID": "UUID or TEXT",
+    "PK": "Optional link to weekly summary row",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful if risk is computed from db_patient_week",
+    "id_1": "patient_week_id",
+    "UUID_1": "UUID or TEXT",
+    "PK_1": "Optional link to weekly summary row",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Useful if risk is computed from db_patient_week"
+  },
+  {
+    "id": "risk_score",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Main numeric risk score",
+    "Yes": "Yes",
+    "Unique record identifier": "Main model output",
+    "id_1": "risk_score",
+    "UUID_1": "NUMERIC(8,3)",
+    "PK_1": "Main numeric risk score",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main model output"
+  },
+  {
+    "id": "risk_tier",
+    "UUID": "TEXT",
+    "PK": "Risk class / risk level",
+    "Yes": "Yes",
+    "Unique record identifier": "Low / medium / high / critical or project-specific labels",
+    "id_1": "risk_tier",
+    "UUID_1": "TEXT",
+    "PK_1": "Risk class / risk level",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Low / medium / high / critical or project-specific labels"
+  },
+  {
+    "id": "risk_horizon_days",
+    "UUID": "INT",
+    "PK": "Prediction horizon in days if applicable",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful for interpretation",
+    "id_1": "alert_flag",
+    "UUID_1": "BOOLEAN",
+    "PK_1": "Whether the patient should be flagged for action",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Simple alert indicator"
+  },
+  {
+    "id": "confidence_score",
+    "UUID": "NUMERIC(6,3)",
+    "PK": "Model confidence if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful support output",
+    "id_1": "action_proposal",
+    "UUID_1": "TEXT",
+    "PK_1": "Recommended next action if available",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Main decision-support output"
+  },
+  {
+    "id": "cluster_label",
+    "UUID": "TEXT",
+    "PK": "Patient cluster / profile label if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful interpreted state",
+    "id_1": "model_name",
+    "UUID_1": "TEXT",
+    "PK_1": "Name of the model / rule engine used",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Traceability"
+  },
+  {
+    "id": "phase_label",
+    "UUID": "TEXT",
+    "PK": "Therapy/adherence phase if available",
+    "Yes": "Yes",
+    "Unique record identifier": "New / adherent / attempting / non-adherent etc.",
+    "id_1": "model_version",
+    "UUID_1": "TEXT",
+    "PK_1": "Model version used for scoring",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Traceability"
+  },
+  {
+    "id": "alert_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether the patient should be flagged for action",
+    "Yes": "Yes",
+    "Unique record identifier": "Simple alert indicator",
+    "id_1": "created_at",
+    "UUID_1": "TIMESTAMPTZ",
+    "PK_1": "Row creation time",
+    "Yes_1": "Yes",
+    "Unique record identifier_1": "Standard metadata"
+  },
+  {
+    "id": "action_proposal",
+    "UUID": "TEXT",
+    "PK": "Recommended next action if available",
+    "Yes": "Yes",
+    "Unique record identifier": "Main decision-support output"
+  },
+  {
+    "id": "evidence_flags",
+    "UUID": "TEXT or JSONB",
+    "PK": "Key supporting flags / reasons",
+    "Yes": "Yes",
+    "Unique record identifier": "Useful explainability field"
+  },
+  {
+    "id": "model_name",
+    "UUID": "TEXT",
+    "PK": "Name of the model / rule engine used",
+    "Yes": "Yes",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "model_version",
+    "UUID": "TEXT",
+    "PK": "Model version used for scoring",
+    "Yes": "Yes",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Yes": "Yes",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Risk scores db Schema (extended)": "Why this extended version?",
+    "Risk scores db Schema (simple)": "Why this simple version?"
+  },
+  {
+    "Risk scores db Schema (extended)": "This version keeps a richer interpreted output layer, not only the main risk result but also supporting information such as confidence, cluster, phase, and explainability flags.",
+    "Risk scores db Schema (simple)": "This version keeps only the main risk output layer: score, tier, alert, and proposed action."
+  },
+  {
+    "Risk scores db Schema (extended)": "It is more complete and may fit better if the project wants stronger AI/dashboard traceability from the beginning.",
+    "Risk scores db Schema (simple)": "It is easier to understand, easier to implement first, and may be enough if the project only needs the core decision-support output in V1."
+  },
+  {
+    "Risk scores db Schema (extended)": "Question to confirm:",
+    "Risk scores db Schema (simple)": "Question to confirm:"
+  },
+  {
+    "Risk scores db Schema (extended)": "Do we want db_risk_scores to be only a simple risk output table, or a richer interpreted-state table linked to AI/model reasoning?",
+    "Risk scores db Schema (simple)": "Do we want db_risk_scores to stay minimal in V1, or should we already include richer interpreted fields such as confidence, cluster, phase, and evidence flags?"
+  }
+]
+--- Sheet: Patient ---
+[
+  {
+    "patient_reference_support": "Field",
+    "__EMPTY": "Type",
+    "__EMPTY_1": "Meaning"
+  },
+  {
+    "patient_reference_support": "id",
+    "__EMPTY": "UUID",
+    "__EMPTY_1": "Unique record identifier"
+  },
+  {
+    "patient_reference_support": "patient_id",
+    "__EMPTY": "UUID / INT",
+    "__EMPTY_1": "Main patient join key"
+  },
+  {
+    "patient_reference_support": "gender",
+    "__EMPTY": "TEXT",
+    "__EMPTY_1": "Patient gender"
+  },
+  {
+    "patient_reference_support": "postal_code",
+    "__EMPTY": "TEXT",
+    "__EMPTY_1": "Patient postal code"
+  },
+  {
+    "patient_reference_support": "birthdate",
+    "__EMPTY": "DATE",
+    "__EMPTY_1": "Patient birth date"
+  },
+  {
+    "patient_reference_support": "created_at",
+    "__EMPTY": "TIMESTAMPTZ",
+    "__EMPTY_1": "Row creation time"
+  },
+  {
+    "patient_reference_support": "Patientall.csv -> patient_reference_support"
+  }
+]
+--- Sheet: whiting source ---
+[
+  {
+    "Category": "Withings watch route",
+    "Item": "Measure v2 - Getactivity",
+    "Current status": "Available",
+    "What it allows": "Daily aggregated activity data such as steps, distance, calories, HR summaries",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Good V1 source for daily activity summaries",
+    "What we should do now": "Keep as confirmed watch source",
+    "Category_1": "Withings BPM Core route",
+    "Item_1": "Measure - Getmeas",
+    "Current status_1": "Available",
+    "What it allows_1": "Measure records such as systolic BP, diastolic BP, heart pulse and other measure types",
+    "Authentication / access needed_1": "OAuth2 access token",
+    "Response / data type_1": "JSON",
+    "Official source_1": "Withings API Reference",
+    "Extra technical notes_1": "Main blood pressure source for BPM Core",
+    "What we should do now_1": "Keep as strong confirmed source"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Measure v2 - Getintradayactivity",
+    "Current status": "Available",
+    "What it allows": "High-frequency activity data including steps, distance, calories, heart_rate, spo2_auto, rmssd, rr",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Important watch route; some metrics depend on device / feature",
+    "What we should do now": "Keep as strong watch source",
+    "Category_1": "Withings BPM Core route",
+    "Item_1": "Heart v2 - List",
+    "Current status_1": "Available",
+    "What it allows_1": "Lists ECG records and related classifications for a given period",
+    "Authentication / access needed_1": "OAuth2 access token",
+    "Response / data type_1": "JSON",
+    "Official source_1": "Withings API Reference",
+    "Extra technical notes_1": "Needed to find ECG records before pulling detailed signal",
+    "What we should do now_1": "Keep as confirmed ECG source"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Measure v2 - Getworkouts",
+    "Current status": "Available",
+    "What it allows": "Workout summaries with HR, SpO2, steps, calories, distance, temperature if available",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Useful support source; more optional for V1",
+    "What we should do now": "Keep but secondary to activity / sleep",
+    "Category_1": "Withings BPM Core route",
+    "Item_1": "Heart v2 - Get",
+    "Current status_1": "Available",
+    "What it allows_1": "Returns detailed ECG signal and metadata",
+    "Authentication / access needed_1": "OAuth2 access token",
+    "Response / data type_1": "JSON",
+    "Official source_1": "Withings API Reference",
+    "Extra technical notes_1": "Docs state BPM Core ECG duration is 20s with 500 Hz sampling",
+    "What we should do now_1": "Keep as strong confirmed ECG source"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Sleep v2 - Get",
+    "Current status": "Available",
+    "What it allows": "High-frequency sleep data including HR, RR, sleep stages and other sleep datapoints if available",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Important if watch model supports sleep data",
+    "What we should do now": "Keep as confirmed watch sleep source",
+    "Category_1": "Withings BPM Core route",
+    "Item_1": "Notify",
+    "Current status_1": "Available",
+    "What it allows_1": "Notifications / webhook subscription when new data arrives",
+    "Authentication / access needed_1": "OAuth2 access token",
+    "Response / data type_1": "JSON / webhook callbacks",
+    "Official source_1": "Withings API Reference",
+    "Extra technical notes_1": "Important for long-term automatic sync",
+    "What we should do now_1": "Keep for long-term design"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Sleep v2 - Getsummary",
+    "Current status": "Available",
+    "What it allows": "Sleep summaries including total sleep, efficiency, latency, WASO, HR/RR summaries and more",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Very useful V1 route for summarized sleep data",
+    "What we should do now": "Keep as strong watch source"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Rawdata v2 - Get",
+    "Current status": "Available but device-dependent",
+    "What it allows": "Raw accelerometer or optical sensor data at higher frequency",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Advanced route; docs indicate raw data compatibility depends on device such as ScanWatch",
+    "What we should do now": "Keep as optional advanced watch route"
+  },
+  {
+    "Category": "Withings watch route",
+    "Item": "Notify",
+    "Current status": "Available",
+    "What it allows": "Notifications / webhook subscription when new data arrives",
+    "Authentication / access needed": "OAuth2 access token",
+    "Response / data type": "JSON / webhook callbacks",
+    "Official source": "Withings API Reference",
+    "Extra technical notes": "Important for long-term automatic sync",
+    "What we should do now": "Keep for long-term design"
+  },
+  {
+    "Category": "Withings watch recommendation",
+    "Category_1": "Withings BPM Core recommendation"
+  },
+  {
+    "Category": "V1 best source: Sleep v2 - Getsummary + Measure v2 - Getactivity / Getintradayactivity",
+    "Category_1": "V1 best source: Measure - Getmeas + Heart v2 - List / Heart v2 - Get"
+  },
+  {
+    "Category": "Long-term best source: Public API + OAuth2 + Notify",
+    "Category_1": "Long-term best source: Public API + OAuth2 + Notify"
+  },
+  {
+    "Category": "Advanced long-term option: Rawdata v2 - Get for compatible watch models"
+  }
+]
+--- Sheet: all ---
+[
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key; source field mapped from AtHomePatientId"
+  },
+  {
+    "id": "tenant_id",
+    "UUID": "TEXT",
+    "PK": "Tenant / platform / country identifier if available",
+    "Unique record identifier": "Source field: TenantId"
+  },
+  {
+    "id": "reference_date",
+    "UUID": "DATE",
+    "PK": "Main therapy/reference date",
+    "Unique record identifier": "Source field: ReferenceDate"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact record time if available",
+    "Unique record identifier": "Source field: Timestamp; may need cleaning/parsing"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "CPAP manufacturer / model family",
+    "Unique record identifier": "Source field: DeviceType"
+  },
+  {
+    "id": "usage_hours",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Total CPAP usage hours",
+    "Unique record identifier": "Source field: Use"
+  },
+  {
+    "id": "effective_use_hours",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Effective usage hours if available",
+    "Unique record identifier": "Source field: EffectiveUse"
+  },
+  {
+    "id": "leaks95",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "95th percentile leak value",
+    "Unique record identifier": "Source field: Leaks95"
+  },
+  {
+    "id": "leaks90",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "90th percentile leak value if available",
+    "Unique record identifier": "Source field: Leaks90"
+  },
+  {
+    "id": "leaks0",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Baseline / minimum leak-related value if available",
+    "Unique record identifier": "Source field: Leaks0"
+  },
+  {
+    "id": "leaks_large_percentage",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Percentage of large leaks if available",
+    "Unique record identifier": "Source field: LeaksLargePercentage"
+  },
+  {
+    "id": "ahi",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Apnea-Hypopnea Index",
+    "Unique record identifier": "Main therapy metric; source field: AHI"
+  },
+  {
+    "id": "ai_cent",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Central apnea index if available",
+    "Unique record identifier": "Source field: AICent"
+  },
+  {
+    "id": "pressure90",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "90th percentile pressure value",
+    "Unique record identifier": "Source field: Presure90"
+  },
+  {
+    "id": "pressure0",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Baseline / minimum pressure value",
+    "Unique record identifier": "Source field: Presure0"
+  },
+  {
+    "id": "source_platform",
+    "UUID": "TEXT",
+    "PK": "Linde / manufacturer / source label",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "somnoArt db Schema",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "night_date",
+    "UUID": "DATE",
+    "PK": "Sleep night date",
+    "Unique record identifier": "Added in V1"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact analysis/report time if available",
+    "Unique record identifier": "Useful metadata"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Somno-Art for these rows",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "sleep_state",
+    "UUID": "TEXT",
+    "PK": "Sleep stage or state summary",
+    "Unique record identifier": "Main sleep-state field"
+  },
+  {
+    "id": "tst",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Total Sleep Time",
+    "Unique record identifier": "Main sleep metric"
+  },
+  {
+    "id": "sleep_efficiency",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Percent of time in bed spent sleeping",
+    "Unique record identifier": "Main sleep metric"
+  },
+  {
+    "id": "waso",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Wake After Sleep Onset",
+    "Unique record identifier": "Main sleep metric"
+  },
+  {
+    "id": "sleep_latency",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Time needed to fall asleep",
+    "Unique record identifier": "Main sleep metric"
+  },
+  {
+    "id": "rem_latency",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Time until first REM sleep",
+    "Unique record identifier": "Main sleep metric"
+  },
+  {
+    "id": "n1_n2_duration",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Light sleep duration",
+    "Unique record identifier": "Added in V1"
+  },
+  {
+    "id": "n3_duration",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Deep sleep duration",
+    "Unique record identifier": "Added in V1"
+  },
+  {
+    "id": "rem_duration",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "REM duration",
+    "Unique record identifier": "Added in V1"
+  },
+  {
+    "id": "cycle_count",
+    "UUID": "INT",
+    "PK": "Number of sleep cycles",
+    "Unique record identifier": "Added in V1"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw/report source row",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Hexoskin db Schema",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Hexoskin for these rows",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Heart rate",
+    "Unique record identifier": "Main derived metric"
+  },
+  {
+    "id": "hrv",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Heart rate variability",
+    "Unique record identifier": "Main derived metric"
+  },
+  {
+    "id": "rr_intervals",
+    "UUID": "JSONB or TEXT",
+    "PK": "RR interval sequence / values",
+    "Unique record identifier": "Can stay semi-raw in V1"
+  },
+  {
+    "id": "breathing_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Breathing rate",
+    "Unique record identifier": "Main respiration metric"
+  },
+  {
+    "id": "tidal_volume",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Volume of air inhaled/exhaled with each breath",
+    "Unique record identifier": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "id": "minute_ventilation",
+    "UUID": "NUMERIC(8,3)",
+    "PK": " Total volume of air breathed per minute",
+    "Unique record identifier": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "id": "respiration_quality",
+    "UUID": "TEXT or JSONB",
+    "PK": "Respiration quality/support flags",
+    "Unique record identifier": "Documented Hexoskin field, export/use to confirm"
+  },
+  {
+    "id": "accelerometer_activity",
+    "UUID": "NUMERIC(8,3) or JSONB",
+    "PK": "Activity / actigraphy summary",
+    "Unique record identifier": "Main movement/activity field"
+  },
+  {
+    "id": "step_count",
+    "UUID": "INT",
+    "PK": "number of steps",
+    "Unique record identifier": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "id": "cadence",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "pace of steps / walking frequency",
+    "Unique record identifier": "Documented Hexoskin field, project use to confirm"
+  },
+  {
+    "id": "sleep_state",
+    "UUID": "TEXT",
+    "PK": "Sleep-related output if used",
+    "Unique record identifier": "Documented/source field, project use to confirm"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row or export content",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Withings Watch db Schema",
+    "id": "Field / Item",
+    "UUID": "Type / Source",
+    "PK": "Meaning / Role",
+    "Unique record identifier": "Note"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement / sync time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Withings for these rows",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "Watch model / family label",
+    "Unique record identifier": "Distinguishes watch rows from BPM Core rows"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Heart rate",
+    "Unique record identifier": "Main confirmed cardiac field"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Oxygen saturation if available",
+    "Unique record identifier": "Confirmed but device / feature dependent"
+  },
+  {
+    "id": "hrv_rmssd",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "HRV RMSSD value if available",
+    "Unique record identifier": "Confirmed but device / feature dependent"
+  },
+  {
+    "id": "hrv_sdnn1",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "HRV SDNN1 value if available",
+    "Unique record identifier": "Confirmed in docs; may depend on device / feature"
+  },
+  {
+    "id": "hrv_quality",
+    "UUID": "TEXT or JSONB",
+    "PK": "HRV quality score / support flag",
+    "Unique record identifier": "Useful support field if returned"
+  },
+  {
+    "id": "respiration_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Respiration rate if available",
+    "Unique record identifier": "Confirmed in intraday / sleep docs; device dependent"
+  },
+  {
+    "id": "activity_value",
+    "UUID": "NUMERIC(8,3) or JSONB",
+    "PK": "Activity / movement summary",
+    "Unique record identifier": "Main activity field"
+  },
+  {
+    "id": "step_count",
+    "UUID": "INT",
+    "PK": "Number of steps",
+    "Unique record identifier": "Main activity field"
+  },
+  {
+    "id": "distance",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Distance travelled",
+    "Unique record identifier": "Confirmed activity field"
+  },
+  {
+    "id": "calories",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Calories / energy summary",
+    "Unique record identifier": "Confirmed activity field"
+  },
+  {
+    "id": "sleep_state",
+    "UUID": "TEXT",
+    "PK": "Sleep state / sleep stage if available",
+    "Unique record identifier": "Confirmed but depends on device / output"
+  },
+  {
+    "id": "sleep_summary_payload",
+    "UUID": "JSONB",
+    "PK": "Sleep summary object / summary block",
+    "Unique record identifier": "Useful if saving summary as returned"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row or API content",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Withings BPM Core db Schema",
+    "id": "Field / Item",
+    "UUID": "Type / Source",
+    "PK": "Meaning / Role",
+    "Unique record identifier": "Note"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Withings for these rows",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "BPM Core / BPM family label",
+    "Unique record identifier": "Distinguishes BPM Core rows from watch rows"
+  },
+  {
+    "id": "systolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Systolic blood pressure",
+    "Unique record identifier": "Main blood pressure metric"
+  },
+  {
+    "id": "diastolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Diastolic blood pressure",
+    "Unique record identifier": "Main blood pressure metric"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Heart pulse / heart rate",
+    "Unique record identifier": "Documented/source field, project use to confirm"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Oxygen saturation if available",
+    "Unique record identifier": "Do not remove yet; keep if returned in project route"
+  },
+  {
+    "id": "ecg_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "ECG classification / ECG summary flag",
+    "Unique record identifier": "Useful ECG summary field"
+  },
+  {
+    "id": "ecg_signal_id",
+    "UUID": "TEXT",
+    "PK": "ECG signal identifier if returned",
+    "Unique record identifier": "Useful if full ECG signal is fetched separately"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row or API content",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Withings db Schema",
+    "id": "Field / Item",
+    "UUID": "Type / Source",
+    "PK": "Meaning / Role",
+    "Unique record identifier": "Device / Scope",
+    "__EMPTY": "Note"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "common",
+    "__EMPTY": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "common",
+    "__EMPTY": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement / sync time",
+    "Unique record identifier": "common",
+    "__EMPTY": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Withings for these rows",
+    "Unique record identifier": "common",
+    "__EMPTY": "Traceability"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "Watch / BPM Core / other Withings device",
+    "Unique record identifier": "common",
+    "__EMPTY": "Needed to separate device families"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Heart rate / pulse",
+    "Unique record identifier": "common",
+    "__EMPTY": "Main shared cardiac field"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Oxygen saturation if available",
+    "Unique record identifier": "device-dependent",
+    "__EMPTY": "Confirmed in docs but depends on device / feature"
+  },
+  {
+    "id": "hrv_rmssd",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "HRV RMSSD if available",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Confirmed but device / feature dependent"
+  },
+  {
+    "id": "hrv_sdnn1",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "HRV SDNN1 if available",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Confirmed in docs; keep if returned"
+  },
+  {
+    "id": "hrv_quality",
+    "UUID": "TEXT or JSONB",
+    "PK": "HRV quality / support flag",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Useful support field"
+  },
+  {
+    "id": "respiration_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Respiration rate if available",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Confirmed in sleep / intraday docs"
+  },
+  {
+    "id": "activity_value",
+    "UUID": "NUMERIC(8,3) or JSONB",
+    "PK": "Activity / movement summary",
+    "Unique record identifier": "watch",
+    "__EMPTY": "Main activity field"
+  },
+  {
+    "id": "step_count",
+    "UUID": "INT",
+    "PK": "Number of steps",
+    "Unique record identifier": "watch",
+    "__EMPTY": "Main activity field"
+  },
+  {
+    "id": "distance",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Distance travelled",
+    "Unique record identifier": "watch",
+    "__EMPTY": "Confirmed activity field"
+  },
+  {
+    "id": "calories",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Calories / energy summary",
+    "Unique record identifier": "watch",
+    "__EMPTY": "Confirmed activity field"
+  },
+  {
+    "id": "sleep_state",
+    "UUID": "TEXT",
+    "PK": "Sleep state / sleep stage if available",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Depends on sleep output / device"
+  },
+  {
+    "id": "sleep_summary_payload",
+    "UUID": "JSONB",
+    "PK": "Sleep summary object / summary block",
+    "Unique record identifier": "watch / device-dependent",
+    "__EMPTY": "Useful if saving summary directly"
+  },
+  {
+    "id": "systolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Systolic blood pressure",
+    "Unique record identifier": "BPM Core",
+    "__EMPTY": "Main blood pressure field"
+  },
+  {
+    "id": "diastolic_bp",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Diastolic blood pressure",
+    "Unique record identifier": "BPM Core",
+    "__EMPTY": "Main blood pressure field"
+  },
+  {
+    "id": "ecg_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "ECG classification / ECG summary",
+    "Unique record identifier": "BPM Core / device-dependent",
+    "__EMPTY": "Main ECG summary field"
+  },
+  {
+    "id": "ecg_signal_id",
+    "UUID": "TEXT",
+    "PK": "ECG signal identifier",
+    "Unique record identifier": "BPM Core / device-dependent",
+    "__EMPTY": "Useful if detailed signal is stored separately"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row or API content",
+    "Unique record identifier": "common",
+    "__EMPTY": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "common",
+    "__EMPTY": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Masimo db Schema",
+    "id": "Field / Item",
+    "UUID": "Type / Source",
+    "PK": "Meaning / Role",
+    "Unique record identifier": "Note"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Always Masimo for these rows",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "Masimo device / model label",
+    "Unique record identifier": "Distinguishes device family / model"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Functional oxygen saturation of arterial hemoglobin",
+    "Unique record identifier": "Main confirmed metric for MightySat® Rx"
+  },
+  {
+    "id": "pulse_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Pulse rate / PR",
+    "Unique record identifier": "Main confirmed metric for MightySat® Rx"
+  },
+  {
+    "id": "perfusion_index",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Perfusion Index (Pi) if available",
+    "Unique record identifier": "Confirmed for MightySat® Rx"
+  },
+  {
+    "id": "respiration_rate",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Respiration rate if available",
+    "Unique record identifier": "Confirmed for MightySat® Rx"
+  },
+  {
+    "id": "pleth_variability_index",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "PVi if available",
+    "Unique record identifier": "Confirmed for MightySat® Rx"
+  },
+  {
+    "id": "raw_payload",
+    "UUID": "JSONB",
+    "PK": "Optional raw source row or export content",
+    "Unique record identifier": "Optional but useful"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Biomarkers db Schema (wide)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement / sync time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Source family name",
+    "Unique record identifier": "Hexoskin / Withings / Masimo / Somno-Art"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "Device / model family",
+    "Unique record identifier": "Needed to distinguish source/device origin"
+  },
+  {
+    "id": "heart_rate",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Heart rate if available",
+    "Unique record identifier": "Main common cardiac biomarker"
+  },
+  {
+    "id": "hrv",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Heart rate variability if available",
+    "Unique record identifier": "Main common cardiac biomarker"
+  },
+  {
+    "id": "spo2",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Oxygen saturation if available",
+    "Unique record identifier": "Main oxygen biomarker"
+  },
+  {
+    "id": "odi",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Oxygen desaturation index if available",
+    "Unique record identifier": "Main sleep/respiratory biomarker"
+  },
+  {
+    "id": "respiration_rate",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Respiration rate if available",
+    "Unique record identifier": "Main respiratory biomarker"
+  },
+  {
+    "id": "systolic_bp",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Systolic blood pressure if available",
+    "Unique record identifier": "Main BPM Core biomarker"
+  },
+  {
+    "id": "diastolic_bp",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Diastolic blood pressure if available",
+    "Unique record identifier": "Main BPM Core biomarker"
+  },
+  {
+    "id": "sleep_efficiency",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Sleep efficiency if available",
+    "Unique record identifier": "Main sleep summary biomarker"
+  },
+  {
+    "id": "tst",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Total sleep time if available",
+    "Unique record identifier": "Main sleep summary biomarker"
+  },
+  {
+    "id": "waso",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Wake after sleep onset if available",
+    "Unique record identifier": "Main sleep fragmentation biomarker"
+  },
+  {
+    "id": "sleep_latency",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Sleep latency if available",
+    "Unique record identifier": "Useful sleep summary biomarker"
+  },
+  {
+    "id": "rem_latency",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "REM latency if available",
+    "Unique record identifier": "Useful sleep summary biomarker"
+  },
+  {
+    "id": "activity_value",
+    "UUID": "NUMERIC(10,3) or JSONB",
+    "PK": "Activity summary if available",
+    "Unique record identifier": "Main activity biomarker"
+  },
+  {
+    "id": "step_count",
+    "UUID": "INT",
+    "PK": "Number of steps if available",
+    "Unique record identifier": "Simple movement/activity biomarker"
+  },
+  {
+    "id": "quality_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "Quality / validity / support flag",
+    "Unique record identifier": "Useful if source provides confidence/quality info"
+  },
+  {
+    "id": "raw_reference",
+    "UUID": "TEXT",
+    "PK": "Optional reference to source-specific row or payload",
+    "Unique record identifier": "Keeps traceability to original source table"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Biomarkers db Schema (long)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "timestamp",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Exact measurement / sync time",
+    "Unique record identifier": "Main time field"
+  },
+  {
+    "id": "source_name",
+    "UUID": "TEXT",
+    "PK": "Source family name",
+    "Unique record identifier": "Hexoskin / Withings / Masimo / Somno-Art"
+  },
+  {
+    "id": "device_type",
+    "UUID": "TEXT",
+    "PK": "Device / model family",
+    "Unique record identifier": "Needed to distinguish source/device origin"
+  },
+  {
+    "id": "biomarker_type",
+    "UUID": "TEXT",
+    "PK": "Type of biomarker",
+    "Unique record identifier": "Main normalized biomarker label"
+  },
+  {
+    "id": "value_numeric",
+    "UUID": "NUMERIC(10,3)",
+    "PK": "Numeric biomarker value if applicable",
+    "Unique record identifier": "Main value field for quantitative biomarkers"
+  },
+  {
+    "id": "value_text",
+    "UUID": "TEXT",
+    "PK": "Text biomarker value if applicable",
+    "Unique record identifier": "Optional support for non-numeric or classified values"
+  },
+  {
+    "id": "unit",
+    "UUID": "TEXT",
+    "PK": "Measurement unit",
+    "Unique record identifier": "%, bpm, ms, min, mmHg, events/hour, etc."
+  },
+  {
+    "id": "quality_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "Quality / validity / support flag",
+    "Unique record identifier": "Useful if source provides confidence/quality info"
+  },
+  {
+    "id": "raw_reference",
+    "UUID": "TEXT",
+    "PK": "Optional reference to source-specific row or payload",
+    "Unique record identifier": "Keeps traceability to original source table"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "db_surveys_monitoring",
+    "id": "Field",
+    "UUID": "Type",
+    "PK": "Meaning"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier"
+  },
+  {
+    "id": "execution_date",
+    "UUID": "DATE",
+    "PK": "Date when the monitoring survey was answered"
+  },
+  {
+    "id": "questionnaire_id",
+    "UUID": "TEXT",
+    "PK": "Monitoring survey identifier"
+  },
+  {
+    "id": "question_text",
+    "UUID": "TEXT",
+    "PK": "Question asked to the patient"
+  },
+  {
+    "id": "answer_value",
+    "UUID": "TEXT / NUMERIC",
+    "PK": "Recorded answer"
+  },
+  {
+    "id": "completion_status",
+    "UUID": "TEXT",
+    "PK": "Completed / partial / missing"
+  },
+  {
+    "id": "source_platform",
+    "UUID": "TEXT",
+    "PK": "Linde / survey tool / source label"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time"
+  },
+  {
+    "Cpap db Schema": "db_surveys_medical",
+    "id": "Field",
+    "UUID": "Type",
+    "PK": "Meaning"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier"
+  },
+  {
+    "id": "execution_date",
+    "UUID": "DATE",
+    "PK": "Date when the medical survey was completed"
+  },
+  {
+    "id": "survey_name",
+    "UUID": "TEXT",
+    "PK": "Name of the questionnaire"
+  },
+  {
+    "id": "question_id",
+    "UUID": "TEXT",
+    "PK": "Question identifier"
+  },
+  {
+    "id": "answer_value",
+    "UUID": "TEXT / NUMERIC",
+    "PK": "Recorded answer"
+  },
+  {
+    "id": "score_value",
+    "UUID": "NUMERIC(8,2)",
+    "PK": "Computed survey score"
+  },
+  {
+    "id": "severity_label",
+    "UUID": "TEXT",
+    "PK": "Interpretation label if available"
+  },
+  {
+    "id": "clinician_note",
+    "UUID": "TEXT",
+    "PK": "Optional medical interpretation note"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time"
+  },
+  {
+    "Cpap db Schema": "db_interventions",
+    "id": "Field",
+    "UUID": "Type",
+    "PK": "Meaning"
+  },
+  {
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier"
+  },
+  {
+    "id": "reference_date",
+    "UUID": "DATE",
+    "PK": "Date of the intervention event"
+  },
+  {
+    "id": "job_type",
+    "UUID": "TEXT",
+    "PK": "Intervention type / job type code"
+  },
+  {
+    "id": "intervention_mode",
+    "UUID": "TEXT",
+    "PK": "Visit / call / SMS / other mode if available"
+  },
+  {
+    "id": "status",
+    "UUID": "TEXT",
+    "PK": "Intervention status"
+  },
+  {
+    "id": "technician_id",
+    "UUID": "TEXT",
+    "PK": "Technician identifier"
+  },
+  {
+    "id": "outcome_metric",
+    "UUID": "TEXT",
+    "PK": "Optional effect / result note"
+  },
+  {
+    "id": "sequence_label",
+    "UUID": "TEXT",
+    "PK": "Optional intervention sequence label"
+  },
+  {
+    "id": "notes",
+    "UUID": "TEXT",
+    "PK": "Extra context"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time"
+  },
+  {
+    "Cpap db Schema": "Patient week db Schema (simple)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "week_start_date",
+    "UUID": "DATE",
+    "PK": "Start date of the weekly window",
+    "Unique record identifier": "Main weekly reference"
+  },
+  {
+    "id": "week_end_date",
+    "UUID": "DATE",
+    "PK": "End date of the weekly window",
+    "Unique record identifier": "Main weekly reference"
+  },
+  {
+    "id": "cpap_usage_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average CPAP usage hours during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_ahi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average residual AHI during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_leak_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average leak value during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "hrv_avg",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Average HRV during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "spo2_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average SpO2 during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "odi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average ODI during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "respiration_rate_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average respiration rate during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "sleep_efficiency_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average sleep efficiency during the week if available",
+    "Unique record identifier": "Main weekly sleep feature"
+  },
+  {
+    "id": "tst_avg",
+    "UUID": "NUMERIC(8,2)",
+    "PK": "Average total sleep time during the week if available",
+    "Unique record identifier": "Main weekly sleep feature"
+  },
+  {
+    "id": "monitoring_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a monitoring survey exists in this week",
+    "Unique record identifier": "Simple weekly follow-up indicator"
+  },
+  {
+    "id": "medical_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a medical survey exists in this week",
+    "Unique record identifier": "Simple weekly clinical indicator"
+  },
+  {
+    "id": "intervention_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether an intervention occurred in this week",
+    "Unique record identifier": "Main operational indicator"
+  },
+  {
+    "id": "intervention_count",
+    "UUID": "INT",
+    "PK": "Number of interventions during the week",
+    "Unique record identifier": "Useful weekly intervention feature"
+  },
+  {
+    "id": "missingness_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "Missing source / incomplete week indicator",
+    "Unique record identifier": "Important for completeness logic"
+  },
+  {
+    "id": "recency_delta_days",
+    "UUID": "INT",
+    "PK": "Days since most recent usable source update",
+    "Unique record identifier": "Useful recency feature"
+  },
+  {
+    "id": "completeness_status",
+    "UUID": "TEXT",
+    "PK": "Complete / partial / insufficient",
+    "Unique record identifier": "Supports completeness gateway"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Patient week db Schema (with dynamics)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "week_start_date",
+    "UUID": "DATE",
+    "PK": "Start date of the weekly window",
+    "Unique record identifier": "Main weekly reference"
+  },
+  {
+    "id": "week_end_date",
+    "UUID": "DATE",
+    "PK": "End date of the weekly window",
+    "Unique record identifier": "Main weekly reference"
+  },
+  {
+    "id": "cpap_usage_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average CPAP usage hours during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_usage_delta",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Change in usage across the week if applicable",
+    "Unique record identifier": "Useful dynamic CPAP feature"
+  },
+  {
+    "id": "cpap_ahi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average residual AHI during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_ahi_max",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Maximum AHI during the week if available",
+    "Unique record identifier": "Useful instability feature"
+  },
+  {
+    "id": "cpap_leak_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average leak value during the week",
+    "Unique record identifier": "Main weekly CPAP feature"
+  },
+  {
+    "id": "cpap_leak_max",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Maximum leak value during the week if available",
+    "Unique record identifier": "Useful instability feature"
+  },
+  {
+    "id": "hrv_avg",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Average HRV during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "hrv_delta",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Change in HRV across the week if applicable",
+    "Unique record identifier": "Useful dynamic biomarker feature"
+  },
+  {
+    "id": "spo2_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average SpO2 during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "spo2_min",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Minimum SpO2 during the week if available",
+    "Unique record identifier": "Useful desaturation warning feature"
+  },
+  {
+    "id": "odi_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average ODI during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "respiration_rate_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average respiration rate during the week if available",
+    "Unique record identifier": "Main weekly biomarker feature"
+  },
+  {
+    "id": "sleep_efficiency_avg",
+    "UUID": "NUMERIC(6,2)",
+    "PK": "Average sleep efficiency during the week if available",
+    "Unique record identifier": "Main weekly sleep feature"
+  },
+  {
+    "id": "tst_avg",
+    "UUID": "NUMERIC(8,2)",
+    "PK": "Average total sleep time during the week if available",
+    "Unique record identifier": "Main weekly sleep feature"
+  },
+  {
+    "id": "monitoring_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a monitoring survey exists in this week",
+    "Unique record identifier": "Simple weekly follow-up indicator"
+  },
+  {
+    "id": "medical_survey_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether a medical survey exists in this week",
+    "Unique record identifier": "Simple weekly clinical indicator"
+  },
+  {
+    "id": "intervention_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether an intervention occurred in this week",
+    "Unique record identifier": "Main operational indicator"
+  },
+  {
+    "id": "intervention_count",
+    "UUID": "INT",
+    "PK": "Number of interventions during the week",
+    "Unique record identifier": "Useful weekly intervention feature"
+  },
+  {
+    "id": "missingness_flag",
+    "UUID": "TEXT or JSONB",
+    "PK": "Missing source / incomplete week indicator",
+    "Unique record identifier": "Important for completeness logic"
+  },
+  {
+    "id": "recency_delta_days",
+    "UUID": "INT",
+    "PK": "Days since most recent usable source update",
+    "Unique record identifier": "Useful recency feature"
+  },
+  {
+    "id": "completeness_status",
+    "UUID": "TEXT",
+    "PK": "Complete / partial / insufficient",
+    "Unique record identifier": "Supports completeness gateway"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Risk scores db Schema (simple)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "reference_date",
+    "UUID": "DATE",
+    "PK": "Main scoring date",
+    "Unique record identifier": "Main risk reference date"
+  },
+  {
+    "id": "patient_week_id",
+    "UUID": "UUID or TEXT",
+    "PK": "Optional link to weekly summary row",
+    "Unique record identifier": "Useful if risk is computed from db_patient_week"
+  },
+  {
+    "id": "risk_score",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Main numeric risk score",
+    "Unique record identifier": "Main model output"
+  },
+  {
+    "id": "risk_tier",
+    "UUID": "TEXT",
+    "PK": "Risk class / risk level",
+    "Unique record identifier": "Low / medium / high / critical or project-specific labels"
+  },
+  {
+    "id": "alert_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether the patient should be flagged for action",
+    "Unique record identifier": "Simple alert indicator"
+  },
+  {
+    "id": "action_proposal",
+    "UUID": "TEXT",
+    "PK": "Recommended next action if available",
+    "Unique record identifier": "Main decision-support output"
+  },
+  {
+    "id": "model_name",
+    "UUID": "TEXT",
+    "PK": "Name of the model / rule engine used",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "model_version",
+    "UUID": "TEXT",
+    "PK": "Model version used for scoring",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  },
+  {
+    "Cpap db Schema": "Risk scores db Schema (extended)",
+    "id": "id",
+    "UUID": "UUID",
+    "PK": "PK",
+    "Unique record identifier": "Unique record identifier"
+  },
+  {
+    "id": "patient_id",
+    "UUID": "UUID / INT",
+    "PK": "Local patient identifier",
+    "Unique record identifier": "Main join key"
+  },
+  {
+    "id": "reference_date",
+    "UUID": "DATE",
+    "PK": "Main scoring date",
+    "Unique record identifier": "Main risk reference date"
+  },
+  {
+    "id": "patient_week_id",
+    "UUID": "UUID or TEXT",
+    "PK": "Optional link to weekly summary row",
+    "Unique record identifier": "Useful if risk is computed from db_patient_week"
+  },
+  {
+    "id": "risk_score",
+    "UUID": "NUMERIC(8,3)",
+    "PK": "Main numeric risk score",
+    "Unique record identifier": "Main model output"
+  },
+  {
+    "id": "risk_tier",
+    "UUID": "TEXT",
+    "PK": "Risk class / risk level",
+    "Unique record identifier": "Low / medium / high / critical or project-specific labels"
+  },
+  {
+    "id": "risk_horizon_days",
+    "UUID": "INT",
+    "PK": "Prediction horizon in days if applicable",
+    "Unique record identifier": "Useful for interpretation"
+  },
+  {
+    "id": "confidence_score",
+    "UUID": "NUMERIC(6,3)",
+    "PK": "Model confidence if available",
+    "Unique record identifier": "Useful support output"
+  },
+  {
+    "id": "cluster_label",
+    "UUID": "TEXT",
+    "PK": "Patient cluster / profile label if available",
+    "Unique record identifier": "Useful interpreted state"
+  },
+  {
+    "id": "phase_label",
+    "UUID": "TEXT",
+    "PK": "Therapy/adherence phase if available",
+    "Unique record identifier": "New / adherent / attempting / non-adherent etc."
+  },
+  {
+    "id": "alert_flag",
+    "UUID": "BOOLEAN",
+    "PK": "Whether the patient should be flagged for action",
+    "Unique record identifier": "Simple alert indicator"
+  },
+  {
+    "id": "action_proposal",
+    "UUID": "TEXT",
+    "PK": "Recommended next action if available",
+    "Unique record identifier": "Main decision-support output"
+  },
+  {
+    "id": "evidence_flags",
+    "UUID": "TEXT or JSONB",
+    "PK": "Key supporting flags / reasons",
+    "Unique record identifier": "Useful explainability field"
+  },
+  {
+    "id": "model_name",
+    "UUID": "TEXT",
+    "PK": "Name of the model / rule engine used",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "model_version",
+    "UUID": "TEXT",
+    "PK": "Model version used for scoring",
+    "Unique record identifier": "Traceability"
+  },
+  {
+    "id": "created_at",
+    "UUID": "TIMESTAMPTZ",
+    "PK": "Row creation time",
+    "Unique record identifier": "Standard metadata"
+  }
+]
