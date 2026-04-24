@@ -1,0 +1,21 @@
+﻿Pat_Id_int,Pat_BU_str,Pat_Lastname_str,Pat_Firstname_str,Pat_Gender_str,Pat_BirthDate_dt,Pat_Phone_str,Pat_Phone2_str,Pat_Mail_str,Pat_IsActive_bl,Pat_WiComment_str,Pat_WiDisplayLeak_bl,Pat_TreatActiveNb_int,Pat_Unbilled_int,Pat_Unbilled_dt
+4480,01,MANTEZOLO,Louise Kuntima,F,1962-12-29 00:00:00,06 68 36 97 53,04 78 86 09 31,loukunti3@gmail.com,1,Date : ,NULL,1,NULL,NULL
+4553,01,CARMONA,Francisca,F,1933-10-27 00:00:00,06 27 96 13 10,0478827394,francisca.carmona69@gmail.com,1,Date : ,NULL,1,NULL,NULL
+5930,01,VALOUR,Daniel,M,1941-06-17 00:00:00,06 63 26 26 17,0478461765,valour.daniel@neuf.fr,1,Date : ,NULL,1,NULL,NULL
+6058,01,MESSAGE,Pierre,M,1949-04-10 00:00:00,06 65 72 34 17,04 70 46 33 10,pierre.message@orange.fr,1,Date : ,NULL,1,NULL,NULL
+6719,01,GILLOT GIBAULT,Claude,M,1950-01-31 00:00:00,06 98 06 25 32,09 71 22 27 96,klodgg@orange.fr,1,Date : ,NULL,1,NULL,NULL
+7680,01,COLOMBAT,Dominique,M,1967-05-20 00:00:00,06 03 76 63 09,04 70 47 09 85,crisgrenouille@yahoo.fr,1,Date : ,NULL,1,59,2021-11-30 00:00:00
+7697,01,MARMIES,Etienne,M,1958-02-10 00:00:00,06 26 05 48 10,04 78 45 03 41,etienne_chantal@outlook.fr,1,Date : ,NULL,1,NULL,NULL
+13917,01,JAY,Marie France,F,1940-09-03 00:00:00,0684493131,04 78 56 00 38,marie-france.gay69@orange.fr,1,Date : ,NULL,1,18,2022-07-31 00:00:00
+26632,01,BARBET,Bernard,M,1949-07-08 00:00:00,06 14 06 00 30,06 37 04 70 92,garoju38@gmail.com,1,Date : ,NULL,1,NULL,NULL
+28205,01,DUBLASSY,Thierry,M,1965-09-18 00:00:00,06 84 48 56 37,04 81 18 06 26,thierrydublassy@gmail.com,1,Date : ,NULL,1,NULL,NULL
+34718,01,CHATELET,Stephane,M,1973-10-05 00:00:00,06 27 79 53 35,NT,stephane.chatelet@wanadoo.fr,1,12/07/21=a toujours eu des nuits entrecoupées et est très agité+stress++travaille en 2/8 en fonderie avec bruit+fumée - 01/06/2022 -  va se faire opérer du nez le 21/07/22  - donc ne portera pas l appareil pendant au moins 15 jours - -,NULL,1,5,2022-07-31 00:00:00
+35703,01,GATIER,Pascal,M,1963-04-11 00:00:00,06 19 41 81 37,04 70 28 63 89,nounet.66140@gmail.com,1,Date : ,NULL,1,NULL,NULL
+37340,01,JAULIN,Germaine,F,1957-04-15 00:00:00,0620076730,04 78 49 36 75,noreply@linde.com,1,Date : ,NULL,1,NULL,NULL
+41742,01,VILAR,Pierre,M,1945-01-17 00:00:00,0681270246,0478497137,piepierre69@gmail.com,1,03/03/2021=ptt barbu +++fuites connues et non ressenties,NULL,1,NULL,NULL
+42149,01,BRUNET,Nicolas,M,1961-05-08 00:00:00,06 30 92 13 95,06 31 54 09 91,nicolas.brunet2000@gmail.com,1,Date : ,NULL,1,NULL,NULL
+44359,01,CHIERA,Bruno,M,1961-03-08 00:00:00,06 64 68 22 66,06 56 86 69 41,ttb.chiera@hotmail.com,1,19/11/20=se couche tard et dort moins bien en ce moment +dort sur le coté ,NULL,1,41,2022-06-30 00:00:00
+49144,01,DUSSAUSSOY,Magalie,F,1973-11-05 00:00:00,06 49 27 16 06,0649271606,fakad03@yahoo.fr,1,Date : ,NULL,1,NULL,NULL
+66855,01,PALUMBO,Lionel,M,1994-09-02 00:00:00,0783306514,06 86 97 65 59,palumbo94@hotmail.fr,1,Date : ,NULL,1,NULL,NULL
+67249,01,DA SILVA CEBOLA,Vitor,M,1974-01-01 00:00:00,06 62 71 85 45,NULL,vitorcebola@hotmail.com,1,08/03/22 : part du 15/03/2022 pour environ 1 mois à l'étranger - Il prend la ppc mais peut etre pas de communication PPC,NULL,1,NULL,NULL
+79682,01,MARTINEZ,Jean Paul,M,1958-10-05 00:00:00,06 80 71 97 73,06 80 71 97 73,ulysse.0@hotmail.fr,1,22/03/21=ptt dort sur le dos+04/05/21=KC de l'oesophage+estomac+chimio en cours  ,NULL,1,5,2022-07-31 00:00:00
