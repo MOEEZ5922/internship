@@ -38,12 +38,12 @@ export default function PhysicianPatientLayout() {
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Demographics</p>
-              <p className="text-[#0A1128]">Female, 47y (DOB: 06/15/78)</p>
+              <p className="text-[#0A1128]">{patientInfo.gender}, 47y (DOB: 06/15/78)</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Therapy Timeline</p>
-              <p className="text-[#0A1128]">Started: Jan 12, 2025</p>
+              <p className="text-[#0A1128]">Started: {new Date(patientInfo.therapyStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>

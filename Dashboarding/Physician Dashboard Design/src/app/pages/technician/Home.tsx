@@ -51,8 +51,7 @@ export default function TechnicianHome() {
 
   const handleConfirm = (id: number) => {
     setStatusMap(prev => ({ ...prev, [id]: 'confirmed' }));
-    const nextPending = pending.find(e => e.id !== id);
-    setSelectedEventId(nextPending?.id || null);
+    // We stay on the current ID so the technician can see the result and perform actions
   };
 
   const handleDismiss = (id: number) => {
@@ -120,9 +119,12 @@ export default function TechnicianHome() {
             {/* Master List (Events) */}
             <div className="w-1/3 border-r border-[#E8EEF2] bg-white flex flex-col overflow-hidden">
               <div className="flex-1 overflow-auto divide-y divide-[#E8EEF2]">
-                {pending.length > 0 ? (
-                  pending.map(event => {
+                {technicianEvents.filter(e => statusMap[e.id] !== 'dismissed').length > 0 ? (
+                  technicianEvents
+                    .filter(e => statusMap[e.id] !== 'dismissed')
+                    .map(event => {
                     const config = eventTypeConfig[event.type] || eventTypeConfig['Equipment Alert'];
+                    const isConfirmed = statusMap[event.id] === 'confirmed';
                     return (
                       <div
                         key={event.id}
@@ -133,10 +135,15 @@ export default function TechnicianHome() {
                           <div className={`p-1.5 rounded-lg ${config.bg}/10 ${config.color}`}>
                             {config.icon}
                           </div>
-                          <span className="text-[10px] text-[#5A6B7C]">{formatTime(event.detectedAt)}</span>
+                          <div className="flex items-center gap-2">
+                            {isConfirmed && <CheckCircle className="w-4 h-4 text-[#6A994E]" />}
+                            <span className="text-[10px] text-[#5A6B7C]">{formatTime(event.detectedAt)}</span>
+                          </div>
                         </div>
                         <p className="text-sm font-bold text-[#0A1128] mb-1">{event.patient.name}</p>
-                        <p className="text-xs text-[#E76F51] font-semibold uppercase tracking-wide">{event.type}</p>
+                        <p className={`text-xs font-semibold uppercase tracking-wide ${isConfirmed ? 'text-[#6A994E]' : 'text-[#E76F51]'}`}>
+                          {isConfirmed ? 'Validated' : event.type}
+                        </p>
                       </div>
                     )
                   })
@@ -194,12 +201,33 @@ export default function TechnicianHome() {
                           <span className="text-[10px] bg-[#E76F51]/10 text-[#E76F51] px-2 py-0.5 rounded font-bold uppercase tracking-tighter">Unified Physician View</span>
                         </div>
 
-                        <SummaryContent patientId={selectedEvent.patient.patientId} isCompact={true} role="technician" hideHeader={true} />
+                        <SummaryContent 
+                          patientId={selectedEvent.patient.patientId} 
+                          isCompact={true} 
+                          role="technician" 
+                          hideHeader={true} 
+                          showActions={statusMap[selectedEvent.id] === 'confirmed'} 
+                        />
                       </div>
                     </div>
 
                     {/* Hardware Control Bar (Specialized) */}
-                    {dismissingId === selectedEvent.id ? (
+                    {statusMap[selectedEvent.id] === 'confirmed' ? (
+                      <div className="bg-[#6A994E]/10 border-2 border-[#6A994E]/30 p-6 rounded-[2rem] flex items-center justify-between animate-in zoom-in-95 duration-500">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-[#6A994E] text-white rounded-2xl flex items-center justify-center shadow-lg shadow-[#6A994E]/20">
+                            <CheckCircle className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-bold text-[#0A1128]">Event Validated</h3>
+                            <p className="text-sm text-[#5A6B7C]">AI detection confirmed. Proceed with technical action below.</p>
+                          </div>
+                        </div>
+                        <div className="text-[10px] font-bold text-[#6A994E] uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-[#6A994E]/20">
+                          Ready for Intervention
+                        </div>
+                      </div>
+                    ) : dismissingId === selectedEvent.id ? (
                       <div className="bg-[#FAFAFA] p-8 rounded-[2rem] border border-[#E8EEF2]">
                         <h3 className="text-lg font-bold text-[#0A1128] mb-6">
                           {selectedEvent.type === 'Patient Self-Report' ? 'Why are you dismissing this report?' : 'Why is this a False Positive?'}
@@ -221,8 +249,11 @@ export default function TechnicianHome() {
                       </div>
                     ) : (
                       <div className="flex gap-6">
+                        <button onClick={() => handleConfirm(selectedEvent.id)} className="flex-1 py-6 bg-[#2D9596] text-white text-lg font-bold rounded-3xl hover:bg-[#247d7e] transition-all shadow-lg shadow-[#2D9596]/20 flex items-center justify-center gap-3">
+                          <CheckCircle className="w-6 h-6" /> Validate & Action
+                        </button>
                         <button onClick={() => setDismissingId(selectedEvent.id)} className="flex-1 py-6 bg-[#E8EEF2] text-[#5A6B7C] text-lg font-bold rounded-3xl hover:bg-[#d6dfe6] transition-all">
-                          {selectedEvent.type === 'Patient Self-Report' ? 'Dismiss Patient Report' : 'Mark Hardware False Positive'}
+                          {selectedEvent.type === 'Patient Self-Report' ? 'Dismiss Report' : 'Mark False Positive'}
                         </button>
                       </div>
                     )}

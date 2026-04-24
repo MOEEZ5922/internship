@@ -3,30 +3,48 @@ import { Watch, Activity, Zap, ShieldCheck, Bluetooth, Battery } from 'lucide-re
 export default function TechnicianDevices() {
   const devices = [
     {
-      id: 'D-8821',
-      name: 'Advanced Oximeter X1',
-      type: 'SpO2 & Heart Rate',
+      id: 'HEXO-092',
+      name: 'Hexoskin Smart Shirt',
+      type: 'Respiratory Effort (RVO) & HRV',
       status: 'Online',
       battery: '82%',
       lastSync: '12 mins ago',
       assigned: 'Jan 12, 2025'
     },
     {
-      id: 'D-4410',
-      name: 'SleepRing v2',
-      type: 'Movement & HRV',
+      id: 'MAS-441',
+      name: 'Masimo MightySat Rx',
+      type: 'SpO2 & Pulse Rate',
       status: 'Online',
       battery: '45%',
       lastSync: '1 hour ago',
       assigned: 'Feb 05, 2025'
     },
     {
-      id: 'D-9902',
-      name: 'Chest Belt Pro',
-      type: 'Respiratory Effort',
+      id: 'SOM-882',
+      name: 'Somno-Art Band',
+      type: 'Sleep Architecture (REM/Deep)',
+      status: 'Online',
+      battery: '95%',
+      lastSync: '30 mins ago',
+      assigned: 'Jan 15, 2025'
+    },
+    {
+      id: 'WTH-990',
+      name: 'Withings BPM Core',
+      type: 'Blood Pressure & AFib',
       status: 'Disconnected',
       battery: '0%',
       lastSync: '2 days ago',
+      assigned: 'Jan 12, 2025'
+    },
+    {
+      id: 'WTH-991',
+      name: 'Withings ScanWatch',
+      type: 'Sleep, HR, SpO2 & Activity',
+      status: 'Online',
+      battery: '74%',
+      lastSync: '4 hours ago',
       assigned: 'Jan 12, 2025'
     }
   ];
@@ -104,9 +122,10 @@ export default function TechnicianDevices() {
             All assigned biomarker devices are currently broadcasting encrypted physiological data to the Universal Truth workspace. Data integrity is verified at the edge.
           </p>
           <div className="flex gap-4">
-            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium">SpO2 Feed: Active</div>
-            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium">HRV Feed: Active</div>
-            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium border border-[#E76F51]/50 text-[#E76F51]">Effort: Fail</div>
+            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium">Masimo SpO2: Active</div>
+            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium">Hexoskin RVO: Active</div>
+            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium">Somno-Art: Active</div>
+            <div className="bg-white/10 px-4 py-2 rounded-xl text-xs font-medium border border-[#E76F51]/50 text-[#E76F51]">Withings: Fail</div>
           </div>
         </div>
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#F4A261]/10 rounded-full blur-3xl -mr-32 -mt-32" />

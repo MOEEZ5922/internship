@@ -1,6 +1,8 @@
 export const patientInfo = {
   name: "Sarah Mitchell",
   dob: "1978-06-15",
+  gender: "Female",
+  therapyStartDate: "2025-01-12",
   riskScore: 72,
   therapyStatus: "Active - CPAP",
   address: "22 Rue de la Paix, 75002 Paris",
