@@ -117,7 +117,7 @@ export default function TechnicianHome() {
         {activeTab === 'events' ? (
           <div className="flex h-full animate-in fade-in duration-500">
             {/* Master List (Events) */}
-            <div className="w-1/3 border-r border-[#E8EEF2] bg-white flex flex-col overflow-hidden">
+            <div className="w-1/3 xl:w-1/4 border-r border-[#E8EEF2] bg-white flex flex-col overflow-hidden">
               <div className="flex-1 overflow-auto divide-y divide-[#E8EEF2]">
                 {technicianEvents.filter(e => statusMap[e.id] !== 'dismissed').length > 0 ? (
                   technicianEvents
@@ -202,7 +202,7 @@ export default function TechnicianHome() {
                         </div>
 
                         <SummaryContent 
-                          patientId={selectedEvent.patient.patientId} 
+                          patientId={String(selectedEvent.patient.patientId)} 
                           isCompact={true} 
                           role="technician" 
                           hideHeader={true} 

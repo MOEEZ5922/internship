@@ -8,7 +8,7 @@ const oaiData = biomarkerData.odi.map((d, i) => ({ day: d.day, value: 4 + Math.c
 
 type BiomarkerType = 'ODI' | 'HRV' | 'SpO2' | 'RVO' | 'OAI' | 'DeepSleep' | 'BP';
 
-export default function PhysicianBiomarkers() {
+export default function UniversalBiomarkers() {
   const [activeChart, setActiveChart] = useState<BiomarkerType>('ODI');
 
   const chartConfigs = {

@@ -90,6 +90,7 @@ export const technicianQueue = [
     assetTracking: { serial: "LND-7742-XP", assetTag: "TAG-991" },
     interventionHistory: [
       { date: "2026-04-18", type: "MAD/HNS Transition Consult", result: "Pending", tech: "Dr. Sarah", code: "SL-REF" },
+      { date: "2026-04-15", type: "Educational Video: Mask Fitting", result: "Success", tech: "Auto-Trigger", code: "ED-VID" },
       { date: "2026-04-12", type: "Remote Pressure Calibration", result: "Success", tech: "AI-System", code: "VK-AUTO" },
       { date: "2026-03-15", type: "Dispatch: AirFit N20 Mask (Nasal)", result: "Failed - Irritation", tech: "J. Mitchell", code: "EX-DISP" },
     ],

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router';
 import { interventionData } from '../../data/mockData';
 import { FileSignature, AlertCircle, Activity, Plus, Package, Phone, Home, Settings } from 'lucide-react';
 
-export default function PhysicianInterventions() {
+export default function UniversalInterventions() {
   const location = useLocation();
   const isTechnician = location.pathname.includes('/technician');
   

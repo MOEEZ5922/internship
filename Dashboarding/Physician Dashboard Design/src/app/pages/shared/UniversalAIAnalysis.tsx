@@ -19,7 +19,7 @@ const clusterColors: Record<string, string> = {
   Dropout:     'bg-[#0A1128]/10 text-[#0A1128] border border-[#0A1128]/30',
 };
 
-export default function PhysicianAIAnalysis() {
+export default function UniversalAIAnalysis() {
   const ai = aiWeeklyState;
 
   const scoreDelta = (ai.compositeRiskScore - ai.previousRiskScore).toFixed(1);

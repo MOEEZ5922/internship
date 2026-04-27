@@ -6,18 +6,18 @@ import PatientLayout from "./layouts/PatientLayout";
 import PhysicianPatientLayout from "./layouts/PhysicianPatientLayout";
 import TechnicianPatientLayout from "./layouts/TechnicianPatientLayout";
 import PhysicianHome from "./pages/physician/Home";
-import PhysicianBiomarkers from "./pages/physician/Biomarkers";
-import PhysicianInterventions from "./pages/physician/Interventions";
+import UniversalBiomarkers from "./pages/shared/UniversalBiomarkers";
+import UniversalInterventions from "./pages/shared/UniversalInterventions";
 import PhysicianSurveys from "./pages/physician/Surveys";
 import PhysicianCPAP from "./pages/physician/CPAP";
 import PhysicianSummary from "./pages/physician/Summary";
 import PhysicianHelp from "./pages/physician/Help";
 import PhysicianDirectory from "./pages/physician/Directory";
-import PhysicianAIAnalysis from "./pages/physician/AIAnalysis";
+import UniversalAIAnalysis from "./pages/shared/UniversalAIAnalysis";
 import TechnicianHome from "./pages/technician/Home";
 import TechnicianSummary from "./pages/technician/Summary";
 import TechnicianCPAP from "./pages/technician/CPAP";
-import TechnicianInterventions from "./pages/technician/Interventions";
+
 import TechnicianSurveys from "./pages/technician/Surveys";
 import TechnicianHelp from "./pages/technician/Help";
 import TechnicianInventory from "./pages/technician/Inventory";
@@ -47,10 +47,10 @@ export const router = createBrowserRouter([
         children: [
           { index: true, Component: PhysicianSummary },
           { path: "trends", Component: PhysicianCPAP },
-          { path: "biomarkers", Component: PhysicianBiomarkers },
-          { path: "interventions", Component: PhysicianInterventions },
+          { path: "biomarkers", Component: UniversalBiomarkers },
+          { path: "interventions", Component: UniversalInterventions },
           { path: "surveys", Component: PhysicianSurveys },
-          { path: "ai-analysis", Component: PhysicianAIAnalysis },
+          { path: "ai-analysis", Component: UniversalAIAnalysis },
         ],
       },
     ],
@@ -69,10 +69,10 @@ export const router = createBrowserRouter([
           { index: true, Component: TechnicianSummary },
           { path: "summary", Component: TechnicianSummary },
           { path: "trends", Component: TechnicianCPAP },
-          { path: "interventions", Component: TechnicianInterventions },
+          { path: "interventions", Component: UniversalInterventions },
           { path: "surveys", Component: TechnicianSurveys },
-          { path: "biomarkers", Component: PhysicianBiomarkers },
-          { path: "ai-analysis", Component: PhysicianAIAnalysis },
+          { path: "biomarkers", Component: UniversalBiomarkers },
+          { path: "ai-analysis", Component: UniversalAIAnalysis },
           { path: "devices", Component: TechnicianDevices },
           { path: "logistics", element: <Navigate to="devices" replace /> },
         ],

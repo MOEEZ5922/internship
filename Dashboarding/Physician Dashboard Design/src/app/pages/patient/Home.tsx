@@ -7,10 +7,13 @@ export default function PatientHome() {
   const [showVideoBanner, setShowVideoBanner] = useState(true);
   const [showMicroSurvey, setShowMicroSurvey] = useState(true);
   const [surveyResponse, setSurveyResponse] = useState<string | null>(null);
+  const [showUrgentModal, setShowUrgentModal] = useState(true);
 
   const lastNightHours = cpapData.usageHistory[cpapData.usageHistory.length - 1]?.hours || 0;
   const percentComplete = (lastNightHours / 8) * 100;
   const weeklyAverage = cpapData.averageHours;
+
+  const surveyProgress = 25; // Example: 2/8 questions complete
 
   return (
     <div className="p-6 space-y-8 max-w-2xl mx-auto pb-32">
@@ -57,10 +60,19 @@ export default function PatientHome() {
               <FileText className="w-7 h-7" />
             </div>
           </div>
-          <p className="text-white/90 mb-6 leading-relaxed">
-            Your clinical team needs this survey to calibrate your therapy. <br/>
-            <span className="font-bold">Due in 3 days.</span>
-          </p>
+          <div className="mb-6">
+            <p className="text-white/90 leading-relaxed mb-3">
+              Your clinical team needs this survey to calibrate your therapy. <br/>
+              <span className="font-bold">Due in 3 days.</span>
+            </p>
+            <div className="flex items-center justify-between text-xs font-semibold text-white/80 mb-1">
+              <span>Progress</span>
+              <span>2/8 Questions</span>
+            </div>
+            <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
+              <div className="bg-white h-full rounded-full transition-all duration-1000" style={{ width: `${surveyProgress}%` }} />
+            </div>
+          </div>
           <Link
             to="/patient/surveys"
             className="flex items-center justify-center gap-3 w-full bg-white text-[#2D9596] py-5 rounded-2xl font-bold hover:bg-[#f0f9f9] transition-all shadow-xl active:scale-98"
@@ -288,6 +300,51 @@ export default function PatientHome() {
           <p className="text-sm font-medium text-[#0A1128]">Get Help</p>
         </Link>
       </div>
+
+      {/* Urgent Video Modal */}
+      {showUrgentModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#0A1128]/40 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-[#E76F51]/10 rounded-full flex items-center justify-center flex-shrink-0 animate-pulse">
+                <AlertCircle className="w-6 h-6 text-[#E76F51]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[#0A1128]">Priority Alert</h3>
+                <p className="text-xs text-[#E76F51] font-bold uppercase tracking-wider">Mask Leak Detected</p>
+              </div>
+            </div>
+            
+            <div className="relative w-full h-40 bg-gray-100 rounded-xl mb-6 overflow-hidden group cursor-pointer">
+              <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=400" alt="Video thumbnail" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                  <Play className="w-5 h-5 text-[#E76F51] ml-1" />
+                </div>
+              </div>
+            </div>
+            
+            <p className="text-sm text-[#5A6B7C] mb-8 leading-relaxed">
+              Your care team assigned a 60-second video on adjusting your headgear to resolve recent leak events.
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => setShowUrgentModal(false)}
+                className="w-full bg-[#E76F51] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#E76F51]/20 hover:bg-[#d6654b] transition-all"
+              >
+                Watch Now (1:00)
+              </button>
+              <button 
+                onClick={() => setShowUrgentModal(false)}
+                className="w-full bg-[#FAFAFA] text-[#5A6B7C] font-bold py-3.5 rounded-xl border border-[#E8EEF2] hover:bg-[#E8EEF2] transition-colors"
+              >
+                Remind Me Later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

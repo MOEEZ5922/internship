@@ -24,7 +24,8 @@ import {
   FileSignature,
   Plus,
   Send,
-  Zap
+  Zap,
+  Video
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -123,14 +124,32 @@ export default function SummaryContent({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-[#E8EEF2] p-5 shadow-sm">
-            <h3 className="text-xs font-bold text-[#0A1128] uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Brain className="w-3.5 h-3.5 text-[#2D9596]" />
-              Behavioral Clustering
-            </h3>
-            <div className="bg-[#FAFAFA] p-4 rounded-xl border border-[#E8EEF2]">
-              <p className="text-[10px] text-[#5A6B7C] font-semibold mb-1">AI Classification</p>
-              <p className="text-lg font-bold text-[#F4A261]">{aiWeeklyState?.clusterAssignment?.current || 'Scanning...'}</p>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white rounded-2xl border border-[#E8EEF2] p-5 shadow-sm">
+              <h3 className="text-xs font-bold text-[#0A1128] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Brain className="w-3.5 h-3.5 text-[#2D9596]" />
+                Behavioral Clustering
+              </h3>
+              <div className="bg-[#FAFAFA] p-4 rounded-xl border border-[#E8EEF2]">
+                <p className="text-[10px] text-[#5A6B7C] font-semibold mb-1">AI Classification</p>
+                <p className="text-lg font-bold text-[#F4A261]">{aiWeeklyState?.clusterAssignment?.current || 'Scanning...'}</p>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-[#E8EEF2] p-5 shadow-sm">
+              <h3 className="text-xs font-bold text-[#0A1128] uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Video className="w-3.5 h-3.5 text-[#2D9596]" />
+                Educational Adherence
+              </h3>
+              <div className="bg-[#FAFAFA] p-4 rounded-xl border border-[#E8EEF2] flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] text-[#5A6B7C] font-semibold mb-1">Video Watchtime</p>
+                  <p className="text-lg font-bold text-[#2D9596]">75% <span className="text-xs font-normal text-[#5A6B7C]">Watched</span></p>
+                </div>
+                <div className="w-10 h-10 rounded-full border-4 border-[#E8EEF2] border-t-[#2D9596] flex items-center justify-center transform rotate-45">
+                   <div className="w-8 h-8 rounded-full border-4 border-white" />
+                </div>
+              </div>
             </div>
           </div>
 
@@ -143,11 +162,13 @@ export default function SummaryContent({
               {(technicianQueue[0]?.interventionHistory || []).slice(0, 3).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-[#E8EEF2] hover:border-[#2D9596]/30 transition-all group">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                    item.type.includes('Educational') ? 'bg-[#2D9596]/10 text-[#2D9596]' :
                     item.result === 'Success' ? 'bg-[#6A994E]/10 text-[#6A994E]' : 
                     item.result === 'Pending' ? 'bg-[#F4A261]/10 text-[#F4A261]' : 
                     'bg-[#E76F51]/10 text-[#E76F51]'
                   }`}>
-                    {item.result === 'Success' ? <CheckCircle className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+                    {item.type.includes('Educational') ? <Video className="w-4 h-4" /> :
+                     item.result === 'Success' ? <CheckCircle className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
