@@ -1,390 +1,351 @@
 # COMPLETE SYSTEM API CONTRACTS: SleepCare Platform
 
-**Date:** April 24, 2026  
-**Version:** 3.0 (FINAL - ALIGNED WITH DB SCHEMA & UI)  
-**Technical Stakeholder:** Siamak  
+**Date:** April 28, 2026  
+**Version:** 4.0 (FINAL - Universal Truth Architecture)  
+**Technical Stakeholder:** Siamak & Backend Engineering Team  
 **Clinical Owner:** Moeez Ahmed
 
 ---
 
-## 1. Global Patient Header API
+## Part 1: Global Entities & Retrieval (GET)
+
+### 1. Patient Summary (Header)
 **Endpoint:** `GET /api/v1/patient/{id}/summary`  
-**Purpose:** Powers the "Patient Cockpit" and header metrics.
-
+**Purpose:** Powers the "Patient Cockpit" and header metrics across all portals.
 ```json
 {
-  "id": "uuid",
   "name": "string",
-  "dob": "ISO-8601",
+  "dob": "YYYY-MM-DD",
   "gender": "enum[M, F, Other]",
+  "therapyStartDate": "YYYY-MM-DD",
+  "riskScore": "float", // Scale: 0-100 (Do not use 0-1 probability here)
+  "therapyStatus": "string",
   "address": "string",
-  "tenant_id": "string",
-  "therapy_status": "string",
-  "therapy_start_date": "ISO-8601",
-  "phase": "enum[Titration, Acclimation, Maintenance]",
-  "risk_score": "float",
-  "risk_tier": "enum[Low, Medium, High, Critical]",
-  "hardware": {
-    "device_brand": "enum[Philips, ResMed, Sefam, Löwenstein]",
-    "device_model": "string",
-    "serial_number": "string",
-    "mask_interface": "string", // UI maps this to 'maskType'
-    "last_modem_call": "ISO-8601"
-  }
+  "machineSerial": "string",
+  "maskType": "string"
 }
 ```
 
----
-
-## 2. Unified CPAP Trends API
-**Endpoint:** `GET /api/v1/patient/{id}/trends/cpap`  
-**Purpose:** Powers the "Trends" tab. Aggregated CPAP clinical data AND 30/60/90-day time-series arrays for UI charts.
-
-```json
-{
-  "reference_date": "ISO-8601",
-  "compliance_streak_days": "int",
-  "usage": {
-    "total_hours": "float",
-    "effective_hours": "float",
-    "mask_on_off_events": "int"
-  },
-  "clinical": {
-    "ahi": "float",
-    "ai_total": "float",
-    "ai_central": "float",
-    "hi_total": "float",
-    "chi_sefam": "float",
-    "oai": "float",
-    "rera": "float",
-    "csr_percent": "float"
-  },
-  "leak_profile": {
-    "p95": "float",
-    "p90": "float",
-    "p0": "float",
-    "large_leak_percent": "float"
-  },
-  "pressure": {
-    "p90": "float",
-    "p0": "float",
-    "mode": "enum[CPAP, APAP, BiLevel]",
-    "min_setting": "float",
-    "max_setting": "float",
-    "current_setting": "float"
-  },
-  "source": {
-    "platform": "enum[LMD, AirView, CareOrchestrator, prismaCloud]",
-    "upload_method": "enum[Modem, SD, Bluetooth]",
-    "receipt_timestamp": "ISO-8601"
-  },
-  "time_series": [
-    {
-      "date": "ISO-8601", // Maps to Siamak's db_cpap.reference_date
-      "usage_hours": "float",
-      "ahi": "float",
-      "ai_central": "float",
-      "oai": "float"
-    }
-  ]
-}
-```
-
----
-
-## 3. Normalized Clinical Biomarkers API
-**Endpoint:** `GET /api/v1/patient/{id}/biomarkers`  
-**Purpose:** Powers the Dynamic Biomarker Monitoring tab. Unified view across all sensors, returning both current averages and a 30-day historical array for charting.
-
-```json
-{
-  "timestamp": "ISO-8601",
-  "analysis_status": "enum[Done, Warning, Partial]",
-  "current_metrics": {
-    "odi": { "value": "float", "source": "string", "status": "enum[Optimal, Moderate, Elevated]" },
-    "hrv": { "value": "float", "unit": "ms", "source": "string" },
-    "spo2": { "mean": "float", "nadir": "float", "source": "string" },
-    "rvo": { "value": "float", "source": "string" }, // Respiratory Effort Variability (Hexoskin)
-    "sleep_architecture": {
-      "deep_sleep_duration_min": "float", 
-      "rem_duration_min": "float",
-      "efficiency_percent": "float",
-      "source": "string" 
-    },
-    "cardiovascular": {
-      "systolic_bp": "float",
-      "diastolic_bp": "float",
-      "heart_rate_avg": "float",
-      "source": "string"
-    }
-  },
-  "historical_series": [
-    {
-      "date": "ISO-8601", // Siamak's night_date / timestamp
-      "odi": "float",
-      "hrv": "float",
-      "spo2_mean": "float",
-      "spo2_nadir": "float",
-      "rvo": "float",
-      "oai": "float",
-      "deep_sleep_duration_min": "float",
-      "systolic_bp": "float",
-      "diastolic_bp": "float"
-    }
-  ]
-}
-```
-
----
-
-## 4. Weekly Clinical Analysis (Feature Store)
-**Endpoint:** `GET /api/v1/patient/{id}/analysis/weekly`  
-**Purpose:** Powers the "AI Analysis" tab. Derived features, risk models, and prescriptive actions.
-
-```json
-{
-  "week_start_date": "ISO-8601",
-  "week_end_date": "ISO-8601",
-  "risk_model_output": {
-    "composite_risk": "float",
-    "previous_risk": "float",
-    "confidence_score": "float",
-    "risk_horizon_days": "int",
-    "risk_tier": "enum[Critical, High, Medium, Low]",
-    "phase_label": "string"
-  },
-  "cluster_assignment": {
-    "current": "enum[Adherent, Attempting, Struggling, Dropout]",
-    "previous": "string",
-    "changed_this_week": "boolean",
-    "description": "text"
-  },
-  "risk_factor_breakdown": [
-    {
-      "factor": "string", // e.g. "Usage Decay"
-      "contribution_percent": "float",
-      "direction": "enum[worsening, improving, stable]"
-    }
-  ],
-  "seven_day_rolling": [
-    {
-      "day": "ISO-8601",
-      "usage_hours": "float",
-      "leak_rate": "float",
-      "ahi": "float"
-    }
-  ],
-  "next_best_action": {
-    "type": "string",
-    "delivery_mode": "string",
-    "rationale": "text",
-    "reassessment_window": "string"
-  },
-  "completeness_status": "enum[Complete, Partial, Insufficient]"
-}
-```
-
----
-
-## 5. Universal Truth Intervention Log
-**Endpoint:** `GET /api/v1/patient/{id}/interventions`  
-**Purpose:** Audit-ready chronological log of all platform actions.
-
-```json
-{
-  "id": "uuid",
-  "timestamp": "ISO-8601",
-  "type": "string",
-  "job_code": "enum[EX-DISP, VK-AUTO, SL-REF, MD-CONSULT]",
-  "actor": {
-    "id": "string",
-    "name": "string",
-    "role": "enum[Physician, Technician, AI-System]"
-  },
-  "outcome": "string",
-  "notes": "text",
-  "signature_hash": "string" 
-}
-```
-
----
-
-## 6. Surveys & PROM History
-**Endpoint:** `GET /api/v1/patient/{id}/surveys`  
-**Purpose:** Powers clinical scoring and persistence timeline.
-
-```json
-{
-  "survey_id": "uuid",
-  "name": "string", // ESS, PSQI, ISI, BDI, SF-36
-  "category": "enum[Clinical, Operational, Monitoring]",
-  "execution_date": "ISO-8601",
-  "status": "enum[Invited, Reminder_1, SMS_Final, Delinquent, Completed]",
-  "score": "float", // UI expects 'score' instead of 'score_value'
-  "threshold": "float",
-  "risk": "enum[Normal, Elevated, Moderate, High]", // UI uses 'risk' instead of 'severity_label'
-  "structured_answers": [
-    { "question_id": "string", "answer": "text" }
-  ]
-}
-```
-
----
-
-## 7. Physician Exception Inbox & Queue
+### 2. Physician Exception Inbox
 **Endpoint:** `GET /api/v1/physician/queue`  
 **Purpose:** Powers the Physician's Home tab lists (Urgent AI escalations & Annual Reviews).
-
 ```json
 {
   "urgent": [
     {
-      "id": "uuid",
-      "patient_name": "string",
-      "risk_score": "float",
+      "id": "number",
+      "patientName": "string",
+      "riskScore": "float",
       "reason": "string",
       "category": "string",
-      "days_active": "int",
-      "last_review": "ISO-8601"
+      "lastReview": "YYYY-MM-DD",
+      "daysActive": "int"
     }
   ],
-  "annual_reviews": [
+  "annualReviews": [
     {
-      "id": "uuid",
-      "patient_name": "string",
-      "risk_score": "float",
-      "therapy_start": "ISO-8601",
-      "days_until_due": "int",
+      "id": "number",
+      "patientName": "string",
+      "riskScore": "float",
+      "therapyStart": "YYYY-MM-DD",
+      "daysUntilDue": "int",
       "status": "enum[Due Soon, Overdue]"
     }
   ]
 }
 ```
 
----
+### 3. Technician Priority Queue
+**Endpoint:** `GET /api/v1/technician/queue`  
+**Purpose:** Powers the Technician's unified list of patients sorted by proactive dropout prevention.
+```json
+[
+  {
+    "id": "number",
+    "patientName": "string",
+    "dropoutRisk": "float",
+    "usageHours": "float",
+    "usageCategory": "string",
+    "postalCode": "string",
+    "lastContact": "YYYY-MM-DD",
+    "action": "string",
+    "behavioralCluster": "string",
+    "phase": "string",
+    "maskType": "string",
+    "lastMaskChange": "YYYY-MM-DD",
+    "equipmentNeed": ["string"],
+    "leakProfile": { "p50": "float", "p95": "float", "max": "float" },
+    "assetTracking": { "serial": "string", "assetTag": "string" },
+    "interventionHistory": [
+      { "date": "YYYY-MM-DD", "type": "string", "result": "string", "tech": "string", "code": "string" }
+    ],
+    "monitoringSurveys": [
+      { "id": "string", "question": "string", "answer": "string", "author": "string", "role": "string", "date": "YYYY-MM-DD" }
+    ],
+    "biomarkers": {
+      "ahi": { "current": "float", "baseline": "float" },
+      "spo2": { "mean": "float", "nadir": "float" },
+      "odi": "float",
+      "hrv": "float",
+      "oai": "float"
+    }
+  }
+]
+```
 
-## 8. Technician Triage & Reactive Alerts
-**Endpoint:** `GET /api/v1/technician/triage/events`  
-**Purpose:** Powers the "Priority Inbox" for technicians.
+### 4. Technician Event-Based Inbox
+**Endpoint:** `GET /api/v1/technician/events`  
+**Purpose:** Powers reactive triage for Mechanical/Self-Reported Triggers.
+```json
+[
+  {
+    "id": "number",
+    "type": "string",
+    "severity": "enum[critical, high, medium, low]",
+    "detectedAt": "ISO-8601",
+    "patient": {
+      "name": "string",
+      "patientId": "number",
+      "address": "string",
+      "phone": "string",
+      "maskType": "string"
+    },
+    "evidence": "string",
+    "aiNote": "string",
+    "suggestedAction": "string",
+    "status": "enum[pending, resolved, dismissed]"
+  }
+]
+```
 
+### 5. Unified CPAP Trends
+**Endpoint:** `GET /api/v1/patient/{id}/trends/cpap`  
+**Purpose:** Powers the CPAP Trends tab. *Note: Central Apnea has been explicitly removed.*
 ```json
 {
-  "event_id": "uuid",
-  "patient_id": "uuid",
-  "severity": "enum[Critical, High, Medium]",
-  "type": "enum[Self-Report, Mechanical Spike, Adherence Drop]",
-  "detected_at": "ISO-8601",
-  "evidence_summary": "text",
-  "status": "enum[Pending, In-Progress, Resolved, Dismissed]",
-  "ai_note": "text",
-  "suggested_action": "text"
+  "currentAHI": "float",
+  "percentileLeak": "float",
+  "averageHours": "float",
+  "lastMaskChange": "YYYY-MM-DD",
+  "currentMask": "string",
+  "jobCode": "string",
+  "pressureSettings": { "min": "float", "max": "float", "current": "float" },
+  "usageHistory": [
+    { "date": "YYYY-MM-DD", "hours": "float", "ahi": "float" }
+  ],
+  "thirtyDayTrend": [
+    { "day": "number", "ahi": "float" }
+  ],
+  "streak": "int"
 }
 ```
 
-**Endpoint:** `POST /api/v1/technician/triage/action`  
-**Purpose:** Submits the technician's validation or rejection of an AI-detected event.
-
+### 6. Universal Biomarkers
+**Endpoint:** `GET /api/v1/patient/{id}/biomarkers`  
+**Purpose:** Powers the multi-sensor physiological tab.
 ```json
 {
-  "event_id": "uuid",
+  "sleepQuality": "float",
+  "restfulness": "string",
+  "odi": [{ "day": "number", "value": "float" }],
+  "hrv": [{ "day": "number", "value": "float" }],
+  "spo2": [{ "day": "number", "value": "float" }],
+  "deepSleep": [{ "day": "number", "value": "float" }],
+  "bp": [{ "day": "number", "systolic": "float", "diastolic": "float" }],
+  "status": { "vitals": "string", "general": "string" }
+}
+```
+
+### 6.1 Biomarker Devices (Hardware Management)
+**Endpoint:** `GET /api/v1/patient/{id}/devices`  
+**Purpose:** Powers the Technician's "Biomarker Devices" tab and Patient "Equipment" tab, tracking hardware health, battery, and sync status for Hexoskin, Masimo, Somno-Art, and Withings.
+```json
+[
+  {
+    "id": "string", // e.g., "HEXO-092"
+    "name": "enum[Hexoskin Smart Shirt, Masimo MightySat Rx, Somno-Art Band, Withings BPM Core, Withings ScanWatch]",
+    "type": "string",
+    "status": "enum[Online, Offline, Disconnected]",
+    "battery": "string", // e.g. "82%"
+    "lastSync": "string", // e.g. "12 mins ago"
+    "assigned": "string" // e.g. "Jan 12, 2025"
+  }
+]
+```
+
+### 7. Universal Interventions
+**Endpoint:** `GET /api/v1/patient/{id}/interventions`  
+**Purpose:** Powers the shared intervention timeline.
+```json
+{
+  "physician": { "availableTherapies": ["string"] },
+  "technician": {
+    "tasks": [
+      { "id": "number", "status": "string", "item": "string", "priority": "string", "scheduledDate": "YYYY-MM-DD" }
+    ]
+  },
+  "patient": {
+    "upcomingDelivery": {
+      "item": "string",
+      "status": "string",
+      "estimatedArrival": "YYYY-MM-DD",
+      "steps": [{ "label": "string", "completed": "boolean" }]
+    }
+  }
+}
+```
+
+### 8. Universal Surveys
+**Endpoint:** `GET /api/v1/patient/{id}/surveys`  
+**Purpose:** Powers the unified Medical + Operational logs view.
+```json
+{
+  "physician": [
+    { "id": "number", "name": "string", "dateTaken": "YYYY-MM-DD", "score": "float", "threshold": "float", "risk": "string" }
+  ],
+  "technician": [
+    { "id": "number", "name": "string", "type": "string", "lastCompleted": "YYYY-MM-DD" }
+  ],
+  "patient": {
+    "next": {
+      "name": "string",
+      "dueDate": "YYYY-MM-DD",
+      "questions": "int",
+      "persistence": { "lastReminder": "string", "status": "string", "automationActive": "boolean", "daysOverdue": "int" }
+    },
+    "history": [{ "name": "string", "completed": "YYYY-MM-DD", "score": "string" }]
+  }
+}
+```
+
+### 9. AI Weekly State
+**Endpoint:** `GET /api/v1/patient/{id}/analysis/weekly`  
+**Purpose:** Powers the Physician's deep-dive AI view.
+```json
+{
+  "weekOf": "YYYY-MM-DD",
+  "compositeRiskScore": "float",
+  "previousRiskScore": "float",
+  "riskTier": "string",
+  "phaseLabel": "string",
+  "confidenceLevel": "float",
+  "daysToPredictedDropout": "int",
+  "clusterAssignment": { "current": "string", "previous": "string", "changedThisWeek": "boolean", "description": "string" },
+  "sevenDayRolling": [
+    { "day": "string", "usageHours": "float", "leakRate": "float", "ahi": "float" }
+  ],
+  "riskFactorBreakdown": [
+    { "factor": "string", "contribution": "float", "direction": "enum[worsening, improving, stable]" }
+  ],
+  "activeFlags": [
+    { "label": "string", "severity": "string" }
+  ],
+  "nextBestAction": { "type": "string", "deliveryMode": "string", "rationale": "string", "reassessmentWindow": "string" }
+}
+```
+
+### 10. Educational Video Interventions
+**Endpoint:** `GET /api/v1/patient/{id}/videos`  
+**Purpose:** Tracks video adherence as a form of clinical intervention.
+```json
+{
+  "physician": [{ "id": "number", "title": "string", "duration": "string", "category": "string", "thumbnail": "string" }],
+  "technician": [{ "id": "number", "title": "string", "duration": "string", "category": "string", "thumbnail": "string" }],
+  "patient": [{ "id": "number", "title": "string", "duration": "string", "category": "string", "triggerReason": "string", "relevance": "string", "watched": "boolean", "rating": "float|null" }]
+}
+```
+
+---
+
+## Part 3: System Mutators (POST)
+
+### 11. Technician AI Event Triage
+**Endpoint:** `POST /api/v1/technician/events/{event_id}/triage`  
+**Purpose:** Technician validates or dismisses an AI-flagged anomaly.
+```json
+{
   "action": "enum[VALIDATE, DISMISS]",
   "technician_id": "string",
   "notes": "string",
-  "reason_code": "string", // Required if action is DISMISS (e.g. "FALSE_POSITIVE", "DATA_ANOMALY")
+  "reason_code": "string", // Required if action = DISMISS (e.g., 'FALSE_POSITIVE')
   "timestamp": "ISO-8601"
 }
 ```
 
----
-
-## 9. Technician's Unified Queue
-**Endpoint:** `GET /api/v1/technician/queue`  
-**Purpose:** Powers the Technician's unified list of patients sorted by risk and usage.
-
-```json
-[
-  {
-    "patient_id": "uuid",
-    "patient_name": "string",
-    "dropout_risk": "float",
-    "usage_hours": "float",
-    "usage_category": "enum[<2 hrs, 2-4 hrs, 4+ hrs]",
-    "postal_code": "string",
-    "last_contact": "ISO-8601",
-    "required_action": "string"
-  }
-]
-```
-
----
-
-## 10. Clinical Orders & Authorization Status
-**Endpoint:** `GET /api/v1/patient/{id}/authorizations`  
-**Purpose:** Tracks clinical transitions (MAD/HNS) and Digital Clinical Seals.
-
+### 12. Submit Operational Monitoring Log
+**Endpoint:** `POST /api/v1/patient/{id}/surveys/monitoring`  
+**Purpose:** Technician logging a Mask Fit, Hardware Integrity, or Cleaning Review.
 ```json
 {
-  "auth_id": "uuid",
-  "type": "enum[MAD, HNS, CPAP_MOD]",
-  "status": "enum[Pending_Review, Approved, Denied, Signed]",
-  "physician_id": "string",
-  "digital_seal": {
-    "seal_hash": "string",
-    "visual_id": "string",
-    "certified_on": "ISO-8601"
-  }
+  "form_type": "string", // e.g., 'Mask Comfort & Fit Check'
+  "notes": "string", // The qualitative observation
+  "technician_id": "string",
+  "timestamp": "ISO-8601"
 }
 ```
 
----
-
-## 11. Biomarker Devices (Hardware Management)
-**Endpoint:** `GET /api/v1/patient/{id}/devices`  
-**Purpose:** Powers the Technician's "Biomarker Devices" tab, tracking hardware health, battery, and sync status for Hexoskin, Masimo, Somno-Art, and Withings.
-
+### 13. Create New Intervention
+**Endpoint:** `POST /api/v1/patient/{id}/interventions`  
+**Purpose:** Both Physicians and Technicians dispatching an action.
 ```json
-[
-  {
-    "device_id": "string", // e.g., "HEXO-092"
-    "name": "enum[Hexoskin Smart Shirt, Masimo MightySat Rx, Somno-Art Band, Withings BPM Core, Withings ScanWatch]",
-    "type": "string",
-    "status": "enum[Online, Offline, Disconnected]",
-    "battery_percentage": "int",
-    "last_sync": "ISO-8601",
-    "assigned_date": "ISO-8601"
-  }
-]
+{
+  "type": "string", 
+  "job_code": "string", // e.g., 'EX-DISP', 'SL-REF'
+  "actor": {
+    "role": "enum[Physician, Technician]",
+    "id": "string"
+  },
+  "outcome": "string",
+  "notes": "string",
+  "signature_hash": "string"
+}
 ```
 
----
+### 14. Authorize Clinical Pathway
+**Endpoint:** `POST /api/v1/patient/{id}/authorizations`  
+**Purpose:** Physician applying digital seal to authorize a transition (e.g., MAD/HNS).
+```json
+{
+  "type": "enum[MAD, HNS, CPAP_MOD]",
+  "status": "enum[Approved, Denied]",
+  "physician_id": "string",
+  "digital_seal_hash": "string",
+  "timestamp": "ISO-8601"
+}
+```
 
-## 12. Source-Specific Audit Records (Backend Storage)
-Siamak's backend must preserve these structures for full auditability, aligning with the `v1.xlsx` schema:
+### 15. Track Video Engagement
+**Endpoint:** `POST /api/v1/patient/{id}/videos/{video_id}/interaction`  
+**Purpose:** Patient marking a video as watched/rated for compliance tracking.
+```json
+{
+  "watched": "boolean",
+  "rating": "int", // 1-5 scale
+  "watch_duration_seconds": "int",
+  "timestamp": "ISO-8601"
+}
+```
 
-### 12.1 Hexoskin Record (`db_hexoskin`)
-*   `heart_rate`, `hrv`, `breathing_rate`, `tidal_volume`, `minute_ventilation`, `accelerometer_activity`. (RVO should be derived here if possible).
+### 16. Submit Medical Survey
+**Endpoint:** `POST /api/v1/patient/{id}/surveys/{survey_id}/submit`  
+**Purpose:** Patient submitting a standardized medical survey (ESS, PSQI, etc.).
+```json
+{
+  "answers": [
+    { "question_id": "string", "value": "string" }
+  ],
+  "completion_time_seconds": "int",
+  "timestamp": "ISO-8601"
+}
+```
 
-### 12.2 Somno-Art Record (`db_somnoart`)
-*   `tst`, `sleep_efficiency`, `waso`, `sleep_latency`, `rem_latency`, `n1_n2_duration`, `n3_duration`, `rem_duration`.
-
-### 12.3 Masimo Record (`db_masimo`)
-*   `spo2`, `pulse_rate`, `perfusion_index`, `respiration_rate`, `pleth_variability_index`, `siq_flag`.
-
-### 12.4 Withings Record (`db_withings`)
-*   `systolic_bp`, `diastolic_bp`, `afib_result`, `pulse_wave_velocity`, `step_count`, `sleep_score`.
-
----
-
-## 13. Technical / Data Integrity Requirements
-For every record, Siamak must ensure:
-1.  **`raw_payload` (JSONB):** Complete manufacturer JSON stored for re-analysis.
-2.  **`source_platform`:** Traceability (e.g. "Hexoskin OneAPI", "Withings Public API").
-3.  **`created_at` / `updated_at`:** Standard database metadata.
-4.  **`missingness_flag` (JSONB):** Critical for `patient_week` layers to track which sensors were offline.
-
----
-
-## 14. Global Formatting Rules
-1.  **Dates:** All timestamps MUST be ISO-8601 (UTC). Time-series `date` fields should map cleanly to DB `reference_date` / `night_date`.
-2.  **Units:** Pressures: `cmH2O`, Leaks: `L/min`, Durations: `minutes`, Biomarkers: `mmHg/ms/bpm/%`.
-3.  **Nulls:** Use `null` for missing clinical metrics; use `[]` for empty lists.
+### 17. Submit Support Ticket
+**Endpoint:** `POST /api/v1/patient/{id}/support/ticket`  
+**Purpose:** Patient reporting an issue (e.g., mask leak, machine noise) via the Help tab.
+```json
+{
+  "issue_type": "enum[mask_leak, mask_discomfort, machine_noise, dry_nose, pressure_issue, other]",
+  "details": "string",
+  "timestamp": "ISO-8601"
+}
+```

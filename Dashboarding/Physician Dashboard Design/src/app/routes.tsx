@@ -8,7 +8,7 @@ import TechnicianPatientLayout from "./layouts/TechnicianPatientLayout";
 import PhysicianHome from "./pages/physician/Home";
 import UniversalBiomarkers from "./pages/shared/UniversalBiomarkers";
 import UniversalInterventions from "./pages/shared/UniversalInterventions";
-import PhysicianSurveys from "./pages/physician/Surveys";
+import UniversalSurveys from "./pages/shared/UniversalSurveys";
 import PhysicianCPAP from "./pages/physician/CPAP";
 import PhysicianSummary from "./pages/physician/Summary";
 import PhysicianHelp from "./pages/physician/Help";
@@ -18,7 +18,7 @@ import TechnicianHome from "./pages/technician/Home";
 import TechnicianSummary from "./pages/technician/Summary";
 import TechnicianCPAP from "./pages/technician/CPAP";
 
-import TechnicianSurveys from "./pages/technician/Surveys";
+
 import TechnicianHelp from "./pages/technician/Help";
 import TechnicianInventory from "./pages/technician/Inventory";
 import TechnicianDevices from "./pages/technician/Devices";
@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
           { path: "trends", Component: PhysicianCPAP },
           { path: "biomarkers", Component: UniversalBiomarkers },
           { path: "interventions", Component: UniversalInterventions },
-          { path: "surveys", Component: PhysicianSurveys },
+          { path: "surveys", Component: UniversalSurveys },
           { path: "ai-analysis", Component: UniversalAIAnalysis },
         ],
       },
@@ -70,7 +70,7 @@ export const router = createBrowserRouter([
           { path: "summary", Component: TechnicianSummary },
           { path: "trends", Component: TechnicianCPAP },
           { path: "interventions", Component: UniversalInterventions },
-          { path: "surveys", Component: TechnicianSurveys },
+          { path: "surveys", Component: UniversalSurveys },
           { path: "biomarkers", Component: UniversalBiomarkers },
           { path: "ai-analysis", Component: UniversalAIAnalysis },
           { path: "devices", Component: TechnicianDevices },

@@ -26,7 +26,7 @@ export const physicianQueue = {
       id: 2,
       patientName: "Robert Chen",
       riskScore: 92,
-      reason: "Central apneas increasing (>60% of events)",
+      reason: "AHI spike: 15.2 (↑30% from baseline)",
       category: "Complex AHI",
       lastReview: "2026-03-10",
       daysActive: 5,
@@ -251,8 +251,6 @@ export const cpapData = {
   thirtyDayTrend: Array.from({ length: 30 }, (_, i) => ({
     day: i + 1,
     ahi: 3 + Math.random() * 4,
-    central: 1 + Math.random() * 2,
-    obstructive: 2 + Math.random() * 2,
   })),
   streak: 4,
 };
@@ -404,7 +402,7 @@ export const aiData = {
       "AHI trending upward over past 2 weeks (+15% increase)",
       "Mask leak events increased by 23% this week",
       "Patient compliance remains strong (>6 hrs/night)",
-      "SpO2 desaturation events correlate with increased central apneas",
+      "SpO2 desaturation events correlate with increased residual AHI variance",
     ],
   },
   technician: {

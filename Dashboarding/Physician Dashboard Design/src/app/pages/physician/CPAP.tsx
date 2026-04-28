@@ -5,7 +5,7 @@ import { TrendingDown, Activity, Wind } from 'lucide-react';
 
 export default function PhysicianCPAP() {
   const [chartPeriod, setChartPeriod] = useState<'30' | '60' | '90'>('30');
-  const [showApneaTypes, setShowApneaTypes] = useState(false);
+
 
   return (
     <div className="p-8 space-y-6">
@@ -106,15 +106,7 @@ export default function PhysicianCPAP() {
                 90 Days
               </button>
             </div>
-            <button
-              onClick={() => setShowApneaTypes(!showApneaTypes)}
-              className={`px-4 py-2 rounded-lg text-sm transition-colors ${showApneaTypes
-                  ? 'bg-[#F4A261] text-white'
-                  : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#F4A261]/10'
-                }`}
-            >
-              {showApneaTypes ? 'Show Total AHI' : 'Show Central vs. Obstructive'}
-            </button>
+
           </div>
         </div>
 
@@ -138,35 +130,14 @@ export default function PhysicianCPAP() {
               }}
             />
             <Legend />
-            {!showApneaTypes ? (
-              <Line
-                type="monotone"
-                dataKey="ahi"
-                stroke="#2D9596"
-                strokeWidth={2}
-                dot={{ fill: '#2D9596', r: 4 }}
-                name="AHI"
-              />
-            ) : (
-              <>
-                <Line
-                  type="monotone"
-                  dataKey="central"
-                  stroke="#F4A261"
-                  strokeWidth={2}
-                  dot={{ fill: '#F4A261', r: 4 }}
-                  name="Central Apneas"
-                />
-                <Line
-                  type="monotone"
-                  dataKey="obstructive"
-                  stroke="#E76F51"
-                  strokeWidth={2}
-                  dot={{ fill: '#E76F51', r: 4 }}
-                  name="Obstructive Apneas"
-                />
-              </>
-            )}
+            <Line
+              type="monotone"
+              dataKey="ahi"
+              stroke="#2D9596"
+              strokeWidth={2}
+              dot={{ fill: '#2D9596', r: 4 }}
+              name="AHI"
+            />
           </LineChart>
         </ResponsiveContainer>
 

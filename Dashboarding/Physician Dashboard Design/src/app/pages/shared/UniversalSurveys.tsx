@@ -5,11 +5,28 @@ import { technicianQueue } from '../../data/mockData';
 
 type SurveyType = 'PSQI' | 'ISI' | 'ESS' | 'FSS' | 'SF-36' | 'BDI';
 
-export default function UnifiedSurveys() {
+export default function UniversalSurveys() {
   const location = useLocation();
   const isTechnician = location.pathname.includes('/technician');
   
   const [activeSurvey, setActiveSurvey] = useState<SurveyType>('ESS');
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [selectedForm, setSelectedForm] = useState('');
+  const [formNote, setFormNote] = useState('');
+
+  const availableForms = [
+    { id: 'comfort', name: 'Mask Comfort & Fit Check', type: 'Behavioral' },
+    { id: 'hardware', name: 'Hardware Integrity Log', type: 'Technical' },
+    { id: 'cleaning', name: 'Hygiene & Maintenance Review', type: 'Operational' },
+    { id: 'env', name: 'Environment & Setup Audit', type: 'Technical' }
+  ];
+
+  const handleFormSubmit = () => {
+    alert(`Monitoring Form Logged & Synced:\n\nForm: ${selectedForm}\nNote: ${formNote}`);
+    setShowFormModal(false);
+    setSelectedForm('');
+    setFormNote('');
+  };
 
   const surveyDatabase = {
     ESS: {
@@ -135,7 +152,7 @@ export default function UnifiedSurveys() {
          {isTechnician && (
             <button 
                className="bg-[#F4A261] text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:bg-[#e39350] transition-all flex items-center gap-2"
-               onClick={() => alert('Opening Operational Monitoring Form...')}
+               onClick={() => setShowFormModal(true)}
             >
                <Plus className="w-5 h-5" /> Start New Observation
             </button>
@@ -147,7 +164,7 @@ export default function UnifiedSurveys() {
         <div className="p-6 border-b border-[#E8EEF2] bg-[#FAFAFA]">
           <div className="flex items-center justify-between mb-4">
              <label className="text-sm font-bold text-[#0A1128] uppercase tracking-widest">
-               Select Standardized Milestone
+                Select Standardized Milestone
              </label>
              <span className="text-[10px] bg-[#6A994E] text-white px-2 py-0.5 rounded font-bold uppercase">Clinical Gateway</span>
           </div>
@@ -281,6 +298,50 @@ export default function UnifiedSurveys() {
            )}
         </div>
       </div>
+
+      {/* Form Modal (Technician Only) */}
+      {showFormModal && (
+        <div className="fixed inset-0 bg-[#0A1128]/60 flex items-center justify-center z-50 animate-in fade-in duration-200 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-xl w-full animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-[#F4A261]/10 rounded-lg flex items-center justify-center">
+                <Plus className="w-6 h-6 text-[#F4A261]" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-[#0A1128]">New Monitoring Form</h3>
+                <p className="text-xs text-[#5A6B7C] uppercase font-bold tracking-tighter">Operational Field Log</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-8">
+              <label className="block text-xs font-bold text-[#5A6B7C] uppercase tracking-widest">Select Form Type</label>
+              <select 
+                value={selectedForm}
+                onChange={(e) => setSelectedForm(e.target.value)}
+                className="w-full bg-[#FAFAFA] border-2 border-[#E8EEF2] rounded-xl p-4 text-sm font-bold text-[#0A1128] focus:border-[#F4A261] outline-none"
+              >
+                <option value="">Choose a monitoring form...</option>
+                {availableForms.map(f => <option key={f.id} value={f.name}>{f.name}</option>)}
+              </select>
+
+              <label className="block text-xs font-bold text-[#5A6B7C] uppercase tracking-widest mt-6">Observations / Patient Feedback</label>
+              <textarea 
+                value={formNote}
+                onChange={(e) => setFormNote(e.target.value)}
+                placeholder="Log the patient's specific feedback or technical observations..."
+                className="w-full h-32 bg-[#FAFAFA] border-2 border-[#E8EEF2] rounded-xl p-4 text-sm focus:border-[#F4A261] outline-none"
+              />
+            </div>
+
+            <div className="flex gap-4">
+              <button onClick={() => setShowFormModal(false)} className="flex-1 py-4 bg-[#E8EEF2] text-[#5A6B7C] font-bold rounded-xl active:scale-95 transition-transform">Cancel</button>
+              <button onClick={handleFormSubmit} disabled={!selectedForm || !formNote} className="flex-2 py-4 bg-[#F4A261] text-white font-bold rounded-xl shadow-lg shadow-[#F4A261]/20 disabled:opacity-40 active:scale-95 transition-transform">
+                Log Form & Sync
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
