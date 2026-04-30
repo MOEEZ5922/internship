@@ -1,53 +1,86 @@
-import { cpapData, interventionData, surveyData } from '../../data/mockData';
-import { Moon, Flame, ChevronRight, Package, FileText, Sparkles, Video, HelpCircle, X, AlertCircle, Play } from 'lucide-react';
-import { useState } from 'react';
-import { Link } from 'react-router';
+import React, { useState } from 'react';
+import { Moon, Flame, ChevronRight, Package, FileText, Sparkles, Video, HelpCircle, X, AlertCircle, Play, Signal, Loader2 } from 'lucide-react';
+import { Link, useParams } from 'react-router';
+import { useApi } from '../../hooks/useApi';
+import { fetchPatientSummary, fetchCpapTrends, fetchSurveys, submitSurveyResponse } from '../../data/api';
 
 export default function PatientHome() {
+  const { id } = useParams();
+  const { data: summary, error: summaryError } = useApi(() => fetchPatientSummary(id || '1'), {
+    dependencies: [id]
+  });
+  const { data: cpapTrends, error: cpapError } = useApi(() => fetchCpapTrends(id || '1', 7), {
+    dependencies: [id]
+  });
+  const { data: surveyData, error: surveyError } = useApi(() => fetchSurveys(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !summaryError && !!summary;
+  
   const [showVideoBanner, setShowVideoBanner] = useState(true);
   const [showMicroSurvey, setShowMicroSurvey] = useState(true);
   const [surveyResponse, setSurveyResponse] = useState<string | null>(null);
   const [showUrgentModal, setShowUrgentModal] = useState(true);
 
-  const lastNightHours = cpapData.usageHistory[cpapData.usageHistory.length - 1]?.hours || 0;
-  const percentComplete = (lastNightHours / 8) * 100;
-  const weeklyAverage = cpapData.averageHours;
+  // Derive data from CPAP trends API
+  const usageHistory = cpapTrends?.usageHistory || [];
+  const lastNightHours = usageHistory.length > 0 ? usageHistory[usageHistory.length - 1]?.hours || 0 : 0;
+  const percentComplete = Math.min((lastNightHours / 8) * 100, 100);
+  const weeklyAverage = cpapTrends?.averageHours || 0;
+  const streak = cpapTrends?.streak || 0;
 
-  const surveyProgress = 25; // Example: 2/8 questions complete
+  // Derive survey info from API
+  const nextSurvey = surveyData?.patient?.next;
+  const surveyDueDate = nextSurvey?.dueDate ? new Date(nextSurvey.dueDate) : null;
+  const surveyDaysLeft = surveyDueDate ? Math.max(0, Math.ceil((surveyDueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0;
+  const surveyName = nextSurvey?.name || 'Health Survey';
+  const surveyQuestions = nextSurvey?.questions || 8;
+  const surveyProgress = 0; // Will come from a future API field
 
   return (
     <div className="p-6 space-y-8 max-w-2xl mx-auto pb-32">
+      <div className="flex justify-between items-center px-2">
+        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest">Ready for Action</h2>
+        {isLive && (
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+            <Signal className="w-3 h-3 text-[#6A994E]" />
+            <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+          </div>
+        )}
+      </div>
+        
       {/* 2-Minute Objective: Action Center */}
       <div className="space-y-4">
-        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest px-2">Ready for Action</h2>
-        
-        {/* Persistent AI Trigger (Non-dismissible for completeness) */}
-        <div className="bg-[#0A1128] text-white rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border-2 border-white/10">
-          <div className="flex items-start gap-6">
-            <div className="w-16 h-16 bg-[#E76F51]/20 rounded-[1.25rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer shadow-lg">
-              <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=150" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all scale-110 group-hover:scale-100" />
-              <div className="absolute inset-0 bg-[#E76F51]/20 group-hover:bg-transparent transition-all" />
-              <Play className="w-8 h-8 text-white relative z-10 drop-shadow-md" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-[#E76F51] animate-pulse" />
-                <span className="text-[#E76F51] font-bold text-xs uppercase tracking-widest">Priority Task: Mask Leak</span>
+        {/* Persistent AI Trigger (Dynamic based on leak) */}
+        {cpapTrends?.percentileLeak > 20 && (
+          <div className="bg-[#0A1128] text-white rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border-2 border-white/10 animate-in zoom-in-95 duration-500">
+            <div className="flex items-start gap-6">
+              <div className="w-16 h-16 bg-[#E76F51]/20 rounded-[1.25rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer shadow-lg">
+                <img src="https://images.unsplash.com/photo-1584515979956-d9f7e5d099f3?auto=format&fit=crop&q=80&w=150" alt="Video thumbnail" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-all scale-110 group-hover:scale-100" />
+                <div className="absolute inset-0 bg-[#E76F51]/20 group-hover:bg-transparent transition-all" />
+                <Play className="w-8 h-8 text-white relative z-10 drop-shadow-md" />
               </div>
-              <h3 className="text-xl font-bold mb-4 leading-tight">We detected a leak yesterday. Let's fix it now with a 60s guide.</h3>
-              <div className="flex gap-3">
-                <button 
-                  className="bg-[#E76F51] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#d6654b] transition-all shadow-lg active:scale-95"
-                >
-                  Watch Now
-                </button>
-                <button className="text-white/60 text-sm hover:text-white transition-colors">
-                  Check Mask Settings →
-                </button>
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="w-2 h-2 rounded-full bg-[#E76F51] animate-pulse" />
+                  <span className="text-[#E76F51] font-bold text-xs uppercase tracking-widest">Priority Task: Mask Leak</span>
+                </div>
+                <h3 className="text-xl font-bold mb-4 leading-tight">We detected a leak of {cpapTrends.percentileLeak} L/min. Let's fix it now with a 60s guide.</h3>
+                <div className="flex gap-3">
+                  <button 
+                    className="bg-[#E76F51] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#d6654b] transition-all shadow-lg active:scale-95"
+                  >
+                    Watch Now
+                  </button>
+                  <button className="text-white/60 text-sm hover:text-white transition-colors">
+                    Check Mask Settings →
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Persistent Survey Reminder */}
         <div className="bg-gradient-to-br from-[#6A994E] to-[#2D9596] rounded-[2rem] p-8 text-white shadow-xl">
@@ -62,19 +95,19 @@ export default function PatientHome() {
           </div>
           <div className="mb-6">
             <p className="text-white/90 leading-relaxed mb-3">
-              Your clinical team needs this survey to calibrate your therapy. <br/>
-              <span className="font-bold">Due in 3 days.</span>
+              Your clinical team needs the {surveyName} survey to calibrate your therapy. <br/>
+              <span className="font-bold">Due in {surveyDaysLeft} days.</span>
             </p>
             <div className="flex items-center justify-between text-xs font-semibold text-white/80 mb-1">
               <span>Progress</span>
-              <span>2/8 Questions</span>
+              <span>0/{surveyQuestions} Questions</span>
             </div>
             <div className="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
               <div className="bg-white h-full rounded-full transition-all duration-1000" style={{ width: `${surveyProgress}%` }} />
             </div>
           </div>
           <Link
-            to="/patient/surveys"
+            to={`/patient/${id}/surveys`}
             className="flex items-center justify-center gap-3 w-full bg-white text-[#2D9596] py-5 rounded-2xl font-bold hover:bg-[#f0f9f9] transition-all shadow-xl active:scale-98"
           >
             Finish Survey
@@ -99,8 +132,13 @@ export default function PatientHome() {
           {['Good 👍', 'Okay 😐', 'Bad 👎'].map((rating) => (
             <button
               key={rating}
-              onClick={() => {
+              onClick={async () => {
                 setSurveyResponse(rating);
+                try {
+                  await submitSurveyResponse(id || '1', 'daily-pulse', { restful_feeling: rating });
+                } catch (e) {
+                  console.error('Failed to submit pulse');
+                }
                 setTimeout(() => setShowMicroSurvey(false), 1500);
               }}
               className={`flex-1 py-4 rounded-xl border-2 transition-all font-bold text-sm ${
@@ -187,21 +225,21 @@ export default function PatientHome() {
                   stroke="#F4A261"
                   strokeWidth="10"
                   fill="none"
-                  strokeDasharray={`${(cpapData.streak / 7) * 100 * 4.02} 402`}
+                  strokeDasharray={`${Math.min((streak / 7) * 100, 100) * 4.02} 402`}
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <Flame className="w-6 h-6 text-[#F4A261] mb-1" />
                 <p className="text-3xl font-bold text-[#0A1128]">
-                  {cpapData.streak}
+                  {streak}
                 </p>
                 <p className="text-xs text-[#5A6B7C]">days</p>
               </div>
             </div>
             <p className="text-sm text-[#5A6B7C]">Current Streak</p>
             <p className="text-lg font-semibold text-[#F4A261] mt-1">
-              {cpapData.streak >= 7 ? '🔥 On Fire!' : 'Building Momentum!'}
+              {streak >= 7 ? '🔥 On Fire!' : 'Building Momentum!'}
             </p>
           </div>
         </div>
@@ -220,7 +258,7 @@ export default function PatientHome() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-white/90">Days Used</span>
-            <span className="text-2xl font-bold">{cpapData.usageHistory.length}/7</span>
+            <span className="text-2xl font-bold">{Math.min(usageHistory.length, 7)}/7</span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-white/90">Consistency</span>
@@ -230,49 +268,6 @@ export default function PatientHome() {
           </div>
         </div>
       </div>
-
-      {/* Equipment Delivery Tracker */}
-      {interventionData.patient.upcomingDelivery && (
-        <div className="bg-white rounded-3xl p-6 shadow-sm border-2 border-[#F4A261]">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-[#F4A261]/10 rounded-full flex items-center justify-center flex-shrink-0">
-              <Package className="w-6 h-6 text-[#F4A261]" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-[#5A6B7C] mb-1">Equipment on the Way</p>
-              <h3 className="text-lg text-[#0A1128] font-semibold mb-2">
-                {interventionData.patient.upcomingDelivery.item}
-              </h3>
-              <p className="text-sm text-[#2D9596] font-medium mb-4">
-                Arriving: {new Date(interventionData.patient.upcomingDelivery.estimatedArrival).toLocaleDateString('en-US', { 
-                  month: 'short', 
-                  day: 'numeric' 
-                })}
-              </p>
-              
-              {/* Delivery Progress Steps */}
-              <div className="flex items-center gap-2">
-                {interventionData.patient.upcomingDelivery.steps.map((step, index) => (
-                  <div key={index} className="flex-1 flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold ${
-                      step.completed
-                        ? 'bg-[#6A994E] text-white'
-                        : 'bg-[#E8EEF2] text-[#5A6B7C]'
-                    }`}>
-                      {step.completed ? '✓' : index + 1}
-                    </div>
-                    {index < interventionData.patient.upcomingDelivery.steps.length - 1 && (
-                      <div className={`flex-1 h-1 mx-1 ${
-                        step.completed ? 'bg-[#6A994E]' : 'bg-[#E8EEF2]'
-                      }`} />
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Motivational Card */}
       <div className="bg-gradient-to-br from-[#F4A261] to-[#e39350] rounded-3xl p-8 text-white shadow-lg">
@@ -286,14 +281,14 @@ export default function PatientHome() {
       {/* Quick Access Buttons */}
       <div className="grid grid-cols-2 gap-4">
         <Link
-          to="/patient/videos"
+          to={`/patient/${id}/videos`}
           className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2] hover:shadow-md transition-all text-center"
         >
           <Video className="w-8 h-8 text-[#2D9596] mx-auto mb-2" />
           <p className="text-sm font-medium text-[#0A1128]">Watch Tutorials</p>
         </Link>
         <Link
-          to="/patient/help"
+          to={`/patient/${id}/help`}
           className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2] hover:shadow-md transition-all text-center"
         >
           <HelpCircle className="w-8 h-8 text-[#F4A261] mx-auto mb-2" />

@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
       { path: "directory", Component: PhysicianDirectory },
       { path: "help", Component: PhysicianHelp },
       {
-        path: "patient/:patientId",
+        path: "patient/:id",
         Component: PhysicianPatientLayout,
         children: [
           { index: true, Component: PhysicianSummary },
@@ -63,7 +63,7 @@ export const router = createBrowserRouter([
       { path: "inventory", Component: TechnicianInventory },
       { path: "help", Component: TechnicianHelp },
       {
-        path: "patient/:patientId",
+        path: "patient/:id",
         Component: TechnicianPatientLayout,
         children: [
           { index: true, Component: TechnicianSummary },
@@ -80,15 +80,20 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/patient",
+    path: "/patient/:id",
     Component: PatientLayout,
     children: [
       { index: true, Component: PatientHome },
+      { path: "home", Component: PatientHome },
       { path: "cpap", Component: PatientCPAP },
       { path: "interventions", Component: PatientInterventions },
       { path: "surveys", Component: PatientSurveys },
       { path: "videos", Component: PatientVideos },
       { path: "help", Component: PatientHelp },
     ],
+  },
+  {
+    path: "/patient",
+    element: <Navigate to="/patient/1/home" replace />,
   },
 ]);

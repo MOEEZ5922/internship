@@ -1,6 +1,8 @@
-import { useState } from 'react';
-import { videoData } from '../../data/mockData';
-import { Play, Star, CheckCircle, Clock, BookOpen, Wrench, Lightbulb, Plane, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useParams } from 'react-router';
+import { Play, Star, CheckCircle, Clock, BookOpen, Wrench, Lightbulb, Plane, ChevronRight, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
+import { fetchVideos, submitVideoInteraction } from '../../data/api';
 
 const categoryIcons: { [key: string]: React.ReactNode } = {
   'Mask & Equipment': <Wrench className="w-3.5 h-3.5" />,
@@ -27,39 +29,84 @@ const thumbnailGradients: { [key: string]: string } = {
 };
 
 export default function PatientVideos() {
-  const videos = videoData.patient;
-  const [activeFilter, setActiveFilter] = useState<string>('All');
-  const [watchedMap, setWatchedMap] = useState<{ [id: number]: boolean }>(
-    Object.fromEntries(videos.map(v => [v.id, v.watched]))
-  );
-  const [ratingMap, setRatingMap] = useState<{ [id: number]: number | null }>(
-    Object.fromEntries(videos.map(v => [v.id, v.rating]))
-  );
+  const { id } = useParams();
+  const { data: liveVideos, isLoading, error } = useApi(() => fetchVideos(id || '1'), {
+    dependencies: [id]
+  });
 
-  const recommended = videos.filter(v => v.relevance === 'high');
+  const isLive = !error && !!liveVideos;
+  const rawVideos = liveVideos?.patient || liveVideos || [];
+  const videos = Array.isArray(rawVideos) ? rawVideos : [];
+
+  if (isLoading && videos.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
+      </div>
+    );
+  }
+
+  const [activeFilter, setActiveFilter] = useState<string>('All');
+  const [watchedMap, setWatchedMap] = useState<{ [id: number]: boolean }>({});
+  const [ratingMap, setRatingMap] = useState<{ [id: number]: number | null }>({});
+
+  useEffect(() => {
+    if (Array.isArray(videos) && videos.length > 0) {
+      setWatchedMap(Object.fromEntries(videos.map((v: any) => [v.id, v.watched])));
+      setRatingMap(Object.fromEntries(videos.map((v: any) => [v.id, v.rating])));
+    }
+  }, [videos]);
+
+  const recommended = videos.filter((v: any) => v.relevance === 'high');
   const watchedCount = Object.values(watchedMap).filter(Boolean).length;
-  const categories = ['All', ...Array.from(new Set(videos.map(v => v.category)))];
+  const categories = ['All', ...Array.from(new Set(videos.map((v: any) => v.category)))];
 
   const filtered = activeFilter === 'All'
     ? videos
-    : videos.filter(v => v.category === activeFilter);
+    : videos.filter((v: any) => v.category === activeFilter);
 
-  const handleWatch = (id: number) => {
-    setWatchedMap(prev => ({ ...prev, [id]: true }));
+  const handleWatch = async (videoId: number) => {
+    setWatchedMap(prev => ({ ...prev, [videoId]: true }));
+    if (isLive) {
+      try {
+        await submitVideoInteraction(id || '1', videoId, {
+          watched: true,
+          watch_duration_seconds: 120 // Demo value
+        });
+      } catch (err) {
+        console.error('Failed to log video watch');
+      }
+    }
   };
 
-  const handleRating = (id: number, stars: number) => {
-    setRatingMap(prev => ({ ...prev, [id]: stars }));
+  const handleRating = async (videoId: number, stars: number) => {
+    setRatingMap(prev => ({ ...prev, [videoId]: stars }));
+    if (isLive) {
+      try {
+        await submitVideoInteraction(id || '1', videoId, {
+          watched: true,
+          rating: stars,
+          watch_duration_seconds: 120
+        });
+      } catch (err) {
+        console.error('Failed to log video rating');
+      }
+    }
   };
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
-
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl text-[#0A1128] font-semibold mb-1">Coaching Videos</h1>
-        <p className="text-sm text-[#5A6B7C]">Videos selected based on your therapy data and progress.</p>
+      <div className="flex justify-between items-center px-2">
+        <h1 className="text-2xl text-[#0A1128] font-bold">Coaching Videos</h1>
+        {isLive && (
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#2D9596]/10 border border-[#2D9596]/20 rounded-md">
+            <Signal className="w-3 h-3 text-[#2D9596]" />
+            <span className="text-[10px] font-bold text-[#2D9596] uppercase tracking-wider">Live</span>
+          </div>
+        )}
       </div>
+
+      <p className="text-sm text-[#5A6B7C] px-2">Videos selected based on your therapy data and progress.</p>
 
       {/* Progress Bar */}
       <div className="bg-white rounded-2xl border border-[#E8EEF2] p-5 shadow-sm">
@@ -80,36 +127,40 @@ export default function PatientVideos() {
         <div>
           <div className="flex items-center gap-2 mb-3">
             <Star className="w-4 h-4 text-[#F4A261]" fill="#F4A261" />
-            <h2 className="text-sm font-semibold text-[#0A1128] uppercase tracking-wider">Recommended for You</h2>
+            <h2 className="text-sm font-bold text-[#0A1128] uppercase tracking-widest">Recommended for You</h2>
           </div>
           <div className="space-y-3">
-            {recommended.map(video => (
+            {recommended.map((video: any) => (
               <div
                 key={video.id}
-                className={`bg-gradient-to-br ${thumbnailGradients[video.category] || 'from-[#2D9596] to-[#1a7273]'} rounded-2xl p-5 text-white shadow-md`}
+                className={`bg-gradient-to-br ${thumbnailGradients[video.category] || 'from-[#2D9596] to-[#1a7273]'} rounded-2xl p-5 text-white shadow-md relative overflow-hidden`}
               >
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium">
-                    {video.triggerReason}
-                  </span>
-                  {watchedMap[video.id] && (
-                    <span className="bg-white/20 text-white text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> Watched
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full blur-2xl" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="bg-white/20 text-white text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider">
+                      {video.triggerReason}
                     </span>
-                  )}
+                    {watchedMap[video.id] && (
+                      <span className="bg-white/20 text-white text-[10px] px-2.5 py-1 rounded-full font-bold flex items-center gap-1 uppercase tracking-wider">
+                        <CheckCircle className="w-3 h-3" /> Watched
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="text-lg font-bold mb-1">{video.title}</h3>
+                  <div className="flex items-center gap-3 text-white/80 text-sm mb-4 font-medium">
+                    <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {video.duration}</span>
+                    <span className="opacity-60">|</span>
+                    <span>{video.category}</span>
+                  </div>
+                  <button
+                    onClick={() => handleWatch(video.id)}
+                    className="w-full bg-white text-[#0A1128] hover:bg-white/90 transition-all font-bold py-3 rounded-xl flex items-center justify-center gap-2 shadow-sm"
+                  >
+                    <Play className="w-4 h-4 fill-[#0A1128]" />
+                    {watchedMap[video.id] ? 'Watch Again' : 'Watch Now'}
+                  </button>
                 </div>
-                <h3 className="text-lg font-semibold mb-1">{video.title}</h3>
-                <div className="flex items-center gap-3 text-white/80 text-sm mb-4">
-                  <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {video.duration}</span>
-                  <span>{video.category}</span>
-                </div>
-                <button
-                  onClick={() => handleWatch(video.id)}
-                  className="w-full bg-white/20 hover:bg-white/30 transition-colors text-white font-medium py-2.5 rounded-xl flex items-center justify-center gap-2"
-                >
-                  <Play className="w-4 h-4" />
-                  {watchedMap[video.id] ? 'Watch Again' : 'Watch Now'}
-                </button>
               </div>
             ))}
           </div>
@@ -118,16 +169,16 @@ export default function PatientVideos() {
 
       {/* Category Filter */}
       <div>
-        <h2 className="text-sm font-semibold text-[#0A1128] uppercase tracking-wider mb-3">All Videos</h2>
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {categories.map(cat => (
+        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest mb-3 px-2">Library Categories</h2>
+        <div className="flex gap-2 overflow-x-auto pb-1 px-1 scrollbar-hide">
+          {categories.map((cat: any) => (
             <button
               key={cat}
               onClick={() => setActiveFilter(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
                 activeFilter === cat
-                  ? 'bg-[#0A1128] text-white shadow'
-                  : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#d6dfe6]'
+                  ? 'bg-[#0A1128] text-white shadow-lg'
+                  : 'bg-white border border-[#E8EEF2] text-[#5A6B7C] hover:border-[#2D9596]/50'
               }`}
             >
               {cat}
@@ -138,34 +189,35 @@ export default function PatientVideos() {
 
       {/* Video List */}
       <div className="space-y-3">
-        {filtered.map(video => (
+        {filtered.map((video: any) => (
           <div
             key={video.id}
             className={`bg-white rounded-2xl border shadow-sm overflow-hidden transition-all ${
-              watchedMap[video.id] ? 'border-[#6A994E]/40' : 'border-[#E8EEF2]'
+              watchedMap[video.id] ? 'border-[#6A994E]/30' : 'border-[#E8EEF2]'
             }`}
           >
             <div className="flex gap-4 p-4">
               {/* Thumbnail */}
-              <div className={`relative w-28 h-20 bg-gradient-to-br ${thumbnailGradients[video.category] || 'from-[#2D9596] to-[#1a7273]'} rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer`}
+              <div className={`relative w-28 h-20 bg-gradient-to-br ${thumbnailGradients[video.category] || 'from-[#2D9596] to-[#1a7273]'} rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer overflow-hidden group`}
                 onClick={() => handleWatch(video.id)}
               >
+                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
                 {watchedMap[video.id]
-                  ? <CheckCircle className="w-8 h-8 text-white/90" />
-                  : <Play className="w-8 h-8 text-white/90" />
+                  ? <CheckCircle className="w-8 h-8 text-white relative z-10 drop-shadow-md" />
+                  : <Play className="w-8 h-8 text-white relative z-10 drop-shadow-md" />
                 }
-                <div className="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
+                <div className="absolute bottom-1 right-1 bg-black/60 text-white text-[10px] px-1.5 py-0.5 rounded font-bold">
                   {video.duration}
                 </div>
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className={`inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-full mb-1.5 ${categoryColors[video.category] || 'bg-[#E8EEF2] text-[#5A6B7C]'}`}>
+                <div className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full mb-1.5 uppercase tracking-wider ${categoryColors[video.category] || 'bg-[#E8EEF2] text-[#5A6B7C]'}`}>
                   {categoryIcons[video.category]}
                   {video.category}
                 </div>
-                <h4 className="text-[#0A1128] font-medium text-sm mb-2 line-clamp-2">{video.title}</h4>
+                <h4 className="text-[#0A1128] font-bold text-sm mb-2 line-clamp-2 leading-snug">{video.title}</h4>
 
                 {/* Star Rating — shown after watched */}
                 {watchedMap[video.id] ? (
@@ -173,22 +225,22 @@ export default function PatientVideos() {
                     {[1, 2, 3, 4, 5].map(star => (
                       <button key={star} onClick={() => handleRating(video.id, star)}>
                         <Star
-                          className="w-4 h-4 transition-colors"
+                          className="w-3.5 h-3.5 transition-colors"
                           fill={ratingMap[video.id] !== null && ratingMap[video.id]! >= star ? '#F4A261' : 'none'}
                           stroke={ratingMap[video.id] !== null && ratingMap[video.id]! >= star ? '#F4A261' : '#CBD5E1'}
                         />
                       </button>
                     ))}
-                    <span className="text-xs text-[#5A6B7C] ml-1">
-                      {ratingMap[video.id] ? 'Thanks!' : 'Rate this'}
+                    <span className="text-[10px] font-bold text-[#5A6B7C] ml-1 uppercase tracking-tighter">
+                      {ratingMap[video.id] ? 'Rated' : 'Rate it'}
                     </span>
                   </div>
                 ) : (
                   <button
                     onClick={() => handleWatch(video.id)}
-                    className="text-sm text-[#2D9596] font-medium flex items-center gap-1 hover:gap-2 transition-all"
+                    className="text-xs text-[#2D9596] font-bold flex items-center gap-1 hover:gap-2 transition-all uppercase tracking-widest"
                   >
-                    Watch <ChevronRight className="w-4 h-4" />
+                    Watch <ChevronRight className="w-3 h-3" />
                   </button>
                 )}
               </div>
@@ -198,10 +250,11 @@ export default function PatientVideos() {
       </div>
 
       {/* Help Footer */}
-      <div className="bg-[#E8EEF2] rounded-2xl p-5">
-        <h4 className="text-[#0A1128] font-medium mb-1">💡 Can't find what you need?</h4>
-        <p className="text-sm text-[#5A6B7C] mb-3">Our team can answer any questions about your therapy or equipment.</p>
-        <button className="text-sm text-[#2D9596] hover:underline font-medium flex items-center gap-1">
+      <div className="bg-[#0A1128] rounded-3xl p-6 text-white relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+        <h4 className="text-lg font-bold mb-1 relative z-10">Can't find what you need?</h4>
+        <p className="text-sm text-white/70 mb-4 relative z-10 leading-relaxed">Our clinical team is available to answer any questions about your therapy or equipment setup.</p>
+        <button className="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3 rounded-xl text-sm font-bold transition-all relative z-10 flex items-center gap-2">
           Contact Support <ChevronRight className="w-4 h-4" />
         </button>
       </div>

@@ -11,7 +11,18 @@ const BASE_URL = 'https://cpap-backend.onrender.com/api/v1';
 
 // ─── Generic fetch wrapper with error handling ───────────────────────────────
 
+// ─── Helper to ensure ID is in PATxxxx format ────────────────────────────────
+
+function formatPatientId(id: string | number): string {
+  const strId = String(id);
+  if (strId.startsWith('PAT')) return strId;
+  // If it's a number like 11, convert to PAT0011
+  return `PAT${strId.padStart(4, '0')}`;
+}
+
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  // Automatically replace any {id} or :id patterns in the endpoint with formatted version
+  // But since we pass it manually in the functions, we should just format it there.
   const res = await fetch(`${BASE_URL}${endpoint}`, {
     headers: { 'Content-Type': 'application/json' },
     ...options,
@@ -31,7 +42,7 @@ export async function fetchPatients(limit = 20) {
 
 /** Get a single patient's summary (header cockpit) */
 export async function fetchPatientSummary(patientId: string) {
-  return apiFetch(`/patient/${patientId}/summary`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/summary`);
 }
 
 /** Get the Physician Exception Inbox (urgent + annual reviews) */
@@ -51,42 +62,47 @@ export async function fetchTechnicianEvents(limit = 30) {
 
 /** Get CPAP usage trends for a patient */
 export async function fetchCpapTrends(patientId: string, days = 90) {
-  return apiFetch(`/patient/${patientId}/trends/cpap?days=${days}`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/trends/cpap?days=${days}`);
 }
 
 /** Get biomarker data for a patient */
 export async function fetchBiomarkers(patientId: string, days = 30) {
-  return apiFetch(`/patient/${patientId}/biomarkers?days=${days}`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/biomarkers?days=${days}`);
 }
 
 /** Get biomarker devices assigned to a patient */
 export async function fetchDevices(patientId: string) {
-  return apiFetch(`/patient/${patientId}/devices`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/devices`);
 }
 
 /** Get intervention history for a patient */
 export async function fetchInterventions(patientId: string) {
-  return apiFetch(`/patient/${patientId}/interventions`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/interventions`);
 }
 
 /** Get survey data for a patient */
 export async function fetchSurveys(patientId: string) {
-  return apiFetch(`/patient/${patientId}/surveys`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/surveys`);
 }
 
 /** Get AI weekly analysis for a patient */
 export async function fetchWeeklyAnalysis(patientId: string) {
-  return apiFetch(`/patient/${patientId}/analysis/weekly`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/analysis/weekly`);
 }
 
 /** Get video content for a patient */
 export async function fetchVideos(patientId: string) {
-  return apiFetch(`/patient/${patientId}/videos`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/videos`);
 }
 
 /** Get clinical authorizations for a patient */
 export async function fetchAuthorizations(patientId: string) {
-  return apiFetch(`/patient/${patientId}/authorizations`);
+  return apiFetch(`/patient/${formatPatientId(patientId)}/authorizations`);
+}
+
+/** Get general technician inventory (not patient specific) */
+export async function fetchInventory() {
+  return apiFetch(`/technician/inventory`);
 }
 
 // ─── POST Endpoints ──────────────────────────────────────────────────────────
@@ -110,7 +126,7 @@ export async function submitMonitoringLog(patientId: string, data: {
   notes: string;
   technician_id: string;
 }) {
-  return apiFetch(`/patient/${patientId}/surveys/monitoring`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/surveys/monitoring`, {
     method: 'POST',
     body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
   });
@@ -125,7 +141,7 @@ export async function createIntervention(patientId: string, data: {
   notes?: string;
   signature_hash?: string;
 }) {
-  return apiFetch(`/patient/${patientId}/interventions`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/interventions`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
@@ -138,7 +154,7 @@ export async function createAuthorization(patientId: string, data: {
   physician_id: string;
   digital_seal_hash: string;
 }) {
-  return apiFetch(`/patient/${patientId}/authorizations`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/authorizations`, {
     method: 'POST',
     body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
   });
@@ -150,18 +166,18 @@ export async function submitVideoInteraction(patientId: string, videoId: number,
   rating?: number;
   watch_duration_seconds: number;
 }) {
-  return apiFetch(`/patient/${patientId}/videos/${videoId}/interaction`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/videos/${videoId}/interaction`, {
     method: 'POST',
     body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
   });
 }
 
 /** Patient submits a medical survey */
-export async function submitMedicalSurvey(patientId: string, surveyId: string, data: {
+export async function submitSurveyResponse(patientId: string, surveyId: string, data: {
   answers: { question_id: string; value: string }[];
   completion_time_seconds: number;
 }) {
-  return apiFetch(`/patient/${patientId}/surveys/${surveyId}/submit`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/surveys/${surveyId}/submit`, {
     method: 'POST',
     body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
   });
@@ -172,7 +188,7 @@ export async function createSupportTicket(patientId: string, data: {
   issue_type: string;
   details: string;
 }) {
-  return apiFetch(`/patient/${patientId}/support/ticket`, {
+  return apiFetch(`/patient/${formatPatientId(patientId)}/support/ticket`, {
     method: 'POST',
     body: JSON.stringify({ ...data, timestamp: new Date().toISOString() }),
   });

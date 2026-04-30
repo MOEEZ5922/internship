@@ -1,12 +1,34 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router';
-import { interventionData } from '../../data/mockData';
-import { FileSignature, AlertCircle, Activity, Plus, Package, Phone, Home, Settings } from 'lucide-react';
+import { useLocation, useParams } from 'react-router';
+import { FileSignature, AlertCircle, Activity, Plus, Package, Phone, Home, Settings, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
+import { fetchInterventions, createIntervention, fetchAuthorizations, createAuthorization } from '../../data/api';
 
 export default function UniversalInterventions() {
+  const { id } = useParams();
   const location = useLocation();
   const isTechnician = location.pathname.includes('/technician');
   
+  const { data: liveInterventions, error: intError, refetch: refetchInt } = useApi(() => fetchInterventions(id || '1'), {
+    dependencies: [id]
+  });
+
+  const { data: liveAuths, error: authError, refetch: refetchAuth } = useApi(() => fetchAuthorizations(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = (!intError && !!liveInterventions) || (!authError && !!liveAuths);
+
+  if (!isLive) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#E76F51] animate-spin" />
+      </div>
+    );
+  }
+
+  const interventions = Array.isArray(liveInterventions) ? liveInterventions : [];
+
   const [activePathway, setActivePathway] = useState<'app_iah' | 'alt_therapy'>('app_iah');
   const [selectedTherapy, setSelectedTherapy] = useState('');
   const [clinicalNotes, setClinicalNotes] = useState('');
@@ -16,20 +38,82 @@ export default function UniversalInterventions() {
   const [escalationSource, setEscalationSource] = useState<'ai' | 'technician'>('ai');
   const [techActionType, setTechActionType] = useState('');
   const [techActionNote, setTechActionNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleAppIahSubmit = () => {
-    alert(`Clinical Order Submitted:\n\n${appIahNotes}`);
-    setShowOrderModal(false);
+  const handleAppIahSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await createIntervention(id || '1', {
+        type: 'Clinical Order',
+        job_code: 'CLIN-ORD',
+        actor: { role: 'physician', id: 'DR-001' },
+        outcome: 'Logged',
+        notes: appIahNotes
+      });
+      alert('Clinical Order Submitted!');
+      refetchInt();
+      setShowOrderModal(false);
+    } catch (err) {
+      alert('Failed to submit order.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleTechActionSubmit = () => {
-    alert(`Technician Intervention Logged:\n\nType: ${techActionType}\nNote: ${techActionNote}`);
-    setShowTechActionModal(false);
+  const handleTechActionSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await createIntervention(id || '1', {
+        type: techActionType,
+        job_code: 'TECH-ACT',
+        actor: { role: 'technician', id: 'TECH-001' },
+        outcome: 'Logged',
+        notes: techActionNote
+      });
+      alert('Technician Intervention Logged!');
+      refetchInt();
+      setShowTechActionModal(false);
+    } catch (err) {
+      alert('Failed to log intervention.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleAuthorize = () => {
-    alert(`Authorization submitted for: ${selectedTherapy}\n\nClinical Notes:\n${clinicalNotes}`);
+  const handleAuthorize = async () => {
+    setIsSubmitting(true);
+    try {
+      await createAuthorization(id || '1', {
+        type: selectedTherapy,
+        status: 'Approved',
+        physician_id: 'DR-001',
+        digital_seal_hash: 'SHA256-V4-SIG-Linde'
+      });
+      alert(`Authorization for ${selectedTherapy} submitted successfully!`);
+      refetchAuth();
+      setSelectedTherapy('');
+      setClinicalNotes('');
+    } catch (err) {
+      alert('Failed to submit authorization.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const allInterventions = [...interventions];
+  if (Array.isArray(liveAuths)) {
+    liveAuths.forEach((auth: any) => {
+      allInterventions.push({
+        date: auth.timestamp ? new Date(auth.timestamp).toLocaleDateString() : '—',
+        type: `Authorization: ${auth.type}`,
+        notes: `Status: ${auth.status}`,
+        outcome: auth.status === 'Approved' ? 'Success' : 'Pending',
+        actor: { role: 'Physician', id: auth.physician_id || 'DR-001' }
+      });
+    });
+  }
+  // Sort by date (descending)
+  allInterventions.sort((a, b) => new Date(b.date || b.timestamp).getTime() - new Date(a.date || a.timestamp).getTime());
 
   return (
     <div className="p-8 max-w-5xl space-y-8 pb-20">
@@ -41,9 +125,17 @@ export default function UniversalInterventions() {
                {isTechnician ? <Package /> : <FileSignature />}
             </div>
             <div>
-               <h2 className="text-xl font-bold text-[#0A1128]">
-                  {isTechnician ? 'Field Intervention Cockpit' : 'Clinical Decision Center'}
-               </h2>
+               <div className="flex items-center gap-3">
+                 <h2 className="text-xl font-bold text-[#0A1128]">
+                    {isTechnician ? 'Field Intervention Cockpit' : 'Clinical Decision Center'}
+                 </h2>
+                 {isLive && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+                      <Signal className="w-3 h-3 text-[#6A994E]" />
+                      <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+                    </div>
+                  )}
+               </div>
                <p className="text-sm text-[#5A6B7C]">
                   {isTechnician ? 'Log equipment dispatches and patient touchpoints.' : 'Review field evidence and authorize therapy transitions.'}
                </p>
@@ -87,54 +179,35 @@ export default function UniversalInterventions() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#E8EEF2]">
-                  <tr className="hover:bg-white transition-colors">
-                    <td className="py-4 px-6 text-[#5A6B7C]">2026-04-18</td>
-                    <td className="py-4 px-6">
-                       <p className="font-bold text-[#0A1128]">Authorized MAD/HNS Transition Consult</p>
-                       <p className="text-[10px] text-[#5A6B7C]">Path: MAD/HNS Referral for CPAP Refractory AHI</p>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className="flex items-center gap-1.5 text-[#6A994E] font-bold">
-                        Pending Clinical Intake
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                       <span className="flex items-center gap-2 text-[10px] font-bold bg-[#6A994E]/10 text-[#6A994E] border border-[#6A994E]/20 px-2 py-1 rounded-full uppercase tracking-widest">
-                          <Plus className="w-3 h-3"/> Clinician: Dr. Sarah
-                       </span>
-                    </td>
-                  </tr>
-                  <tr className="hover:bg-white transition-colors">
-                    <td className="py-4 px-6 text-[#5A6B7C]">2026-04-12</td>
-                    <td className="py-4 px-6">
-                       <p className="font-bold text-[#0A1128]">Remote Pressure Calibration</p>
-                       <p className="text-[10px] text-[#5A6B7C]">Pressure increased to 11.5 cmH2O</p>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className="flex items-center gap-1.5 text-[#6A994E] font-bold">
-                        Success - AHI Stabilized
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-[#5A6B7C] font-medium italic">Auto-System (AI)</td>
-                  </tr>
-                  <tr className="hover:bg-white transition-colors">
-                    <td className="py-4 px-6 text-[#5A6B7C]">2026-03-15</td>
-                    <td className="py-4 px-6 font-bold text-[#0A1128]">
-                       Dispatch: AirFit F20 Mask (M)
-                       <span className="block text-[10px] text-[#F4A261] font-normal italic">Job Code: O3-LOG-DISP</span>
-                    </td>
-                    <td className="py-4 px-6">
-                      <span className="flex items-center gap-1.5 text-[#E76F51] font-bold">
-                        <AlertCircle className="w-3.5 h-3.5" />
-                        Failed - Skin Irritation
-                      </span>
-                    </td>
-                    <td className="py-4 px-6">
-                       <span className="flex items-center gap-2 text-[10px] font-bold bg-[#F4A261]/10 text-[#F4A261] border border-[#F4A261]/20 px-2 py-1 rounded-full uppercase tracking-widest">
-                          <Package className="w-3 h-3"/> Tech: J. Mitchell
-                       </span>
-                    </td>
-                  </tr>
+                  {allInterventions.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="py-12 text-center text-[#5A6B7C]">No history logged for this patient.</td>
+                    </tr>
+                  ) : (
+                    allInterventions.map((item: any, idx: number) => (
+                      <tr key={idx} className="hover:bg-white transition-colors">
+                        <td className="py-4 px-6 text-[#5A6B7C]">{item.date || (item.timestamp ? new Date(item.timestamp).toLocaleDateString() : '—')}</td>
+                        <td className="py-4 px-6">
+                           <p className="font-bold text-[#0A1128]">{item.type}</p>
+                           <p className="text-[10px] text-[#5A6B7C]">{item.notes || item.job_code}</p>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={`flex items-center gap-1.5 font-bold ${item.outcome === 'Success' || item.outcome === 'Approved' ? 'text-[#6A994E]' : 'text-[#F4A261]'}`}>
+                            {item.outcome || 'Logged'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                           <span className={`flex items-center gap-2 text-[10px] font-bold border px-2 py-1 rounded-full uppercase tracking-widest ${
+                             (item.actor?.role || '').toLowerCase() === 'physician' 
+                              ? 'bg-[#2D9596]/10 text-[#2D9596] border-[#2D9596]/20' 
+                              : 'bg-[#6A994E]/10 text-[#6A994E] border-[#6A994E]/20'
+                           }`}>
+                              <Plus className="w-3 h-3"/> {item.actor?.role || 'User'}: {item.actor?.id || 'ID'}
+                           </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

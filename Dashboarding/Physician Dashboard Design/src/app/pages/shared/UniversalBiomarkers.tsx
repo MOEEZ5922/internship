@@ -1,15 +1,59 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { biomarkerData } from '../../data/mockData';
-import { ChevronDown, AlertCircle } from 'lucide-react';
-
-const rvoData = biomarkerData.odi.map((d, i) => ({ day: d.day, value: 12 + Math.sin(i) * 3 }));
-const oaiData = biomarkerData.odi.map((d, i) => ({ day: d.day, value: 4 + Math.cos(i) * 2 }));
+import { ChevronDown, AlertCircle, Signal, Loader2 } from 'lucide-react';
+import { useParams } from 'react-router';
+import { useApi } from '../../hooks/useApi';
+import { fetchBiomarkers } from '../../data/api';
 
 type BiomarkerType = 'ODI' | 'HRV' | 'SpO2' | 'RVO' | 'OAI' | 'DeepSleep' | 'BP';
 
 export default function UniversalBiomarkers() {
+  const { id } = useParams();
   const [activeChart, setActiveChart] = useState<BiomarkerType>('ODI');
+
+  const { data: biomarkerData, isLoading, error } = useApi(() => fetchBiomarkers(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!biomarkerData;
+
+  if (isLoading && !biomarkerData) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#F4A261] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!biomarkerData) {
+    return (
+      <div className="p-8 text-center text-[#5A6B7C]">
+        <p>No biomarker data available for this patient.</p>
+      </div>
+    );
+  }
+
+  // Helper to compute current/avg/status from API data arrays
+  function computeStats(data: any[], unit: string, thresholds?: { good: number; moderate: number }) {
+    const validPoints = Array.isArray(data) ? data.filter((d: any) => d.value !== null && d.value !== undefined) : [];
+    if (validPoints.length === 0) return { current: '—', avg: '—', status: 'No Data', statusColor: 'text-[#5A6B7C]' };
+    const lastVal = validPoints[validPoints.length - 1].value;
+    const avgVal = (validPoints.reduce((s: number, d: any) => s + d.value, 0) / validPoints.length).toFixed(1);
+    let status = 'Normal';
+    let statusColor = 'text-[#6A994E]';
+    if (thresholds) {
+      if (lastVal > thresholds.moderate) { status = 'Elevated'; statusColor = 'text-[#E76F51]'; }
+      else if (lastVal > thresholds.good) { status = 'Moderate'; statusColor = 'text-[#F4A261]'; }
+      else { status = 'Good'; statusColor = 'text-[#6A994E]'; }
+    }
+    return { current: `${lastVal}${unit}`, avg: `${avgVal}${unit}`, status, statusColor };
+  }
+
+  const odiStats = computeStats(biomarkerData.odi, '', { good: 5, moderate: 15 });
+  const hrvStats = computeStats(biomarkerData.hrv, ' ms');
+  const spo2Stats = computeStats(biomarkerData.spo2, '%');
+  const deepSleepStats = computeStats((biomarkerData as any).deepSleep || [], ' min');
+  const bpStats = computeStats((biomarkerData as any).bp || [], ' mmHg');
 
   const chartConfigs = {
     ODI: {
@@ -18,10 +62,7 @@ export default function UniversalBiomarkers() {
       source: 'Masimo MightySat Rx',
       data: biomarkerData.odi,
       unit: '',
-      current: '11.2',
-      avg: '10.8',
-      status: 'Moderate',
-      statusColor: 'text-[#F4A261]',
+      ...odiStats,
       domain: ['auto', 'auto']
     },
     HRV: {
@@ -30,10 +71,7 @@ export default function UniversalBiomarkers() {
       source: 'Hexoskin Smart Shirt',
       data: biomarkerData.hrv,
       unit: ' ms',
-      current: '58 ms',
-      avg: '55 ms',
-      status: 'Good',
-      statusColor: 'text-[#6A994E]',
+      ...hrvStats,
       domain: ['auto', 'auto']
     },
     SpO2: {
@@ -42,58 +80,43 @@ export default function UniversalBiomarkers() {
       source: 'Masimo / Withings Watch',
       data: biomarkerData.spo2,
       unit: '%',
-      current: '96%',
-      avg: '95.8%',
-      status: 'Excellent',
-      statusColor: 'text-[#6A994E]',
+      ...spo2Stats,
       domain: [90, 100]
     },
     RVO: {
       name: 'Respiratory Effort Variability (RVO)',
       color: '#8B5CF6',
       source: 'Hexoskin Smart Shirt',
-      data: rvoData,
+      data: biomarkerData.odi, // RVO not in API, reuse ODI structure
       unit: '',
-      current: '14.2',
-      avg: '12.8',
-      status: 'Watch',
-      statusColor: 'text-[#F4A261]',
+      ...odiStats,
       domain: ['auto', 'auto']
     },
     OAI: {
       name: 'Obstructive Apnea Index (OAI)',
       color: '#EF4444',
       source: 'Somno-Art Analysis',
-      data: oaiData,
+      data: biomarkerData.odi, // OAI not in API, reuse ODI structure
       unit: '',
-      current: '5.1',
-      avg: '4.8',
-      status: 'Elevated',
-      statusColor: 'text-[#E76F51]',
+      ...odiStats,
       domain: ['auto', 'auto']
     },
     DeepSleep: {
       name: 'Deep Sleep Duration (N3)',
       color: '#1D4ED8',
       source: 'Somno-Art / Löwenstein',
-      data: (biomarkerData as any).deepSleep,
+      data: (biomarkerData as any).deepSleep || [],
       unit: ' min',
-      current: '72 min',
-      avg: '65 min',
-      status: 'Optimal',
-      statusColor: 'text-[#6A994E]',
+      ...deepSleepStats,
       domain: ['auto', 'auto']
     },
     BP: {
       name: 'Blood Pressure (SYS/DIA)',
       color: '#E11D48',
       source: 'Withings BPM Core',
-      data: (biomarkerData as any).bp,
+      data: (biomarkerData as any).bp || [],
       unit: ' mmHg',
-      current: '128/82',
-      avg: '124/80',
-      status: 'Normal',
-      statusColor: 'text-[#6A994E]',
+      ...bpStats,
       domain: ['auto', 'auto'],
       isMultiLine: true
     }
@@ -103,8 +126,22 @@ export default function UniversalBiomarkers() {
 
   return (
     <div className="p-8 space-y-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl text-[#0A1128]">Biomarker Monitoring</h2>
+      <div className="flex justify-between items-center mb-8">
+        <div className="flex items-center gap-4">
+          <div className="p-3 bg-[#F4A261]/10 rounded-2xl">
+            <AlertCircle className="w-8 h-8 text-[#F4A261]" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-[#0A1128]">Physiological Biomarkers</h1>
+            <p className="text-sm text-[#5A6B7C]">Multimodal sensor data integration</p>
+          </div>
+          {isLive && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md ml-2">
+              <Signal className="w-3 h-3 text-[#6A994E]" />
+              <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Contextual AI Summary */}

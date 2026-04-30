@@ -1,33 +1,81 @@
 import { useState } from 'react';
+import { useParams } from 'react-router';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { cpapData } from '../../data/mockData';
-import { TrendingDown, Activity, Wind } from 'lucide-react';
+import { TrendingDown, TrendingUp, Activity, Wind, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
+import { fetchCpapTrends } from '../../data/api';
 
 export default function PhysicianCPAP() {
+  const { id } = useParams();
   const [chartPeriod, setChartPeriod] = useState<'30' | '60' | '90'>('30');
 
+  const { data: cpap, isLoading, error } = useApi(() => fetchCpapTrends(id || '1', Number(chartPeriod)), {
+    dependencies: [id, chartPeriod]
+  });
+
+  const isLive = !error && !!cpap;
+
+  if (isLoading && !cpap) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!cpap) {
+    return (
+      <div className="p-8 text-center text-[#5A6B7C]">
+        <p>Unable to load CPAP trends. Please try again.</p>
+      </div>
+    );
+  }
+
+  // Compute derived stats from API data
+  const trend30 = cpap.thirtyDayTrend || [];
+  const avgAhi30 = trend30.length > 0
+    ? (trend30.reduce((sum: number, d: any) => sum + d.ahi, 0) / trend30.length).toFixed(1)
+    : '—';
+  const daysBelowTarget = trend30.filter((d: any) => d.ahi < 5).length;
+  const trendDirection = trend30.length >= 2
+    ? (trend30[trend30.length - 1].ahi <= trend30[0].ahi ? 'Improving' : 'Worsening')
+    : 'Stable';
 
   return (
     <div className="p-8 space-y-6">
+      {/* Live Badge */}
+      {isLive && (
+        <div className="flex justify-end">
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+            <Signal className="w-3 h-3 text-[#6A994E]" />
+            <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+          </div>
+        </div>
+      )}
+
       {/* Summary Cards */}
       <div className="grid grid-cols-3 gap-6">
         <div className="bg-white rounded-xl p-6 border border-[#E8EEF2] shadow-sm">
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm text-[#5A6B7C] mb-1">Current AHI</p>
-              <p className="text-4xl font-semibold text-[#0A1128]">{cpapData.currentAHI}</p>
+              <p className="text-4xl font-semibold text-[#0A1128]">{cpap.currentAHI}</p>
             </div>
             <div className="w-12 h-12 bg-[#6A994E]/10 rounded-lg flex items-center justify-center">
-              <TrendingDown className="w-6 h-6 text-[#6A994E]" />
+              {cpap.currentAHI < 5
+                ? <TrendingDown className="w-6 h-6 text-[#6A994E]" />
+                : <TrendingUp className="w-6 h-6 text-[#E76F51]" />
+              }
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-[#6A994E]">↓ 12%</span>
-            <span className="text-[#5A6B7C]">vs. last month</span>
+            <span className={cpap.currentAHI < 5 ? 'text-[#6A994E]' : 'text-[#E76F51]'}>
+              {cpap.currentAHI < 5 ? '✓ Normal' : '⚠ Elevated'}
+            </span>
           </div>
           <div className="mt-4 pt-4 border-t border-[#E8EEF2]">
             <p className="text-xs text-[#5A6B7C]">
-              Normal range: &lt;5 events/hour. Patient shows good control.
+              Normal range: &lt;5 events/hour. {cpap.currentAHI < 5 ? 'Patient shows good control.' : 'Requires clinical review.'}
             </p>
           </div>
         </div>
@@ -36,19 +84,20 @@ export default function PhysicianCPAP() {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm text-[#5A6B7C] mb-1">90th Percentile Leak</p>
-              <p className="text-4xl font-semibold text-[#0A1128]">{cpapData.percentileLeak} <span className="text-xl text-[#5A6B7C]">L/min</span></p>
+              <p className="text-4xl font-semibold text-[#0A1128]">{cpap.percentileLeak} <span className="text-xl text-[#5A6B7C]">L/min</span></p>
             </div>
             <div className="w-12 h-12 bg-[#2D9596]/10 rounded-lg flex items-center justify-center">
               <Activity className="w-6 h-6 text-[#2D9596]" />
             </div>
           </div>
           <div className="flex items-center gap-2 text-sm">
-            <span className="text-[#F4A261]">↑ 5%</span>
-            <span className="text-[#5A6B7C]">vs. last month</span>
+            <span className={cpap.percentileLeak < 24 ? 'text-[#6A994E]' : 'text-[#F4A261]'}>
+              {cpap.percentileLeak < 24 ? '✓ Acceptable' : '⚠ High'}
+            </span>
           </div>
           <div className="mt-4 pt-4 border-t border-[#E8EEF2]">
             <p className="text-xs text-[#5A6B7C]">
-              Target: &lt;24 L/min. Current leak rate is acceptable.
+              Target: &lt;24 L/min. Current leak rate is {cpap.percentileLeak < 24 ? 'acceptable' : 'elevated — consider mask refit'}.
             </p>
           </div>
         </div>
@@ -57,8 +106,8 @@ export default function PhysicianCPAP() {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm text-[#5A6B7C] mb-1">Mask Interface</p>
-              <p className="text-lg font-bold text-[#0A1128]">AirFit F20</p>
-              <p className="text-sm text-[#5A6B7C]">Medium (Full Face)</p>
+              <p className="text-lg font-bold text-[#0A1128]">{cpap.currentMask || '—'}</p>
+              <p className="text-sm text-[#5A6B7C]">Pressure: {cpap.pressureSettings?.current || '—'} cmH₂O</p>
             </div>
             <div className="w-12 h-12 bg-[#F4A261]/10 rounded-lg flex items-center justify-center">
               <Wind className="w-6 h-6 text-[#F4A261]" />
@@ -66,7 +115,7 @@ export default function PhysicianCPAP() {
           </div>
           <div className="mt-4 pt-4 border-t border-[#E8EEF2]">
             <p className="text-xs text-[#5A6B7C]">
-              Mask leak is often tied to fit integrity. Full-face masks have higher tolerances.
+              Range: {cpap.pressureSettings?.min || '—'} – {cpap.pressureSettings?.max || '—'} cmH₂O. Last mask change: {cpap.lastMaskChange || '—'}
             </p>
           </div>
         </div>
@@ -78,40 +127,24 @@ export default function PhysicianCPAP() {
           <h3 className="text-lg text-[#0A1128]">AHI Trend Analysis</h3>
           <div className="flex items-center gap-4">
             <div className="flex gap-2">
-              <button
-                onClick={() => setChartPeriod('30')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '30'
+              {(['30', '60', '90'] as const).map(period => (
+                <button
+                  key={period}
+                  onClick={() => setChartPeriod(period)}
+                  className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === period
                     ? 'bg-[#2D9596] text-white'
                     : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
                   }`}
-              >
-                30 Days
-              </button>
-              <button
-                onClick={() => setChartPeriod('60')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '60'
-                    ? 'bg-[#2D9596] text-white'
-                    : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
-                  }`}
-              >
-                60 Days
-              </button>
-              <button
-                onClick={() => setChartPeriod('90')}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${chartPeriod === '90'
-                    ? 'bg-[#2D9596] text-white'
-                    : 'bg-[#E8EEF2] text-[#5A6B7C] hover:bg-[#2D9596]/10'
-                  }`}
-              >
-                90 Days
-              </button>
+                >
+                  {period} Days
+                </button>
+              ))}
             </div>
-
           </div>
         </div>
 
         <ResponsiveContainer width="100%" height={400}>
-          <LineChart data={cpapData.thirtyDayTrend}>
+          <LineChart data={trend30}>
             <CartesianGrid strokeDasharray="3 3" stroke="#E8EEF2" />
             <XAxis
               dataKey="day"
@@ -143,16 +176,16 @@ export default function PhysicianCPAP() {
 
         <div className="mt-6 grid grid-cols-3 gap-4">
           <div className="bg-[#E8EEF2] rounded-lg p-4">
-            <p className="text-xs text-[#5A6B7C] mb-1">Average AHI (30d)</p>
-            <p className="text-xl font-semibold text-[#0A1128]">4.1</p>
+            <p className="text-xs text-[#5A6B7C] mb-1">Average AHI ({chartPeriod}d)</p>
+            <p className="text-xl font-semibold text-[#0A1128]">{avgAhi30}</p>
           </div>
           <div className="bg-[#E8EEF2] rounded-lg p-4">
             <p className="text-xs text-[#5A6B7C] mb-1">Trend Direction</p>
-            <p className="text-xl font-semibold text-[#6A994E]">Improving</p>
+            <p className={`text-xl font-semibold ${trendDirection === 'Improving' ? 'text-[#6A994E]' : trendDirection === 'Worsening' ? 'text-[#E76F51]' : 'text-[#F4A261]'}`}>{trendDirection}</p>
           </div>
           <div className="bg-[#E8EEF2] rounded-lg p-4">
             <p className="text-xs text-[#5A6B7C] mb-1">Days Below Target (&lt;5)</p>
-            <p className="text-xl font-semibold text-[#0A1128]">24/30</p>
+            <p className="text-xl font-semibold text-[#0A1128]">{daysBelowTarget}/{trend30.length}</p>
           </div>
         </div>
       </div>

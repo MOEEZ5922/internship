@@ -1,10 +1,17 @@
 import { Outlet, Link, useLocation, useParams } from 'react-router';
-import { patientInfo } from '../data/mockData';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../hooks/useApi';
+import { fetchPatientSummary } from '../data/api';
 
 export default function PhysicianPatientLayout() {
   const location = useLocation();
-  const { patientId } = useParams();
+  const { id } = useParams();
+
+  const { data: summary, isLoading, error } = useApi(() => fetchPatientSummary(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!summary;
 
   const getRiskColor = (score: number) => {
     if (score >= 80) return 'text-[#E76F51]';
@@ -13,48 +20,73 @@ export default function PhysicianPatientLayout() {
   };
 
   const tabs = [
-    { name: 'Clinical Summary', href: `/physician/patient/${patientId}` },
-    { name: 'Trends', href: `/physician/patient/${patientId}/trends` },
-    { name: 'Biomarkers', href: `/physician/patient/${patientId}/biomarkers` },
-    { name: 'Interventions', href: `/physician/patient/${patientId}/interventions` },
-    { name: 'Surveys', href: `/physician/patient/${patientId}/surveys` },
-    { name: 'AI Analysis', href: `/physician/patient/${patientId}/ai-analysis` },
+    { name: 'Clinical Summary', href: `/physician/patient/${id}` },
+    { name: 'Trends', href: `/physician/patient/${id}/trends` },
+    { name: 'Biomarkers', href: `/physician/patient/${id}/biomarkers` },
+    { name: 'Interventions', href: `/physician/patient/${id}/interventions` },
+    { name: 'Surveys', href: `/physician/patient/${id}/surveys` },
+    { name: 'AI Analysis', href: `/physician/patient/${id}/ai-analysis` },
   ];
+
+  if (isLoading && !summary) {
+    return (
+      <div className="flex items-center justify-center h-full bg-[#FAFAFA]">
+        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
+      </div>
+    );
+  }
+
+  const patient = summary || {
+    name: 'Unknown Patient',
+    gender: '—',
+    dob: '—',
+    therapyStartDate: new Date().toISOString(),
+    maskType: '—',
+    riskScore: 0
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA]">
       {/* Patient Context Header */}
       <div className="bg-white border-b border-[#E8EEF2] px-8 py-4">
-        <Link to="/physician" className="flex items-center gap-2 text-[#2D9596] hover:underline mb-4 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Inbox
-        </Link>
+        <div className="flex items-center justify-between mb-4">
+          <Link to="/physician" className="flex items-center gap-2 text-[#2D9596] hover:underline text-sm font-medium">
+            <ArrowLeft className="w-4 h-4" /> Back to Inbox
+          </Link>
+          {isLive && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+              <Signal className="w-3 h-3 text-[#6A994E]" />
+              <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+            </div>
+          )}
+        </div>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Patient Profile</p>
-              <p className="font-semibold text-[#0A1128]">{patientInfo.name}</p>
+              <p className="font-semibold text-[#0A1128]">{patient.name}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Demographics</p>
-              <p className="text-[#0A1128]">{patientInfo.gender}, 47y (DOB: 06/15/78)</p>
+              <p className="text-[#0A1128]">{patient.gender}, {patient.dob}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Therapy Timeline</p>
-              <p className="text-[#0A1128]">Started: {new Date(patientInfo.therapyStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              <p className="text-[#0A1128]">Started: {new Date(patient.therapyStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Current Hardware</p>
-              <p className="text-[#0A1128]">{patientInfo.maskType}</p>
+              <p className="text-[#0A1128]">{patient.maskType}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Risk Score</p>
-              <p className={`font-semibold ${getRiskColor(patientInfo.riskScore)}`}>
-                {patientInfo.riskScore}/100
+              <p className={`font-semibold ${getRiskColor(patient.riskScore)}`}>
+                {patient.riskScore}/100
               </p>
             </div>
           </div>

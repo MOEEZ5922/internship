@@ -1,6 +1,8 @@
-import { surveyData } from '../../data/mockData';
-import { FileText, Clock, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { useParams } from 'react-router';
+import { FileText, Clock, CheckCircle, ChevronRight, ChevronLeft, Signal, Loader2 } from 'lucide-react';
 import { useState } from 'react';
+import { useApi } from '../../hooks/useApi';
+import { fetchSurveys } from '../../data/api';
 
 const surveyQuestions = [
   {
@@ -54,7 +56,15 @@ const surveyQuestions = [
 ];
 
 export default function PatientSurveys() {
-  const nextSurvey = surveyData.patient.next;
+  const { id } = useParams();
+  const { data: liveSurveys, isLoading, error } = useApi(() => fetchSurveys(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!liveSurveys;
+  const nextSurvey = liveSurveys?.patient?.next || { name: 'Health Survey', dueDate: null };
+  const history = Array.isArray(liveSurveys?.patient?.history) ? liveSurveys.patient.history : [];
+
   const [inSurvey, setInSurvey] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answers, setAnswers] = useState<Record<number, any>>({});
@@ -198,6 +208,16 @@ export default function PatientSurveys() {
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
+      <div className="flex justify-between items-center px-2">
+        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest">Medical Check-ins</h2>
+        {isLive && (
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+            <Signal className="w-3 h-3 text-[#6A994E]" />
+            <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+          </div>
+        )}
+      </div>
+
       {/* Next Check-In */}
       <div className="bg-gradient-to-br from-[#6A994E] to-[#4a7a35] rounded-3xl p-8 text-white shadow-lg">
         <div className="flex items-start gap-4 mb-4">
@@ -255,51 +275,11 @@ export default function PatientSurveys() {
         </button>
       </div>
 
-      {/* Why It Matters */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <h3 className="text-lg text-[#0A1128] mb-3">Why These Check-Ins Matter</h3>
-        <p className="text-[#5A6B7C] mb-4">
-          Your responses help your care team understand how you're doing and make sure your
-          therapy is working well for you.
-        </p>
-        <div className="space-y-3">
-          <div className="flex items-start gap-3 p-3 bg-[#E8EEF2] rounded-lg">
-            <div className="w-6 h-6 bg-[#6A994E] text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-              1
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-[#0A1128] font-medium">Answer honestly</p>
-              <p className="text-xs text-[#5A6B7C]">There are no wrong answers</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3 p-3 bg-[#E8EEF2] rounded-lg">
-            <div className="w-6 h-6 bg-[#2D9596] text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-              2
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-[#0A1128] font-medium">Take your time</p>
-              <p className="text-xs text-[#5A6B7C]">Usually takes about 5 minutes</p>
-            </div>
-          </div>
-
-          <div className="flex items-start gap-3 p-3 bg-[#E8EEF2] rounded-lg">
-            <div className="w-6 h-6 bg-[#F4A261] text-white rounded-full flex items-center justify-center flex-shrink-0 text-sm">
-              3
-            </div>
-            <div className="flex-1">
-              <p className="text-sm text-[#0A1128] font-medium">Get personalized support</p>
-              <p className="text-xs text-[#5A6B7C]">Helps us provide better care</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* History */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2]">
         <h3 className="text-lg text-[#0A1128] mb-4">Completed Check-Ins</h3>
         <div className="space-y-3">
-          {surveyData.patient.history.map((item, index) => (
+          {history.map((item: any, index: number) => (
             <div key={index} className="flex items-center gap-3 pb-3 border-b border-[#E8EEF2] last:border-0">
               <CheckCircle className="w-5 h-5 text-[#6A994E] flex-shrink-0" />
               <div className="flex-1">
@@ -311,6 +291,9 @@ export default function PatientSurveys() {
                     year: 'numeric',
                   })}
                 </p>
+              </div>
+              <div className="text-right">
+                <span className="text-xs font-bold text-[#6A994E] bg-[#6A994E]/10 px-2 py-1 rounded">Score: {item.score}</span>
               </div>
             </div>
           ))}

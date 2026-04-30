@@ -1,20 +1,51 @@
-import { interventionData } from '../../data/mockData';
-import { Package, MapPin, Truck, CheckCircle, Activity, Battery, Smartphone, Watch, Wifi, HeartPulse } from 'lucide-react';
+import { useParams } from 'react-router';
+import { Package, MapPin, Truck, CheckCircle, Activity, Battery, Smartphone, Watch, Wifi, HeartPulse, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
+import { fetchInterventions, fetchDevices } from '../../data/api';
 
 export default function PatientInterventions() {
-  const delivery = interventionData.patient.upcomingDelivery;
+  const { id } = useParams();
+  const { data: liveInterventions, isLoading: isLoadingInt, error: intError } = useApi(() => fetchInterventions(id || '1'), {
+    dependencies: [id]
+  });
+
+  const { data: liveDevices, isLoading: isLoadingDev, error: devError } = useApi(() => fetchDevices(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !intError && !!liveInterventions;
+  const delivery = liveInterventions?.patient?.upcomingDelivery || liveInterventions?.upcomingDelivery || null;
+  const devices = Array.isArray(liveDevices) ? liveDevices : [];
+
+  if ((isLoadingInt || isLoadingDev) && !liveInterventions) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="p-6 space-y-6 max-w-2xl mx-auto pb-32">
+      <div className="flex justify-between items-center px-2">
+        <h2 className="text-sm font-bold text-[#414D5B] uppercase tracking-widest">Equipment & Supplies</h2>
+        {isLive && (
+          <div className="flex items-center gap-1.5 px-2 py-1 bg-[#2D9596]/10 border border-[#2D9596]/20 rounded-md">
+            <Signal className="w-3 h-3 text-[#2D9596]" />
+            <span className="text-[10px] font-bold text-[#2D9596] uppercase tracking-wider">Live</span>
+          </div>
+        )}
+      </div>
 
       {/* Delivery Status Card */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
+      {delivery ? (
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2]">
         <div className="flex items-start gap-4 mb-6">
           <div className="w-12 h-12 bg-[#2D9596]/10 rounded-full flex items-center justify-center flex-shrink-0">
             <Package className="w-6 h-6 text-[#2D9596]" />
           </div>
           <div className="flex-1">
-            <p className="text-sm text-[#5A6B7C] mb-1">On the way</p>
+            <p className="text-sm text-[#5A6B7C] mb-1">{delivery.status}</p>
             <p className="text-xl font-semibold text-[#0A1128] mb-1">{delivery.item}</p>
             <div className="flex items-center gap-2 text-sm text-[#2D9596]">
               <MapPin className="w-4 h-4" />
@@ -25,7 +56,7 @@ export default function PatientInterventions() {
 
         {/* Progress Tracker */}
         <div className="space-y-4">
-          {delivery.steps.map((step, index) => {
+          {delivery.steps.map((step: any, index: number) => {
             const isCompleted = step.completed;
             const isLast = index === delivery.steps.length - 1;
 
@@ -69,8 +100,14 @@ export default function PatientInterventions() {
           })}
         </div>
       </div>
+      ) : (
+      <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2] text-center">
+        <Package className="w-10 h-10 text-[#E8EEF2] mx-auto mb-3" />
+        <p className="text-[#5A6B7C] text-sm">No pending deliveries for this patient.</p>
+      </div>
+      )}
 
-      {/* Biomarker Wearables (Demo List) */}
+      {/* Biomarker Wearables */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border-2 border-[#E8EEF2]">
         <h3 className="text-[#0A1128] font-semibold mb-2 flex items-center gap-2">
           <Activity className="w-5 h-5 text-[#E76F51]" />

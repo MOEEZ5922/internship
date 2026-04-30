@@ -40,13 +40,7 @@ export default function VisitPrepCard({ patient }: VisitPrepCardProps) {
   if (!patient) return null;
 
   // Safe data access for biomarkers
-  const biomarkers = patient.biomarkers || {
-    ahi: { current: 0, baseline: 0 },
-    spo2: { mean: 0, nadir: 0 },
-    odi: 0,
-    hrv: 0,
-    oai: 0
-  };
+  const biomarkers = patient.biomarkers || null;
 
   const handleAddLog = () => {
     setShowLogForm(false);
@@ -114,8 +108,8 @@ export default function VisitPrepCard({ patient }: VisitPrepCardProps) {
           <>
             <div className="space-y-8 animate-in fade-in duration-300">
               
-              {/* Survey Recovery Workflow (Active only for Delinquent Patients) */}
-              {patient.id === 10 && (
+              {/* Survey Recovery Workflow (Active only for High Risk) */}
+              {patient.dropoutRisk > 90 && (
                 <div className="bg-[#9b59b6]/5 border-2 border-[#9b59b6]/30 rounded-3xl p-6 mb-8 relative overflow-hidden group">
                   <div className="absolute top-[-20px] right-[-20px] opacity-5 group-hover:scale-110 transition-transform">
                     <Send className="w-32 h-32 text-[#9b59b6]" />
@@ -173,21 +167,23 @@ export default function VisitPrepCard({ patient }: VisitPrepCardProps) {
                 </div>
 
                 {/* Bag Pack Checklist */}
-                <div className="bg-[#2D9596]/5 rounded-2xl border border-[#2D9596]/20 p-6">
-                  <h3 className="text-xs font-bold text-[#2D9596] uppercase tracking-widest mb-4 flex items-center gap-2">
-                    <ClipboardCheck className="w-3.5 h-3.5" /> Equipment to Bring
-                  </h3>
-                  <div className="space-y-2">
-                    {(patient.equipmentNeed || []).map((item: string) => (
-                      <div key={item} className="flex items-center gap-3 text-sm text-[#0A1128] font-medium bg-white/60 p-2.5 rounded-lg border border-[#2D9596]/10">
-                        <div className="w-4 h-4 border-2 border-[#2D9596] rounded flex items-center justify-center">
-                          <CheckCircle className="w-3 h-3 text-transparent hover:text-[#2D9596]/30" />
+                {Array.isArray(patient.equipmentNeed) && patient.equipmentNeed.length > 0 && (
+                  <div className="bg-[#2D9596]/5 rounded-2xl border border-[#2D9596]/20 p-6">
+                    <h3 className="text-xs font-bold text-[#2D9596] uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <ClipboardCheck className="w-3.5 h-3.5" /> Equipment to Bring
+                    </h3>
+                    <div className="space-y-2">
+                      {patient.equipmentNeed.map((item: string) => (
+                        <div key={item} className="flex items-center gap-3 text-sm text-[#0A1128] font-medium bg-white/60 p-2.5 rounded-lg border border-[#2D9596]/10">
+                          <div className="w-4 h-4 border-2 border-[#2D9596] rounded flex items-center justify-center">
+                            <CheckCircle className="w-3 h-3 text-transparent hover:text-[#2D9596]/30" />
+                          </div>
+                          {item}
                         </div>
-                        {item}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Unified Evidence Workspace (Compact Pulse) */}

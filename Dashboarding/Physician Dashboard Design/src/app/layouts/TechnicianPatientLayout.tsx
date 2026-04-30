@@ -1,49 +1,79 @@
 import { Outlet, Link, useLocation, useParams } from 'react-router';
-import { patientInfo } from '../data/mockData';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Signal, Loader2 } from 'lucide-react';
+import { useApi } from '../hooks/useApi';
+import { fetchPatientSummary } from '../data/api';
 
 export default function TechnicianPatientLayout() {
   const location = useLocation();
-  const { patientId } = useParams();
+  const { id } = useParams();
+
+  const { data: summary, isLoading, error } = useApi(() => fetchPatientSummary(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!summary;
 
   const tabs = [
-    { name: 'Clinical Summary', href: `/technician/patient/${patientId}` },
-    { name: 'Trends', href: `/technician/patient/${patientId}/trends` },
-    { name: 'Biomarkers', href: `/technician/patient/${patientId}/biomarkers` },
-    { name: 'Interventions', href: `/technician/patient/${patientId}/interventions` },
-    { name: 'Surveys', href: `/technician/patient/${patientId}/surveys` },
-    { name: 'AI Analysis', href: `/technician/patient/${patientId}/ai-analysis` },
-    { name: 'Biomarker Devices', href: `/technician/patient/${patientId}/devices` },
+    { name: 'Clinical Summary', href: `/technician/patient/${id}` },
+    { name: 'Trends', href: `/technician/patient/${id}/trends` },
+    { name: 'Biomarkers', href: `/technician/patient/${id}/biomarkers` },
+    { name: 'Interventions', href: `/technician/patient/${id}/interventions` },
+    { name: 'Surveys', href: `/technician/patient/${id}/surveys` },
+    { name: 'AI Analysis', href: `/technician/patient/${id}/ai-analysis` },
+    { name: 'Biomarker Devices', href: `/technician/patient/${id}/devices` },
   ];
+
+  if (isLoading && !summary) {
+    return (
+      <div className="flex items-center justify-center h-full bg-[#FAFAFA]">
+        <Loader2 className="w-8 h-8 text-[#F4A261] animate-spin" />
+      </div>
+    );
+  }
+
+  const patient = summary || {
+    name: 'Unknown Patient',
+    address: '—',
+    machineSerial: '—',
+    maskType: '—'
+  };
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA]">
       {/* Patient Context Header */}
       <div className="bg-white border-b border-[#E8EEF2] px-8 py-4">
-        <Link to="/technician" className="flex items-center gap-2 text-[#F4A261] hover:underline mb-4 text-sm font-medium">
-          <ArrowLeft className="w-4 h-4" /> Back to Queue
-        </Link>
+        <div className="flex items-center justify-between mb-4">
+          <Link to="/technician" className="flex items-center gap-2 text-[#F4A261] hover:underline text-sm font-medium">
+            <ArrowLeft className="w-4 h-4" /> Back to Queue
+          </Link>
+          {isLive && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+              <Signal className="w-3 h-3 text-[#6A994E]" />
+              <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+            </div>
+          )}
+        </div>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-6">
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Patient Name</p>
-              <p className="font-semibold text-[#0A1128]">{patientInfo.name}</p>
+              <p className="font-semibold text-[#0A1128]">{patient.name}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Address</p>
-              <p className="text-[#0A1128]">{patientInfo.address}</p>
+              <p className="text-[#0A1128]">{patient.address}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Machine Serial</p>
-              <p className="text-[#0A1128] font-mono text-sm">{patientInfo.machineSerial}</p>
+              <p className="text-[#0A1128] font-mono text-sm">{patient.machineSerial}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Current Mask</p>
-              <p className="text-[#0A1128]">{patientInfo.maskType}</p>
+              <p className="text-[#0A1128]">{patient.maskType}</p>
             </div>
           </div>
         </div>

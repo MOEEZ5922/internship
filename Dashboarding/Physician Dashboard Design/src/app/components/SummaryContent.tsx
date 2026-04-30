@@ -1,10 +1,4 @@
-import { Link } from 'react-router';
-import {
-  aiWeeklyState,
-  cpapData,
-  patientInfo,
-  technicianQueue
-} from '../data/mockData';
+import { Link, useParams } from 'react-router';
 import {
   AlertTriangle,
   CheckCircle,
@@ -25,9 +19,13 @@ import {
   Plus,
   Send,
   Zap,
-  Video
+  Video,
+  Signal,
+  Loader2
 } from 'lucide-react';
 import { useState } from 'react';
+import { useApi } from '../hooks/useApi';
+import { fetchPatientSummary, fetchWeeklyAnalysis } from '../data/api';
 
 interface SummaryContentProps {
   patientId?: string;
@@ -38,12 +36,25 @@ interface SummaryContentProps {
 }
 
 export default function SummaryContent({
-  patientId,
+  patientId: propPatientId,
   isCompact = false,
   role = 'physician',
   hideHeader = false,
   showActions = true
 }: SummaryContentProps) {
+  const { id: urlId } = useParams();
+  const id = propPatientId || urlId || '1';
+
+  const { data: summary, isLoading: isSumLoading, error: sumError } = useApi(() => fetchPatientSummary(id), {
+    dependencies: [id]
+  });
+
+  const { data: ai, isLoading: isAiLoading, error: aiError } = useApi(() => fetchWeeklyAnalysis(id), {
+    dependencies: [id]
+  });
+
+  const isLive = !sumError && !!summary;
+
   const [showLogConfirmation, setShowLogConfirmation] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [activePathway, setActivePathway] = useState<'app_iah' | 'alt_therapy'>('app_iah');
@@ -61,11 +72,20 @@ export default function SummaryContent({
     alert(`Clinical Order Logged: ${appIahNotes}`);
   };
 
+  if ((isSumLoading || isAiLoading) && (!summary || !ai)) {
+     return (
+       <div className="flex items-center justify-center h-96">
+         <Loader2 className="w-8 h-8 text-[#E76F51] animate-spin" />
+       </div>
+     );
+  }
+
   // Ultra-resilient data mapping
-  const nextAction = aiWeeklyState?.nextBestAction || { type: 'Monitoring', rationale: 'No active clinical exception.' };
-  const currentAHI = cpapData?.currentAHI || 0;
-  const usage = cpapData?.averageHours || 0;
-  const leak = cpapData?.percentileLeak || 0;
+  const nextAction = ai?.nextBestAction || { type: 'Monitoring', rationale: 'No active clinical exception.' };
+  const currentAHI = summary?.currentAHI || 0;
+  const usage = summary?.averageHours || 0;
+  const leak = summary?.percentileLeak || 0;
+
 
   return (
     <div className={`space-y-6 ${isCompact ? 'p-0' : 'p-8 max-w-6xl mx-auto'} animate-in fade-in duration-500`}>
@@ -79,7 +99,14 @@ export default function SummaryContent({
                 <AlertTriangle className="w-8 h-8 text-[#E76F51]" />
               </div>
               <div>
-                <h2 className="text-xl font-bold mb-1">Clinical Exception: {nextAction.type}</h2>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-xl font-bold">Clinical Exception: {nextAction.type}</h2>
+                  {isLive && (
+                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-[#6A994E]/20 border border-[#6A994E]/30 rounded text-[9px] font-bold uppercase tracking-widest text-[#6A994E]">
+                      <Signal className="w-2.5 h-2.5" /> Live
+                    </div>
+                  )}
+                </div>
                 <p className="text-white/70 text-sm max-w-2xl leading-relaxed">
                   {nextAction.rationale}
                 </p>
@@ -88,9 +115,9 @@ export default function SummaryContent({
             {!isCompact && (
               <div className="text-right whitespace-nowrap">
                 <div className="bg-white/10 px-3 py-1 rounded-lg text-xs font-semibold mb-2">
-                  ESCALATED {aiWeeklyState?.weekOf || 'ACTIVE'}
+                  ESCALATED {ai?.weekOf || 'ACTIVE'}
                 </div>
-                <div className="text-2xl font-bold text-[#E76F51]">Risk: {aiWeeklyState?.compositeRiskScore || 0}</div>
+                <div className="text-2xl font-bold text-[#E76F51]">Risk: {ai?.compositeRiskScore || 0}</div>
               </div>
             )}
           </div>
@@ -132,7 +159,7 @@ export default function SummaryContent({
               </h3>
               <div className="bg-[#FAFAFA] p-4 rounded-xl border border-[#E8EEF2]">
                 <p className="text-[10px] text-[#5A6B7C] font-semibold mb-1">AI Classification</p>
-                <p className="text-lg font-bold text-[#F4A261]">{aiWeeklyState?.clusterAssignment?.current || 'Scanning...'}</p>
+                <p className="text-lg font-bold text-[#F4A261]">{ai?.clusterAssignment?.current || 'Scanning...'}</p>
               </div>
             </div>
 
@@ -144,7 +171,7 @@ export default function SummaryContent({
               <div className="bg-[#FAFAFA] p-4 rounded-xl border border-[#E8EEF2] flex items-center justify-between">
                 <div>
                   <p className="text-[10px] text-[#5A6B7C] font-semibold mb-1">Video Watchtime</p>
-                  <p className="text-lg font-bold text-[#2D9596]">75% <span className="text-xs font-normal text-[#5A6B7C]">Watched</span></p>
+                  <p className="text-lg font-bold text-[#2D9596]">{summary?.adherenceRate || 75}% <span className="text-xs font-normal text-[#5A6B7C]">Watched</span></p>
                 </div>
                 <div className="w-10 h-10 rounded-full border-4 border-[#E8EEF2] border-t-[#2D9596] flex items-center justify-center transform rotate-45">
                    <div className="w-8 h-8 rounded-full border-4 border-white" />
@@ -159,24 +186,24 @@ export default function SummaryContent({
               Intervention History
             </h3>
             <div className="space-y-3">
-              {(technicianQueue[0]?.interventionHistory || []).slice(0, 3).map((item, idx) => (
+              {(summary?.interventions || []).slice(0, 3).map((item: any, idx: number) => (
                 <div key={idx} className="flex items-start gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-[#E8EEF2] hover:border-[#2D9596]/30 transition-all group">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     item.type.includes('Educational') ? 'bg-[#2D9596]/10 text-[#2D9596]' :
-                    item.result === 'Success' ? 'bg-[#6A994E]/10 text-[#6A994E]' : 
-                    item.result === 'Pending' ? 'bg-[#F4A261]/10 text-[#F4A261]' : 
+                    item.outcome === 'Success' ? 'bg-[#6A994E]/10 text-[#6A994E]' : 
+                    item.outcome === 'Pending' ? 'bg-[#F4A261]/10 text-[#F4A261]' : 
                     'bg-[#E76F51]/10 text-[#E76F51]'
                   }`}>
                     {item.type.includes('Educational') ? <Video className="w-4 h-4" /> :
-                     item.result === 'Success' ? <CheckCircle className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
+                     item.outcome === 'Success' ? <CheckCircle className="w-4 h-4" /> : <Activity className="w-4 h-4" />}
                   </div>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <p className="text-[11px] font-bold text-[#0A1128] group-hover:text-[#2D9596] transition-colors">{item.type}</p>
-                      <span className="text-[8px] font-mono bg-white px-1.5 py-0.5 rounded border border-[#E8EEF2] text-[#5A6B7C]">{item.code}</span>
+                      <span className="text-[8px] font-mono bg-white px-1.5 py-0.5 rounded border border-[#E8EEF2] text-[#5A6B7C]">{item.job_code || item.code}</span>
                     </div>
                     <p className="text-[9px] text-[#5A6B7C] flex items-center gap-1 mt-0.5">
-                      {item.date} • {item.tech}
+                      {item.date} • {item.actor?.id || item.tech}
                     </p>
                   </div>
                 </div>
@@ -282,7 +309,7 @@ export default function SummaryContent({
               )}
 
               <div className="mt-8 pt-8 border-t border-[#E8EEF2] space-y-2">
-                <Link to={`/${role}/patient/${patientId || '1'}/trends`} className="flex items-center justify-between bg-[#FAFAFA] p-3 rounded-xl hover:border-[#E8EEF2] transition-all">
+                <Link to={`/${role}/patient/${id || '1'}/trends`} className="flex items-center justify-between bg-[#FAFAFA] p-3 rounded-xl hover:border-[#E8EEF2] transition-all">
                   <span className="text-xs font-bold text-[#0A1128]">Detailed Trends</span>
                   <ArrowRight className="w-4 h-4 text-[#E8EEF2]" />
                 </Link>

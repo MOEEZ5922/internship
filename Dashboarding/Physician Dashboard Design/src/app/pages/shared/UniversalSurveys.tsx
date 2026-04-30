@@ -1,13 +1,21 @@
 import { useState } from 'react';
-import { useLocation } from 'react-router';
-import { AlertCircle, ChevronDown, CalendarDays, MessageSquare, ShieldAlert, UserCircle, CheckCircle, ClipboardList, Plus } from 'lucide-react';
-import { technicianQueue } from '../../data/mockData';
+import { useLocation, useParams } from 'react-router';
+import { AlertCircle, ChevronDown, CalendarDays, MessageSquare, ShieldAlert, UserCircle, CheckCircle, ClipboardList, Plus, Signal } from 'lucide-react';
+import { useApi } from '../../hooks/useApi';
+import { fetchSurveys, submitMonitoringLog } from '../../data/api';
 
 type SurveyType = 'PSQI' | 'ISI' | 'ESS' | 'FSS' | 'SF-36' | 'BDI';
 
 export default function UniversalSurveys() {
+  const { id } = useParams();
   const location = useLocation();
   const isTechnician = location.pathname.includes('/technician');
+  
+  const { data: liveSurveys, error, refetch } = useApi(() => fetchSurveys(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!liveSurveys;
   
   const [activeSurvey, setActiveSurvey] = useState<SurveyType>('ESS');
   const [showFormModal, setShowFormModal] = useState(false);
@@ -21,102 +29,74 @@ export default function UniversalSurveys() {
     { id: 'env', name: 'Environment & Setup Audit', type: 'Technical' }
   ];
 
-  const handleFormSubmit = () => {
-    alert(`Monitoring Form Logged & Synced:\n\nForm: ${selectedForm}\nNote: ${formNote}`);
-    setShowFormModal(false);
-    setSelectedForm('');
-    setFormNote('');
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const surveyDatabase = {
-    ESS: {
-      name: 'Epworth Sleepiness Scale (ESS)',
-      date: '2026-04-10',
-      score: 14,
-      threshold: 10,
-      risk: 'Elevated',
-      breakdown: [
-        { label: 'Sitting and reading', answer: 'Moderate chance of dozing (2)' },
-        { label: 'Watching TV', answer: 'High chance of dozing (3)' },
-        { label: 'Sitting inactive in a public place', answer: 'Slight chance of dozing (1)' },
-        { label: 'As a passenger in a car for an hour', answer: 'Moderate chance of dozing (2)' },
-        { label: 'Lying down to rest in the afternoon', answer: 'High chance of dozing (3)' },
-      ],
-      clinicalNote: 'Patient exhibits significant daytime sleepiness despite CPAP therapy. Consider evaluating for residual apneas or insufficient sleep syndrome.'
-    },
-    PSQI: {
-      name: 'Pittsburgh Sleep Quality Index (PSQI)',
-      date: '2026-03-25',
-      score: 8,
-      threshold: 5,
-      risk: 'Elevated',
-      breakdown: [
-        { label: 'Subjective sleep quality', answer: 'Fairly bad (2)' },
-        { label: 'Sleep latency', answer: '> 30 minutes (2)' },
-        { label: 'Sleep duration', answer: '5-6 hours (1)' },
-        { label: 'Habitual sleep efficiency', answer: '< 75% (3)' },
-      ],
-      clinicalNote: 'Poor sleep quality and efficiency indicated. Mask discomfort may be contributing to prolonged sleep latency.'
-    },
-    ISI: {
-      name: 'Insomnia Severity Index (ISI)',
-      date: '2026-04-01',
-      score: 16,
-      threshold: 14,
-      risk: 'Moderate',
-      breakdown: [
-        { label: 'Difficulty falling asleep', answer: 'Moderate (2)' },
-        { label: 'Difficulty staying asleep', answer: 'Severe (3)' },
-        { label: 'Problem waking up too early', answer: 'Mild (1)' },
-        { label: 'Interference with daily functioning', answer: 'Much (3)' },
-      ],
-      clinicalNote: 'Moderate clinical insomnia. Patient reports frequent awakenings which correlate with CPAP pressure surges.'
-    },
-    FSS: {
-      name: 'Fatigue Severity Scale (FSS)',
-      date: '2026-03-10',
-      score: 42,
-      threshold: 36,
-      risk: 'High',
-      breakdown: [
-        { label: 'Exercise brings on my fatigue', answer: 'Strongly Agree (7)' },
-        { label: 'Fatigue interferes with physical functioning', answer: 'Agree (5)' },
-        { label: 'Fatigue causes frequent problems', answer: 'Agree (5)' },
-        { label: 'My fatigue prevents sustained physical functioning', answer: 'Strongly Agree (7)' },
-      ],
-      clinicalNote: 'Severe fatigue reported impacting physical activity. Possible comorbidity or profoundly fragmented sleep architecture.'
-    },
-    'SF-36': {
-      name: 'Short Form 36 Health Survey (SF-36)',
-      date: '2026-01-15',
-      score: 65,
-      threshold: 50,
-      risk: 'Normal',
-      breakdown: [
-        { label: 'Physical Functioning', answer: '80/100' },
-        { label: 'Role Limitations (Physical)', answer: '50/100' },
-        { label: 'Energy/Fatigue', answer: '45/100' },
-        { label: 'Emotional Well-being', answer: '70/100' },
-      ],
-      clinicalNote: 'General health is acceptable, but energy levels are sub-par. Annual review baseline established.'
-    },
-    BDI: {
-      name: 'Beck Depression Inventory (BDI)',
-      date: '2026-02-28',
-      score: 11,
-      threshold: 13,
-      risk: 'Normal',
-      breakdown: [
-        { label: 'Sadness', answer: 'I do not feel sad (0)' },
-        { label: 'Pessimism', answer: 'I am not particularly discouraged about the future (0)' },
-        { label: 'Loss of Energy', answer: 'I have less energy than I used to (1)' },
-        { label: 'Changes in Sleep Pattern', answer: 'I sleep most of the day (3)' },
-      ],
-      clinicalNote: 'Minimal clinical depression indicated. Symptoms are highly localized to energy and sleep pattern disruptions.'
+  const handleFormSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      await submitMonitoringLog(id || '1', {
+        form_type: selectedForm,
+        notes: formNote,
+        technician_id: 'TECH-001'
+      });
+      alert(`Monitoring Form Logged & Synced!`);
+      refetch();
+      setShowFormModal(false);
+      setSelectedForm('');
+      setFormNote('');
+    } catch (err) {
+      alert('Failed to log form. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const activeContent = surveyDatabase[activeSurvey];
+  // Build survey database from API data when available
+  const apiPhysicianSurveys = Array.isArray(liveSurveys?.physician) ? liveSurveys.physician : [];
+
+  // Map API survey names to their full display info
+  const surveyMeta: Record<string, { fullName: string; defaultThreshold: number; breakdownTemplate: { label: string; answer: string }[]; clinicalNoteTemplate: string }> = {
+    ESS: { fullName: 'Epworth Sleepiness Scale (ESS)', defaultThreshold: 10, breakdownTemplate: [{ label: 'Daytime Sleepiness Assessment', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'ESS score indicates {risk} level of daytime sleepiness. {action}' },
+    PSQI: { fullName: 'Pittsburgh Sleep Quality Index (PSQI)', defaultThreshold: 5, breakdownTemplate: [{ label: 'Sleep Quality Assessment', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'PSQI score indicates {risk} sleep quality. {action}' },
+    ISI: { fullName: 'Insomnia Severity Index (ISI)', defaultThreshold: 14, breakdownTemplate: [{ label: 'Insomnia Severity Assessment', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'ISI score indicates {risk} insomnia severity. {action}' },
+    FSS: { fullName: 'Fatigue Severity Scale (FSS)', defaultThreshold: 36, breakdownTemplate: [{ label: 'Fatigue Impact Assessment', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'FSS score indicates {risk} fatigue levels. {action}' },
+    'SF-36': { fullName: 'Short Form 36 Health Survey (SF-36)', defaultThreshold: 50, breakdownTemplate: [{ label: 'General Health Assessment', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'SF-36 score indicates {risk} general health status. {action}' },
+    BDI: { fullName: 'Beck Depression Inventory (BDI)', defaultThreshold: 13, breakdownTemplate: [{ label: 'Depression Screening', answer: 'Score-based evaluation' }], clinicalNoteTemplate: 'BDI score indicates {risk} depression levels. {action}' },
+  };
+
+  const surveyDatabase: Record<string, any> = {};
+  // First populate from API data
+  for (const apiSurvey of apiPhysicianSurveys) {
+    const meta = surveyMeta[apiSurvey.name] || { fullName: apiSurvey.name, defaultThreshold: 0, breakdownTemplate: [{ label: 'Assessment', answer: 'Score-based' }], clinicalNoteTemplate: 'Score indicates {risk} level.' };
+    const threshold = apiSurvey.threshold ?? meta.defaultThreshold;
+    const risk = apiSurvey.risk || (apiSurvey.score > threshold ? 'Elevated' : 'Normal');
+    const action = apiSurvey.score > threshold ? 'Clinical review recommended.' : 'No immediate action required.';
+    surveyDatabase[apiSurvey.name] = {
+      name: meta.fullName,
+      date: apiSurvey.dateTaken,
+      score: apiSurvey.score,
+      threshold: threshold,
+      risk: risk,
+      breakdown: meta.breakdownTemplate,
+      clinicalNote: meta.clinicalNoteTemplate.replace('{risk}', risk.toLowerCase()).replace('{action}', action)
+    };
+  }
+  // Fill in any missing survey types with defaults so the selector always works
+  for (const [key, meta] of Object.entries(surveyMeta)) {
+    if (!surveyDatabase[key]) {
+      surveyDatabase[key] = {
+        name: meta.fullName,
+        date: '—',
+        score: 0,
+        threshold: meta.defaultThreshold,
+        risk: 'No Data',
+        breakdown: [{ label: 'No assessment available', answer: 'Patient has not completed this survey yet' }],
+        clinicalNote: 'No data available for this survey. Patient has not completed it yet.'
+      };
+    }
+  }
+
+  const activeContent = surveyDatabase[activeSurvey] || surveyDatabase['ESS'];
 
   const getRiskColor = (risk: string) => {
     if (risk === 'High') return 'text-[#E76F51]';
@@ -140,9 +120,17 @@ export default function UniversalSurveys() {
                {isTechnician ? <ClipboardList /> : <UserCircle />}
             </div>
             <div>
-               <h2 className="text-xl font-bold text-[#0A1128]">
-                  {isTechnician ? 'Behavioral Monitoring Desk' : 'Clinical Assessment Review'}
-               </h2>
+               <div className="flex items-center gap-3">
+                 <h2 className="text-xl font-bold text-[#0A1128]">
+                    {isTechnician ? 'Behavioral Monitoring Desk' : 'Clinical Assessment Review'}
+                 </h2>
+                 {isLive && (
+                    <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+                      <Signal className="w-3 h-3 text-[#6A994E]" />
+                      <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+                    </div>
+                  )}
+               </div>
                <p className="text-sm text-[#5A6B7C]">
                   {isTechnician ? 'Log visit observations and view patient-reported milestones.' : 'Review standardized medical surveys and technician field notes.'}
                </p>
@@ -265,7 +253,8 @@ export default function UniversalSurveys() {
         </div>
         
         <div className="p-8 space-y-6 bg-white/5">
-           {technicianQueue?.[0]?.monitoringSurveys?.map((log: any, idx: number) => (
+           {Array.isArray(liveSurveys?.technician) && liveSurveys.technician.length > 0 ? (
+             liveSurveys.technician.map((log: any, idx: number) => (
              <div key={idx} className="bg-white p-6 rounded-2xl shadow-lg border border-transparent hover:border-[#F4A261]/30 transition-all group">
                 <div className="flex items-start justify-between mb-4">
                    <div className="flex items-center gap-4">
@@ -273,24 +262,22 @@ export default function UniversalSurveys() {
                          <UserCircle className="w-7 h-7 text-[#5A6B7C]" />
                       </div>
                       <div>
-                         <p className="text-md font-bold text-[#0A1128] group-hover:text-[#F4A261] transition-colors">{log.question}</p>
-                         <p className="text-[10px] text-[#5A6B7C] uppercase font-bold tracking-widest mt-0.5">{log.role}: {log.author}</p>
+                         <p className="text-md font-bold text-[#0A1128] group-hover:text-[#F4A261] transition-colors">{log.name || 'Monitoring Log'}</p>
+                         <p className="text-[10px] text-[#5A6B7C] uppercase font-bold tracking-widest mt-0.5">{log.type || 'Operational'}: {log.author || 'TECH-001'}</p>
                       </div>
                    </div>
-                   <span className="text-[10px] font-mono font-bold bg-[#FAFAFA] px-2 py-1 rounded text-[#5A6B7C] border border-[#E8EEF2]">{log.date}</span>
+                   <span className="text-[10px] font-mono font-bold bg-[#FAFAFA] px-2 py-1 rounded text-[#5A6B7C] border border-[#E8EEF2]">{log.lastCompleted}</span>
                 </div>
                 
                 <div className="bg-[#F4A261]/5 border-2 border-dashed border-[#F4A261]/20 p-5 rounded-2xl flex items-center gap-4 group-hover:bg-[#F4A261]/10 transition-colors">
                    <MessageSquare className="w-5 h-5 text-[#F4A261]" />
                    <p className="text-sm font-bold text-[#0A1128] leading-relaxed">
                      <span className="text-[#F4A261] uppercase text-[10px] font-black mr-2">Field Observation:</span> 
-                     {log.answer}
+                     Data successfully synced from field unit via {log.name}.
                    </p>
                 </div>
              </div>
-           ))}
-           
-           {(!technicianQueue?.[0]?.monitoringSurveys || technicianQueue[0].monitoringSurveys.length === 0) && (
+           ))) : (
              <div className="text-center py-20">
                 <ClipboardList className="w-16 h-16 text-white/10 mx-auto mb-4" />
                 <p className="text-white/40 font-bold uppercase tracking-widest text-xs">No technician-logged monitoring forms available.</p>

@@ -2,9 +2,9 @@ import { useParams } from 'react-router';
 import SummaryContent from '../../components/SummaryContent';
 
 export default function PhysicianSummary() {
-  const { patientId } = useParams();
+  const { id } = useParams();
   
   return (
-    <SummaryContent patientId={patientId} role="physician" />
+    <SummaryContent patientId={id} role="physician" />
   );
 }

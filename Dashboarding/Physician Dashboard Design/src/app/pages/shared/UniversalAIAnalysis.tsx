@@ -1,9 +1,11 @@
-import { aiWeeklyState } from '../../data/mockData';
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
-import { TrendingUp, TrendingDown, Minus, AlertTriangle, Brain, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, AlertTriangle, Brain, ArrowRight, Signal, Loader2 } from 'lucide-react';
+import { useParams } from 'react-router';
+import { useApi } from '../../hooks/useApi';
+import { fetchWeeklyAnalysis } from '../../data/api';
 
 const riskTierColors: Record<string, string> = {
   Critical: 'bg-[#E76F51] text-white',
@@ -20,16 +22,56 @@ const clusterColors: Record<string, string> = {
 };
 
 export default function UniversalAIAnalysis() {
-  const ai = aiWeeklyState;
+  const { id } = useParams();
+  
+  const { data: ai, isLoading, error } = useApi(() => fetchWeeklyAnalysis(id || '1'), {
+    dependencies: [id]
+  });
+
+  const isLive = !error && !!ai;
+
+  if (isLoading && !ai) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#0A1128] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!ai) {
+    return (
+      <div className="p-8 text-center text-[#5A6B7C]">
+        <p>No AI analysis available for this patient yet.</p>
+      </div>
+    );
+  }
 
   const scoreDelta = (ai.compositeRiskScore - ai.previousRiskScore).toFixed(1);
   const scoreWorsened = ai.compositeRiskScore > ai.previousRiskScore;
+
 
   return (
     <div className="p-8 space-y-8 max-w-5xl">
 
       {/* Header */}
       <div>
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-[#0A1128]/5 rounded-2xl">
+              <Brain className="w-8 h-8 text-[#0A1128]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#0A1128]">AI Weekly Analysis</h1>
+              <p className="text-sm text-[#5A6B7C]">Composite risk engine & predictive stratification</p>
+            </div>
+            {isLive && (
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md ml-2">
+                <Signal className="w-3 h-3 text-[#6A994E]" />
+                <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+              </div>
+            )}
+          </div>
+        </div>
         <div className="flex items-center gap-2 mb-2">
           <Brain className="w-5 h-5 text-[#2D9596]" />
           <span className="text-xs font-bold uppercase tracking-widest text-[#2D9596]">
@@ -185,19 +227,19 @@ export default function UniversalAIAnalysis() {
         <div className="grid grid-cols-3 gap-6">
           <div>
             <p className="text-xs text-white/60 mb-1">Action Type</p>
-            <p className="font-semibold">{aiWeeklyState.nextBestAction.type}</p>
+            <p className="font-semibold">{ai.nextBestAction.type}</p>
           </div>
           <div>
             <p className="text-xs text-white/60 mb-1">Delivery Mode</p>
-            <p className="font-semibold">{aiWeeklyState.nextBestAction.deliveryMode}</p>
+            <p className="font-semibold">{ai.nextBestAction.deliveryMode}</p>
           </div>
           <div>
             <p className="text-xs text-white/60 mb-1">Reassessment Window</p>
-            <p className="font-semibold">{aiWeeklyState.nextBestAction.reassessmentWindow}</p>
+            <p className="font-semibold">{ai.nextBestAction.reassessmentWindow}</p>
           </div>
         </div>
         <p className="text-sm text-white/80 mt-4 border-t border-white/10 pt-4">
-          {aiWeeklyState.nextBestAction.rationale}
+          {ai.nextBestAction.rationale}
         </p>
       </div>
     </div>

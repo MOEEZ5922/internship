@@ -1,12 +1,45 @@
-import { physicianQueue } from '../../data/mockData';
-import { AlertTriangle, Calendar, ChevronRight, Activity, Search, Filter } from 'lucide-react';
+import { AlertTriangle, Calendar, ChevronRight, Activity, Search, Filter, Signal, Loader2 } from 'lucide-react';
 import { Link } from 'react-router';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import SummaryContent from '../../components/SummaryContent';
+import { fetchPhysicianQueue } from '../../data/api';
+import { useApi } from '../../hooks/useApi';
 
 export default function PhysicianHome() {
   const [activeTab, setActiveTab] = useState<'urgent' | 'annual'>('urgent');
-  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(physicianQueue.urgent[0]?.id || null);
+  
+  // Use the scalable useApi hook
+  const { data: queue, isLoading, error } = useApi(fetchPhysicianQueue);
+
+  const isLive = !error && !!queue;
+  const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);
+
+  // Set initial selected patient when queue loads
+  useEffect(() => {
+    if (queue && !selectedPatientId) {
+      setSelectedPatientId(queue.urgent?.[0]?.id || queue.annualReviews?.[0]?.id || null);
+    }
+  }, [queue, selectedPatientId]);
+
+  if (isLoading && !queue) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-white">
+        <Loader2 className="w-8 h-8 text-[#E76F51] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!queue) {
+    return (
+      <div className="flex items-center justify-center h-full w-full bg-white text-[#5A6B7C]">
+        <p>No clinical escalations found in inbox.</p>
+      </div>
+    );
+  }
+
+  const urgentCount = Array.isArray(queue.urgent) ? queue.urgent.length : 0;
+  const annualCount = Array.isArray(queue.annualReviews) ? queue.annualReviews.length : 0;
+
 
   const getRiskColor = (score: number, category?: string) => {
     if (category === 'Tech Escalation') return 'text-[#9b59b6]';
@@ -26,6 +59,12 @@ export default function PhysicianHome() {
             <h1 className="text-xl font-bold text-[#0A1128]">Exception Inbox</h1>
             <p className="text-xs text-[#5A6B7C]">AI-filtered clinical escalations</p>
           </div>
+          {isLive && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
+              <Signal className="w-3 h-3 text-[#6A994E]" />
+              <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
+            </div>
+          )}
         </div>
 
         <div className="p-6 border-b border-[#E8EEF2] space-y-4">
@@ -34,20 +73,20 @@ export default function PhysicianHome() {
             <button
               onClick={() => {
                 setActiveTab('urgent');
-                setSelectedPatientId(physicianQueue.urgent[0]?.id || null);
+                setSelectedPatientId(queue.urgent?.[0]?.id || null);
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'urgent' ? 'bg-white shadow text-[#E76F51]' : 'text-[#5A6B7C]'}`}
             >
-              <AlertTriangle className="w-3.5 h-3.5" /> Urgent ({physicianQueue.urgent.length})
+              <AlertTriangle className="w-3.5 h-3.5" /> Urgent ({urgentCount})
             </button>
             <button
               onClick={() => {
                 setActiveTab('annual');
-                setSelectedPatientId(physicianQueue.annualReviews[0]?.id || null);
+                setSelectedPatientId(queue.annualReviews?.[0]?.id || null);
               }}
               className={`flex-1 py-2 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-2 ${activeTab === 'annual' ? 'bg-white shadow text-[#2D9596]' : 'text-[#5A6B7C]'}`}
             >
-              <Calendar className="w-3.5 h-3.5" /> Reviews ({physicianQueue.annualReviews.length})
+              <Calendar className="w-3.5 h-3.5" /> Reviews ({annualCount})
             </button>
           </div>
         </div>
@@ -56,7 +95,7 @@ export default function PhysicianHome() {
         <div className="flex-1 overflow-auto">
           {activeTab === 'urgent' ? (
             <div className="divide-y divide-[#E8EEF2]">
-              {physicianQueue.urgent.map((patient) => (
+              {queue.urgent.map((patient) => (
                 <div
                   key={patient.id}
                   onClick={() => setSelectedPatientId(patient.id)}
@@ -88,7 +127,7 @@ export default function PhysicianHome() {
             </div>
           ) : (
             <div className="divide-y divide-[#E8EEF2]">
-               {physicianQueue.annualReviews.map((patient) => (
+               {queue.annualReviews.map((patient) => (
                 <div
                   key={patient.id}
                   onClick={() => setSelectedPatientId(patient.id)}
@@ -130,8 +169,8 @@ export default function PhysicianHome() {
                 <div>
                   <h2 className="text-xl font-bold text-[#0A1128]">
                     {activeTab === 'urgent' 
-                      ? physicianQueue.urgent.find(p => p.id === selectedPatientId)?.patientName 
-                      : physicianQueue.annualReviews.find(p => p.id === selectedPatientId)?.patientName}
+                      ? queue.urgent.find(p => p.id === selectedPatientId)?.patientName 
+                      : queue.annualReviews.find(p => p.id === selectedPatientId)?.patientName}
                   </h2>
                   <p className="text-xs text-[#5A6B7C]">
                     Clinical Decision Support Overview
