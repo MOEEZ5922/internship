@@ -1,0 +1,1599 @@
+Process of completed works
+Analyzed CPAP Adherence & Therapy Optimization Challenges
+Developed a Conceptual AI-Driven Framework for CPAP Therapy Personalization (Still in the research phase, identifying key elements, but not yet implemented)
+Reviewed CPAP machine usage data (AHI, leak rate, compliance hours) and patient surveys.
+
+Identified limitations in existing CPAP adherence models:
+Lack of physiological validation 
+No real-time intervention adjustments
+Simple clustering models 
+Conducted a literature review and data-driven analysis to identify gaps in personalized CPAP treatment and intervention strategies.
+Dropout Analysis
+Cost & Usage Analysis
+Identified the need for digital biomarkers and adaptive interventions
+
+Explored the role of Digital Biomarkers (HRV, SpO₂, BP, EEG) in real-time physiological monitoring.
+Proposed an event-driven intervention model → Aiming to detect therapy failures and suggest corrective actions.
+Investigated multi-factor clustering approaches → Combining CPAP data, digital biomarkers, and patient feedback for personalized stratification.
+Outlined a real-time patient pathway model → To enhance collaboration between physicians, technicians, and patients.
+1
+*No real-time intervention adjustments → Physicians receive data too late to make timely decisions.
+*Simple clustering models → Patients are categorized only by CPAP usage, ignoring physiological and behavioral factors.
+Identified key patient groups—adherent, attempted, and non-adherent—based on therapy usage patterns.
+Dropout Analysis: intervention impact, and patient response variability.
+Cost & Usage Analysis: Evaluated intervention costs and therapy adjustments across different patient groups.
+Identified the need for digital biomarkers and adaptive interventions → As a way to improve therapy personalization and long-term adherence.
+
+
+
+Why ?
+1. CPAP Usage Data Alone is Not Sufficient 
+Analyzed CPAP machine usage data (AHI, leak rate, compliance hours). 
+Collected patient surveys to monitor therapy experience. 
+❌
+Surveys provide subjective feedback, but there is no objective physiological validation or real situation of patients. 
+CPAP adherence does not necessarily mean therapy success. 
+❌
+Patients may be using CPAP, but physiological markers (e.g., HRV, SpO₂, BP) may still indicate poor response. 
+❌
+Introduce Digital Biomarkers → Physiological data (HRV, SpO₂, BP, EEG) provides real-time insights into therapy effectiveness. 
+Move beyond survey-based clustering → Use biomarker-driven clustering to classify therapy response accurately. 
+
+2
+2
+
+2. No Real-Time Intervention Adjustments
+❌
+❌
+If a patient started experiencing aggressive symptoms, there was no automatic intervention adjustment. 
+Doctors & technicians received data too late to make timely interventions
+Develop real-time event detection models → If a biomarker signals therapy failure, the system triggers an immediate therapy adjustment. 
+
+Adaptive intervention validation → Patient feedback + Biomarker response continuously refine therapy recommendations. 
+Why ?
+3
+3
+
+❌
+❌
+3. Lack of Personalized, Multi-Factor Clustering 
+Patients were categorized based on CPAP compliance (Adherent, Non-Adherent, Attempting). 
+Clustering was based on CPAP metrics + Patient-reported adherence issues. 
+Therapy adherence is complex → Simple clustering ignores underlying physiological and behavioral factors. 
+Clustering should include biomarkers → HRV, SpO₂, BP, EEG provide deeper insights into therapy effectiveness. 
+Multi-modal clustering → Integrate CPAP data + Digital biomarkers + Patient surveys for dynamic patient categorization. 
+Why ?
+4
+4
+
+❌
+❌
+4. Limited Stakeholder (Physician) Collaboration
+Doctors and technicians were disconnected from real-time patient data. 
+No structured system to notify physicians when therapy needed adjustment. 
+Develop a structured patient pathway model → Doctors, technicians, and patients interact dynamically in a real-time data exchange framework. 
+
+Introduce event-triggered reports → When therapy deviation occurs, physicians are notified with structured intervention recommendations. 
+
+Improve technician oversight → Ensure that CPAP settings are adjusted based on real-time biomarker feedback. 
+Why ?
+5
+5
+
+A different approach to using Digital Biomarkers
+Why they want Digital Biomarkers:
+To fill the gap between CPAP adherence and actual treatment effectiveness by integrating DB.
+To enable real-time, personalized interventions based on objective biomarker-driven evidence.
+To improve decision trees with continuous monitoring.
+Clinical data: Patient history, diagnostic reports, treatment response records.
+CPAP data: Usage hours, pressure settings, AHI, and leak rates.
+Decision-making tree: Based on periodic check-ups, symptoms, and static CPAP adherence data.
+CPAP machine data: Basic adherence metrics (AHI, usage compliance, leak rates).
+Limited clinical insights: Focuses on device performance rather than individual patient physiology.
+Why we want Digital Biomarkers:
+To enhance CPAP monitoring by integrating physiological responses into therapy tracking.
+To develop smarter intervention strategies that adapt based on real-time biomarker deviations.
+To optimize adherence support mechanisms using AI-driven insights rather than solely relying on static CPAP metrics.
+     Goal: More effective CPAP management, reduced dropout rates, and improved patient support through AI-based predictive models.
+      Goal: More precise patient profiling, data-driven intervention strategies, and dynamic therapy adjustments to improve treatment success.
+For Patients: A personalized, adaptive, and proactive treatment model that optimizes CPAP usage based on their unique physiological responses.
+6
+6
+
+Why ?
+🔬 Scientific Reasons 
+
+Bridging the gap between patient-reported & biomarker-driven adherence monitoring. 
+Developing a real-time, event-driven intervention system to prevent therapy failure. 
+Implementing AI-based clustering to refine therapy adjustments dynamically. 
+Establishing a structured, data-driven communication.
+
+
+ 
+🏥 Clinical & Practical Impact 
+
+Helping physicians tailor CPAP therapy based on real-time patient biomarkers. 
+Empowering patients with transparent feedback and self-monitoring tools. 
+Reducing CPAP dropout rates by identifying adherence risks early. 
+Improving the collaboration between physican, technicians, and patients. 
+7
+7
+
+Categories of Digital Biomarkers in CPAP Therapy
+A. Respiratory Biomarkers (Breathing Function & Sleep Apnea Severity)
+Apnea-Hypopnea Events
+Respiratory Rate & Variability
+Snoring Intensity & Frequency
+Upper Airway Resistance
+B. Oxygenation Biomarkers (Sleep Hypoxia & Cardiovascular Risks)
+SpO₂ Levels (Blood Oxygen Saturation)
+Oxygen Desaturation Index (ODI)
+Cumulative Hypoxic Burden
+C. Cardiovascular & Autonomic Biomarkers (Impact on Heart & Nervous System)
+Heart Rate Variability (HRV)
+Blood Pressure Variability
+ECG Morphology (Heart Electrical Activity)
+8
+
+Digital Biomarkers map
+9
+
+Digital Biomarkers map
+10
+
+ Why Are Digital Biomarkers Important?
+Facilitating Long-Term OSA Management
+Helps in tracking disease progression beyond CPAP usage.
+Supports better cardiovascular risk assessment in OSA patients.
+Enhancing CPAP Adherence Monitoring
+Traditional CPAP monitoring only tracks usage and AHI, which does not fully capture patient experience or therapy effectiveness.
+Digital biomarkers provide additional insights into why patients may struggle with adherence.
+Refining Patient Clustering & Personalization
+Moving beyond compliance-based clustering by integrating physiological and behavioral markers.
+Enables personalized treatment plans based on real-world patient data.
+Supporting Early Intervention & Therapy Optimization
+Detects therapy failure risk before it happens through real-time biomarker deviations.
+Ensures adaptive CPAP adjustments based on real-time patient needs.
+Bridging Physician & Patient Interaction
+Provides structured, risk-based reports instead of overwhelming physicians with excessive data.
+Improves data-driven decision-making for CPAP therapy adjustments.
+11
+11
+
+List of Digital Biomarkers
+Device
+Biomarkers Covered
+Sensors Used
+Clinical Relevance
+Price
+Hexoskin Smart Shirt
+HRV, Respiratory Rate, Sleep Patterns, ECG
+Chest-worn sensors, ECG 
+Multi-biomarker wearable ideal for continuous monitoring
+800-900 EU
+Somno-Art 
+Sleep Stages, HRV, Sleep Efficiency, Sleep Latency, WASO, Sleep fragmentation
+ECG-based sleep stage analysis, HRV-derived sleep metrics
+Alternative tp PSG for sleep staging& therapy effectivness tracking
+Renting
+Apple Watch Series 9/WHITHINGS WATCH
+HRV, ECG, Blood Pressure, SpO₂
+PPG, ECG, BP sensor
+Best for cardiovascular biomarker tracking
+300-400 EU
+Masimo MightySat
+SpO₂, HRV, Respiratory Rate
+Pulse oximeter, photoplethysmography (PPG)
+High-fidelity oxygen & HRV monitoring
+300 EU
+Withings BPM Core
+Blood Pressure, ECG, HRV
+BP cuff, ECG electrodes
+Ideal for tracking cardiovascular impact
+250-300 EU
+ResMed AirSense 11
+AHI, CPAP Usage, Flow Limitations, SpO₂
+CPAP-integrated airflow & pulse oximeter
+Best for CPAP-based respiratory monitoring
+-
+💡 Best Choice for of digital biomarkers? Hexoskin Smart Shirt → Captures multiple respiratory + cardiovascular biomarkers in real-time
+💡 Best Choice for of sleep staging& Cpap therapy?  Somno-Art
+
+
+12
+wake after sleep onset:'WASO’
+This refers to periods of wakefulness occurring after defined sleep onset. This parameter measures wakefulness
+
+SpO₂:Blood oxygen during sleep
+
+cardiac rate and rhythm
+
+sleep fragmentation: the total number of awakenings and shifts to Stage 1 sleep divided by the total sleep time
+12
+
+13
+New Clinical Indicators from Resmed
+Patient Demographics & Environment
+Data Field
+Why It Matters?
+Patient Age & DOB
+Helps adjust therapy pressure based on age-related lung function changes
+Gender
+Women may have different OSA patterns and CPAP adherence levels
+Body Mass Index (BMI)
+Obesity influences CPAP pressure needs & alternative therapy options
+Height (cm)
+Used for tidal volume & respiratory calculations
+Smoking History
+Smoking impacts airway inflammation & therapy effectiveness
+Location (Environmental Factors)
+Altitude and air quality may affect oxygenation and therapy efficacy
+B. Sleep & Respiratory Event Tracking
+Data Field
+Why It Matters?
+Apnea-Hypopnea Index (AHI)
+Determines OSA severity and therapy adjustments
+Oxygen Desaturation Index (ODI)
+Tracks hypoxia burden & cardiovascular risks
+Cheyne-Stokes Respiration (CSR) Duration
+Identifies cardiovascular risks & heart failure association
+Central Apnea Index (CAI)
+Differentiates central vs. obstructive apnea for treatment optimization
+Obstructive Apnea Index (OAI)
+Confirms airway collapse severity for CPAP vs. MAD therapy selection
+the amount of air that moves in or out of the lungs with each respiratory cycle
+13
+
+14
+New Clinical Indicators from Resmed
+C. CPAP Therapy Compliance & Adherence Metrics 
+Data Field
+Why It Matters?
+Total Usage Hours per Night
+Key CPAP adherence metric
+Percentage of Nights ≥ 4 Hours
+Determines long-term therapy success
+Mask Leak Rate (50th, 95th Percentile, Maximum)
+High leak rates reduce therapy efficiency and patient comfort
+Session Start & Stop Times
+Helps detect sleep disruption patterns
+D. Device & Therapy Settings
+Data Field
+Why It Matters?
+Therapy Mode (CPAP, BiPAP, AutoPAP)
+Determines respiratory support level
+Expiratory Positive Airway Pressure (EPAP) Trends
+Critical for BiPAP users & neuromuscular patients
+Peak Inspiratory Pressure (IPAP) Trends
+Tracks lung function & airway resistance
+Tidal Volume & Minute Ventilation
+Measures breathing efficiency & therapy impact
+Respiratory Rate (Median, Max, 5th/95th Percentiles)
+Tracks breathing stability during sleep
+BiPAP therapy is primarily used to treat central sleep apnea (CSA), as well as heart, lung, and neurological disorders that require structured airway support during sleep
+14
+
+15
+Selection Database Structure for Wearable Devices & Digital Biomarkers
+What Details & Criteria Should Be Analyzed?
+
+A. Demographic & Lifestyle Factors
+Factor
+Why It Matters?
+Key Data to Analyze
+Age
+Older patients have higher CPAP intolerance, cardiovascular risks, and cognitive decline
+Patient age group <40, 40-60, 60+- History of hypertension, cardiovascular diseases
+Gender
+Women experience different OSA symptoms, lower AHI but worse hypoxia burden
+Gender-specific CPAP adherence & therapy response
+BMI & Obesity
+Higher BMI correlates with severe OSA, increased airway collapse, and CPAP resistance
+BMI Classification (Normal, Overweight, Obese)
+Smoking History
+Smoking increases airway inflammation, impacting CPAP therapy effectiveness
+Pack-years of smoking history
+Height (cm)
+Affects tidal volume, lung function estimates
+Patient height input required for lung function calculations
+Physical Activity Levels
+Lower activity levels increase autonomic dysfunction, CPAP intolerance
+Daily step count, resting HRV trends
+Tidal volume describes how much air is supplied to a patient during ventilation
+15
+
+16
+Selection Database Structure for Wearable Devices & Digital Biomarkers
+What Details & Criteria Should Be Analyzed?
+
+B. Physiological & Clinical Indicators
+Factor
+Why It Matters?
+Key Data to Analyze
+OSA Severity (AHI, ODI, RDI levels)
+Determines CPAP requirement alternative therapy (MAD, HNS)
+AHI classification: Mild (5-15), Moderate (15-30), Severe (30+)
+Oxygen Desaturation (ODI <90%)
+Indicates hypoxia burden and cardiovascular stress
+Nocturnal SpO₂ drops (frequency, severity)
+Heart Rate Variability (HRV) & Autonomic Function
+Tracks sympathetic overactivation and CPAP adherence prediction
+HRV trends, LF/HF ratio, Nocturnal BP surges
+Central vs. Obstructive Apnea Events
+Helps differentiate CPAP vs. BiPAP or ASV requirements
+Central Apnea Index (CAI), Obstructive Apnea Index (OAI)
+Upper Airway Resistance (UAR)
+Determines airway collapse risk for therapy adjustments
+CPAP pressure requirements, snoring intensity
+C. CPAP Therapy Compliance & Adherence Metrics
+Factor
+Why It Matters?
+Key Data to Analyze
+Total Usage Hours per Night
+Identifies adherence trends and CPAP tolerance
+Session durations, frequency of interruptions
+Percentage of Nights ≥ 4 Hours
+Determines long-term therapy success
+Percentage of nights meeting usage threshold
+Mask Leak Rate (50th, 95th Percentile, Maximum)
+High leak rates reduce therapy efficiency and patient comfort
+Leakage trend analysis, mask fit indicators
+Session Start & Stop Times
+Helps detect sleep disruption patterns
+Daily therapy start/stop tracking
+respiratory disturbance index (RDI)
+(MAD) has been a novel method in the management of snoring and OSA
+HNS treatment, a surgical team will insert an Inspire device under the skin on your chest.
+The LF/HF ratio, its maximal value during REM sleep and a minimal value in synchronous sleep.
+16
+
+17
+Selection Database Structure for Wearable Devices & Digital Biomarkers
+What Details & Criteria Should Be Analyzed?
+
+D. Behavioral & Psychological Factors
+Factor
+Why It Matters?
+Key Data to Analyze
+CPAP Adherence Patterns
+Patients with poor adherence require telemonitoring & interventions
+CPAP usage hours, therapy interruptions, mask fit issues
+Claustrophobia & Mask Discomfort
+Higher dropout rates in patients with mask intolerance
+Self-reported discomfort, mask fit issues
+Cognitive Impairment (Dementia, ADHD)
+Forgetfulness reduces long-term CPAP compliance
+Memory screening (MMSE, MoCA), adherence reports
+Individuals with ADHD had an increased risk for dementia
+
+Mini-Mental State Examination (MMSE) and Montreal Cognitive Assessment (MoCA) are two commonly used cognitive screening and diagnostic tools.
+17
+
+18
+Categorizing Patients Based on CPAP Data
+Patient Category
+Key Indicators from Data
+Wearable/Digital Biomarker Recommendations
+Severe OSA with Cardiovascular Risk
+AHI >30, frequent SpO₂ desaturations- Cheyne-Stokes Breathing (CSR)- Nocturnal hypertension & HRV abnormalities
+HRV Monitors (Whoop Strap, Polar H10) BP Wearables (Omron HeartGuide)
+CPAP Non-Adherent with High Mask Leak
+Leak rate >95th percentile, frequent mask adjustments- Session interruptions & discomfort reports
+AI-Powered Sleep Trackers (Oura Ring, SleepScore Max, Fitbit Sense) Real-time Leak Monitoring (Hexoskin, Withings Sleep Analyzer)
+Positional OSA Patients
+AHI fluctuates significantly between supine & non-supine sleep- Snoring detected more frequently in back position
+Positional Therapy Sensors (NightBalance, SleepScore Max)
+Mild-Moderate OSA with CPAP Intolerance
+CPAP usage <4 hours/night, patient-reported discomfort- Lower AHI but high daytime sleepiness score
+Alternative Therapy Tracking (Mandibular Devices, Myofunctional Therapy Apps)
+Neuromuscular Patients on BiPAP
+ High reliance on machine-triggered breaths- Frequent backup rate adjustments
+Ventilation Monitoring Wearables (ResMed Astral, Ventec VOCSN)
+18
+
+Analysis of Patient Dropout
+
+File
+Unique Patients
+Data Duration
+Patient
+91472
+All time
+StartDate
+96135
+All time
+Mask
+42404
+All time
+Usage
+48160
+Last 2 Years
+Intervention
+47403
+Last 2 Years
+Survey
+45074
+Last 2 Years
+Data sets 
+20
+
+Defining Adherent, Attempted, Not Adherent category
+Categorize Patients by Usage: Patients are divided into categories based on how much they use their devices daily.
+
+Not Adherent: Low Usage (< 2 hours per day)- 2677 Unique patients
+
+Attempted: Medium Usage (2-4 hours per day)- 3522 Unique patients
+
+High Usage (> 6 hours per day) But usage > 4 are Adherent with 41961 Unique patients
+Analysis Steps to prepare Data sets
+Including mask and birthdate: combining the patient usage data with their demographic information, such as birthdate and gender. 
+Including start date of therapy and end date of the therapy
+Including survey and Intervention data sets
+Separating the three category of patient from our final merged file: categorizing patients into three adherence groups (Adherent, Not Adherent, and Attempted) by merging patient demographic and mask data with adherence metrics. 
+Analysis Steps to prepare Data sets
+21
+
+Gender
+Mask
+Age
+Male
+2228
+Nasal
+1123
+61-80
+1653
+Female  
+1210
+Facial
+663
+41-60
+1024
+Narinaire
+315
+81-100
+530
+21-40
+222
+0-20         
+5
+Attempter
+Gender
+Mask
+Age
+Male
+1706
+Nasal
+433
+61-80
+1055
+Female  
+942
+Facial
+302
+41-60
+923
+Narinaire
+146
+81-100
+430
+21-40
+224
+0-20         
+15
+Not_Adherent
+Gender
+Age
+Male
+29482
+61-80
+24686
+Female  
+12017
+41-60
+10216
+81-100
+5396
+21-40
+1160
+0-20         
+28
+Mask
+Nasal
+19717
+Facial
+7529
+Narinaire
+3709
+Buccal           
+1
+Adherent
+All Patients
+22
+
+Gender
+Mask
+Age
+Male
+758
+Nasal
+446
+61-80
+589
+Female  
+422
+Facial
+310
+41-60
+370
+Narinaire
+131
+81-100
+163
+21-40
+56
+0-20         
+2
+Attempter
+Gender
+Mask
+Age
+Male
+319
+Nasal
+154
+61-80
+205
+Female  
+199
+Facial
+123
+41-60
+200
+Narinaire
+52
+81-100
+64
+21-40
+45
+0-20         
+4
+Not_Adherent
+Gender
+Age
+Male
+6625
+61-80
+5511
+Female  
+2609
+41-60
+2096
+81-100
+1379
+21-40
+241
+0-20         
+7
+Mask
+Nasal
+4264
+Facial
+2308
+Narinaire
+796
+Adherent
+AirGenious Patients
+Adherent        9234
+Attempted       1180
+Not Adherent     518
+23
+
+Gender
+Mask
+Age
+Male
+1410
+Nasal
+648
+61-80
+1024
+Female  
+761
+Facial
+333
+41-60
+629
+Narinaire
+177
+81-100
+354
+21-40
+159
+0-20         
+3
+Attempter
+Gender
+Mask
+Age
+Male
+1336
+Nasal
+272
+61-80
+822
+Female  
+726
+Facial
+176
+41-60
+707
+Narinaire
+91
+81-100
+345
+21-40
+177
+0-20         
+10
+Not_Adherent
+Gender
+Age
+Male
+21473
+61-80
+18033
+Female  
+8957
+41-60
+7649
+81-100
+3838
+21-40
+883
+0-20         
+20
+Mask
+Nasal
+15344
+Facial
+5167
+Narinaire
+2889
+Buccal           
+1
+Adherent
+Not AirGenious Patients
+Adherent        30430
+Attempted        2171
+Not Adherent     2062
+24
+
+How left the therapy?
+How It Works:
+
+ Prepare Therapy Data: Therapy start, and end dates are standardized.
+
+ Aggregate Therapy Periods: For each patient, the earliest therapy start date and latest therapy end date are determined to define the overall therapy period.
+
+ Determine Therapy Status: Patients are classified as "In Therapy" if their therapy end date is in the future (or ongoing) or "Left Therapy" if the therapy has ended.
+
+ Finding their initial AHI those patient respond to this "1c IAH initial"
+25
+
+AtHomePatientId
+Mask
+Gender
+AverageDailyUsage
+StartDateTherapy
+EndDateTherapy
+TherapyStatus
+103414
+Nasal
+Male
+0.70297619
+11/4/2014
+5/13/2024
+Left Therapy
+107376
+Nasal
+Male
+0.243154574
+1/29/2015
+2099
+In Therapy
+Not adherent
+TherapyStatus
+PatientCount
+Left Therapy 
+1474
+In Therapy 
+1112
+TherapyStatus
+PatientCount
+Left Therapy 
+412
+In Therapy 
+105
+AirGenious
+TherapyStatus
+PatientCount
+Left Therapy 
+1296
+In Therapy 
+695
+Not AirGenious
+26
+
+TherapyStatus
+PatientCount
+Left Therapy 
+4787
+In Therapy 
+36526
+AtHomePatientId
+Mask
+Gender
+AverageDaily Usage
+StartDate Therapy
+EndDate Therapy
+TherapyStatus
+100161
+Nasal
+Male
+6.914011299
+8/12/2014
+2099
+In Therapy
+101583
+Facial
+Male
+7.899394813
+9/25/2014
+12/21/2023
+Left Therapy
+104842
+Nasal
+Female
+6.549783237
+12/5/2014
+8/29/2024
+Left Therapy
+Adherent
+TherapyStatus
+PatientCount
+Left Therapy 
+283
+In Therapy 
+8942
+AirGenious
+TherapyStatus
+PatientCount
+Left Therapy 
+2471
+In Therapy 
+27531
+Not AirGenious
+27
+
+AtHomePatientId
+MaskType
+Gender
+AverageDailyUsage
+StartDate Therapy
+EndDate Therapy
+TherapyStatus
+100767
+Narinaire
+Male
+3.121581633
+9/5/2014
+2099
+In Therapy
+100792
+Facial
+Female
+3.971657459
+9/5/2014
+2099
+In Therapy
+102408
+Facial
+Male
+2.937989418
+12/24/2014
+7/20/2023
+Left Therapy
+Attempter
+TherapyStatus
+PatientCount
+Left Therapy 
+804
+In Therapy 
+2559
+TherapyStatus
+PatientCount
+Left Therapy 
+70
+In Therapy 
+1105
+AirGenious
+TherapyStatus
+PatientCount
+Left Therapy 
+635
+In Therapy 
+1441
+Not AirGenious
+28
+
+CancellationReason
+Non-Adherent (Count)
+Attempted (Count)
+Adherent (Count)
+Intolerance / Non-adherence / No improvement
+725
+256
+355
+Doctor's request
+342
+175
+432
+Patient's death
+118
+118
+917
+Clinical improvement
+61
+39
+150
+Relocation outside LHF zone
+55
+58
+999
+Transfer CO
+32
+48
+998
+Hospitalisation
+26
+26
+250
+Unhappy patient-change of provider
+16
+16
+197
+Summary cancellation reason all patients
+29
+
+Summary cancellation reason AirGenious
+CancellationReason
+Adherent (Count)
+Attempted (Count)
+Non-Adherent (Count)
+Patient Death
+83
+11
+4
+Hospitalization
+80
+5
+6
+Intolerance / Non-Compliance / No Improvement
+29
+26
+59
+Doctor's Request
+27
+16
+16
+Treatment Change (Non-Switch)
+21
+3
+3
+Clinical improvement
+18
+3
+7
+Relocation outside LHF zone
+11
+3
+2
+Unhappy patient-change of provider
+10
+1
+2
+30
+
+Summary cancellation reason Not AirGenious
+CancellationReason
+Non-Adherent (Count)
+Attempted (Count)
+Adherent (Count)
+Intolerance / Non-adherence / No improvement
+665
+230
+326
+Doctor's request
+324
+156
+389
+Patient's death
+111
+107
+830
+Clinical improvement
+54
+36
+131
+Relocation outside LHF zone
+29
+25
+128
+Unhappy patient-change of provider
+14
+15
+185
+Hospitalisation
+20
+21
+170
+31
+
+Usage of Intervention (Done) for all patients how left therapy
+JobTypeCode
+Adherent_Count
+Adherent_Perc
+Non_Adherent_Count
+Non_Adherent_Perc
+Attempted_Count
+Attempted_Perc
+Total_JobType
+TA
+2351
+41.22%
+1274
+22.34%
+630
+11.04%
+5704
+VK
+2040
+2.89%
+446
+0.63%
+367
+0.52%
+70607
+EX
+1280
+3.41%
+155
+0.41%
+233
+0.62%
+37491
+VH
+1212
+5.99%
+591
+2.92%
+394
+1.95%
+20237
+HL
+785
+4.41%
+170
+0.95%
+173
+0.97%
+17807
+AP
+711
+3.44%
+1029
+4.98%
+416
+2.02%
+20642
+VA
+556
+6.94%
+772
+9.64%
+228
+2.85%
+8011
+AW
+400
+6.12%
+392
+5.99%
+221
+3.38%
+6539
+WM
+307
+4.73%
+152
+2.34%
+96
+1.48%
+6485
+LC
+261
+8.76%
+92
+3.09%
+46
+1.54%
+2978
+TT
+236
+3.01%
+603
+7.69%
+209
+2.67%
+7841
+IU
+232
+3.39%
+491
+7.17%
+174
+2.54%
+6850
+O1
+216
+1.70%
+127
+1.00%
+104
+0.82%
+12694
+FO
+195
+3.58%
+75
+1.38%
+52
+0.96%
+5443
+O2
+186
+3.32%
+2
+0.04%
+5
+0.09%
+5598
+V9
+170
+2.55%
+308
+4.62%
+138
+2.07%
+6664
+PW
+93
+7.82%
+48
+4.03%
+24
+2.02%
+1190
+RC
+83
+23.38%
+19
+5.35%
+12
+3.38%
+355
+32
+
+Usage of Intervention (Done) for Not-AirGenious patients how left therapy
+JobTypeCode
+Adherent_Count
+Adherent_Perc
+Non_Adherent_Count
+Non_Adherent_Perc
+Attempted_Count
+Attempted_Perc
+Total_JobType
+TA
+2151
+37.71%
+1183
+20.74%
+575
+10.08%
+5704
+VK
+1722
+2.44%
+384
+0.54%
+303
+0.43%
+70607
+EX
+1080
+2.88%
+131
+0.35%
+194
+0.52%
+37491
+VH
+959
+4.74%
+511
+2.53%
+318
+1.57%
+20237
+HL
+618
+3.47%
+144
+0.81%
+138
+0.77%
+17807
+AP
+584
+2.83%
+955
+4.63%
+352
+1.71%
+20642
+VA
+518
+6.47%
+701
+8.75%
+207
+2.58%
+8011
+AW
+355
+5.43%
+318
+4.86%
+188
+2.88%
+6539
+WM
+266
+4.10%
+120
+1.85%
+87
+1.34%
+6485
+LC
+216
+7.25%
+86
+2.89%
+38
+1.28%
+2978
+TT
+210
+2.68%
+575
+7.33%
+192
+2.45%
+7841
+IU
+208
+3.04%
+467
+6.82%
+163
+2.38%
+6850
+FO
+167
+3.07%
+67
+1.23%
+48
+0.88%
+5443
+V9
+147
+2.21%
+285
+4.28%
+125
+1.88%
+6664
+RC
+69
+19.44%
+15
+4.23%
+8
+2.25%
+355
+EM
+67
+5.71%
+11
+0.94%
+18
+1.53%
+1173
+PW
+65
+5.46%
+36
+3.03%
+19
+1.60%
+1190
+T1
+63
+2.11%
+84
+2.82%
+49
+1.64%
+2981
+33
+
+Usage of Intervention (Done) for AirGenious patients how left therapy
+JobTypeCode
+Adherent_Count
+Adherent_Perc
+Non_Adherent_Count
+Non_Adherent_Perc
+Attempted_Count
+Attempted_Perc
+Total_JobType
+VK
+318
+0.45%
+62
+0.09%
+64
+0.09%
+70607
+VH
+253
+1.25%
+80
+0.40%
+76
+0.38%
+20237
+O1
+216
+1.70%
+127
+1.00%
+104
+0.82%
+12694
+TA
+200
+3.51%
+91
+1.60%
+55
+0.96%
+5704
+EX
+200
+0.53%
+24
+0.06%
+39
+0.10%
+37491
+O2
+186
+3.32%
+2
+0.04%
+5
+0.09%
+5598
+HL
+167
+0.94%
+26
+0.15%
+35
+0.20%
+17807
+AP
+127
+0.62%
+74
+0.36%
+64
+0.31%
+20642
+O4
+61
+3.84%
+1
+0.06%
+2
+0.13%
+1587
+O9
+55
+0.80%
+2
+0.03%
+13
+0.19%
+6873
+O7
+46
+4.42%
+1
+0.10%
+2
+0.19%
+1040
+LC
+45
+1.51%
+6
+0.20%
+8
+0.27%
+2978
+AW
+45
+0.69%
+74
+1.13%
+33
+0.50%
+6539
+O3
+41
+2.10%
+39
+2.00%
+30
+1.54%
+1952
+WM
+41
+0.63%
+32
+0.49%
+9
+0.14%
+6485
+O5
+38
+3.87%
+0
+0.00%
+2
+0.20%
+982
+VA
+38
+0.47%
+71
+0.89%
+21
+0.26%
+8011
+OA
+37
+1.42%
+0
+0.00%
+1
+0.04%
+2602
+34
+
+Implementation of Methodology
+
+Framework
+36
+
+Framework
+37
+C:\Users\A6QU89\OneDrive - univ-lyon2.fr\UML1.pdf
+37
+
+Digital Biomarker Integration for New CPAP Patients (From Day 1)
+38
+📌 Goal: Apply digital biomarkers immediately to optimize therapy from the start.
+Why Immediate Biomarker Use is Essential?
+✔ New CPAP users often struggle with adherence.✔ Early monitoring detects therapy inefficacy before dropout occurs.✔ Identifying risk factors early allows for personalized intervention.
+Factor
+Criteria
+Impact on CPAP Therapy
+OSA Severity
+High AHI (>30) or Oxygen Desaturation Index (ODI)
+Requires continuous SpO₂ & HRV tracking
+Cardiovascular Comorbidities
+Hypertension, Heart Disease, High BP Variability
+HRV + BP Monitoring to track cardiovascular response
+Obesity & Metabolic Risks
+BMI > 30, Diabetes, Insulin Resistance
+Respiratory rate & HRV monitoring
+Sympathetic Nervous System Activation
+High resting heart rate, BP
+HRV & BP variability tracking to detect stress responses
+Reduces CPAP dropout rates by detecting early inefficacy.
+Provides an AI-driven early warning system for therapy failure.
+Improves therapy adherence through adaptive real-time adjustments.
+New patients benefit from a proactive approach. By integrating biomarkers from day one, we ensure that high-risk patients receive intensive monitoring while low-risk patients have a more flexible setup.This approach improves early adherence and reduces CPAP dropout.
+
+38
+
+Adaptive Digital Biomarker Integration for Mid-Treatment CPAP Patients (3+ Months)
+39
+📌 Goal: Introduce biomarkers selectively based on therapy response and risk factors.📌 Purpose: Refine interventions dynamically and ensure long-term adherence.
+
+Why Adjust Biomarkers for Patients Already in Therapy?
+
+✔ Some patients show therapy response notstable (AHI improvement but persistent symptoms).✔ Cardiovascular markers may worsen over time, requiring additional tracking.✔ CPAP usage compliance ≠ therapy success (patients may still experience symptoms).
+Refines CPAP therapy continuously for long-term adherence.
+
+Detects therapy inefficacy and need for adjustments early.
+
+Prevents unnecessary monitoring burden by targeting specific patient needs.
+Factor
+Criteria
+Adjustment Strategy
+Worsening Symptoms
+Fatigue, morning headaches, BP
+Add HRV & BP monitoring to detect therapy inefficacy
+CPAP Effectiveness
+AHI improvement but no clinical symptom
+Monitor respiratory effort & HRV for optimization
+Cardiovascular Risk Progression
+Hypertension worsening over time
+Introduce continuous BP & HRV tracking
+Patient Expresses Discomfort or Non-Adherence
+Reports mask issues, discomfort, therapy resistance
+Adaptive intervention based on biometric stress markers
+Patients already in therapy may not need full-scale biomarker integration from the start. Instead, we introduce sensors based on their evolving needs and therapy responses.This ensures that CPAP therapy is continuously optimized while keeping patient burden minimal.
+39
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 1: Infrastructure & System Setup (Weeks 1–8)
+📌 Objective: Establish IT infrastructure, integrate data pipelines
+✅ Tasks:
+Develop a cloud-based data repository for CPAP and digital biomarker data.
+Ensure Wearable devices integration.
+Define patient inclusion/exclusion criteria for the pilot study.
+Secure regulatory approval for patient monitoring and data collection.
+Collaborate with Linde, IT teams, and physicians for data standardization.
+⚠ Challenges:
+Interoperability issues between CPAP manufacturers and different biometric devices.
+Physicians’ skepticism about AI-driven patient monitoring and clustering models.
+40
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 2: Wearable Device Deployment & Data Collection (Weeks 6–16)
+📌 Objective: Deploy biometric wearables for continuous physiological monitoring and collect real-time patient data.
+✅ Tasks:
+Select wearable sensors: HRV, SpO₂, BP, EEG, respiratory effort sensors.
+Train patients and caregivers on proper device usage.
+Ensure real-time data transmission and secure cloud storage.
+Validate data accuracy, reliability, and calibration with CPAP usage data.
+⚠ Challenges:
+Patient compliance issues (some patients may forget or refuse to wear devices).
+Connectivity & data transmission reliability (ensuring minimal data loss).
+Variability in biomarker readings requires continuous AI model adjustment.
+41
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 3: AI-Based Patient Clustering & Adaptive Intervention Design (Weeks 10–24)
+📌 Objective: Develop patient profiles, detect therapy failures, and design personalized interventions based on real-time data.
+✅ Tasks:
+Implement AI-driven patient clustering models using:
+CPAP adherence data (usage trends, compliance history).
+Biomarker patterns (HRV fluctuations, SpO₂ desaturation, AHI trends).
+Patient-reported feedback (symptom tracking, perceived therapy benefits).
+Develop anomaly detection algorithms to flag therapy failures.
+Design an AI-powered decision-support tool for physicians to optimize interventions.
+⚠ Challenges:
+Ensuring clustering accuracy handling variability in patient responses.
+Physician acceptance AI models must be explainable and clinically validated.
+Handling large data streams in real time requires computational efficiency.
+42
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 4: Adaptive Intervention Deployment (Weeks 18–28)
+📌 Objective: Implement real-time, personalized interventions based on patient adherence trends and biomarker data.
+✅ Tasks:
+Deploy automated intervention triggers (alerts, notifications, or physician consultations).
+Implement engagement strategies such as:
+Personalized coaching messages (based on biomarker fluctuations).
+Gamification elements (reward-based engagement).
+Real-time adherence feedback via mobile apps.
+⚠ Challenges:
+Patient responsiveness, some patients may ignore or delay acting on alerts.
+Scalability concerns, ensuring interventions work across larger populations.
+43
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 5: Model Validation & Cost Analysis (Weeks 22–32)
+📌 Objective: Validate the effectiveness of interventions, measure patient outcomes, and assess economic feasibility.
+✅ Tasks:
+Compare intervention groups to assess adherence improvement.
+Measure biomarker-driven therapy success (AHI reduction, HRV stability, SpO₂ improvements).
+Conduct a cost-benefit analysis:
+Cost of wearable devices & software.
+Reduction in therapy dropout rates & long-term healthcare savings.
+Identify bugs, software failures, and workflow inefficiencies for system refinement.
+⚠ Challenges:
+Patient retention, ensuring study participants remain engaged for 6 months.
+44
+
+Implementation Pathway for Real-World Deployment of the CPAP Optimization Framework
+🔹 Phase 6: Full-Scale Deployment & Continuous Optimization (Post-Pilot, Month 6 Onward)
+📌 Objective: Expand to a larger patient population (50+ patients) and continuously improve model performance.
+✅ Tasks:
+Scale implementation to multiple healthcare settings.
+Implement periodic AI model retraining based on new data trends.
+Develop a structured feedback loop with stakeholders (physicians, Linde, IT teams).
+Optimize real-time monitoring efficiency and system response time.
+⚠ Challenges:
+Managing large-scale real-time data processing.
+Ensuring sustained engagement from physicians and healthcare providers.
+45
+
+Adherent Patients (Sustaining Long-Term Engagement & Therapy Optimization) Interventions
+
+Proactive therapy optimization: Periodic CPAP pressure adjustments based on biometric trends
+Monthly biomarker analysis: Monitor physiological trends to detect silent therapy
+AI-based treatment feedback: Recommend real-time pressure adjustments based on data patterns
+Automated positive reinforcement: Behavioral reinforcement strategies via personalized digital gamification 
+Bi-annual clinical evaluations: Physician integrate sleep quality assessments (ESS, SF-36)
+Smart alert system: Detect early signs of declining adherence trends
+46
+46
+
+Non-Adherent Patients (Addressing Barriers & Preventing Therapy Dropout) Interventions
+Real-time intervention triggers
+AI-driven algorithms detect early therapy non-adherence and trigger immediate, targeted interventions .
+Personalized coaching
+Virtual or in-person coaching sessions guided by biometric insights to tailor solutions.
+Mask-fitting optimization comfort adjustments
+AI-driven facial scanning & pressure adaptation to improve fit and comfort dynamically.
+Psychological support integration
+For patients with therapy resistance, implement motivational interviewing strategies, cognitive-behavioral interventions, and stress-reduction techniques.
+Telemonitoring 
+& physician alerts
+If a patient fails to reach a minimum adherence threshold, direct physician involvement is triggered for a structured intervention session.
+47
+47
+
+Attempting Patients (Transitioning from Partial to Full Adherence) Interventions
+AI-driven dynamic adherence scoring
+Patients receive real-time, personalized adherence insights and predictive risk scores to help them stay on track.
+Real-time CPAP feedback & education
+Personalized alerts provide daily adherence summaries, pressure adjustments, and bite-sized CPAP training videos to encourage consistent use.
+Nightly adherence reinforcement
+AI-driven digital assistant provides personalized encouragement messages, progress comparisons, and recommendations.
+Smart nudging strategies and Early-stage intervention triggers
+48
+Use predictive analytics to intervention at high risk dropout point.
+Objective: Ensure successful transition from low-to-moderate adherence to long-term therapy commitment.
+
+Challenges: This group often consists of patients in their first 1-3 months of therapy, where initial struggles with comfort, perceived benefit, and routine-building are most common. Many of these patients drop out before experiencing clinical improvements.
+
+48

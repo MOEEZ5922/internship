@@ -1,0 +1,36 @@
+name: CI — SleepCare Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Dashboarding/Physician Dashboard Design/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'Dashboarding/Physician Dashboard Design/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: 'Dashboarding/Physician Dashboard Design'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'Dashboarding/Physician Dashboard Design/package-lock.json'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        run: npm run build

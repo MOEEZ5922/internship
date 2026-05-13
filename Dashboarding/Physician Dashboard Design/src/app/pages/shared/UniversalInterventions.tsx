@@ -19,16 +19,6 @@ export default function UniversalInterventions() {
 
   const isLive = (!intError && !!liveInterventions) || (!authError && !!liveAuths);
 
-  if (!isLive) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-[#E76F51] animate-spin" />
-      </div>
-    );
-  }
-
-  const interventions = Array.isArray(liveInterventions) ? liveInterventions : [];
-
   const [activePathway, setActivePathway] = useState<'app_iah' | 'alt_therapy'>('app_iah');
   const [selectedTherapy, setSelectedTherapy] = useState('');
   const [clinicalNotes, setClinicalNotes] = useState('');
@@ -39,6 +29,16 @@ export default function UniversalInterventions() {
   const [techActionType, setTechActionType] = useState('');
   const [techActionNote, setTechActionNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (!isLive) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#E76F51] animate-spin" />
+      </div>
+    );
+  }
+
+  const interventions = Array.isArray(liveInterventions) ? liveInterventions : [];
 
   const handleAppIahSubmit = async () => {
     setIsSubmitting(true);
@@ -291,9 +291,15 @@ export default function UniversalInterventions() {
                       <textarea value={clinicalNotes} onChange={(e) => setClinicalNotes(e.target.value)} placeholder="Justify the abandonment of CPAP therapy..." className="w-full h-[200px] px-4 py-4 rounded-xl border border-[#E8EEF2] focus:border-[#2D9596] transition-all resize-none text-sm" />
                     </div>
                   </div>
-                  <button onClick={handleAuthorize} disabled={!selectedTherapy || !clinicalNotes} className="w-full bg-[#2D9596] text-white px-6 py-5 rounded-2xl hover:bg-[#247a7a] disabled:bg-[#E8EEF2] disabled:text-[#5A6B7C] transition-all flex items-center justify-center gap-3 shadow-xl">
-                    <FileSignature className="w-5 h-5" />
-                    <span className="font-bold uppercase tracking-widest text-sm">Authorize Treatment Transition</span>
+                  <button 
+                    onClick={handleAuthorize} 
+                    disabled={!selectedTherapy || !clinicalNotes || isSubmitting} 
+                    className="w-full bg-[#2D9596] text-white px-6 py-5 rounded-2xl hover:bg-[#247a7a] disabled:bg-[#E8EEF2] disabled:text-[#5A6B7C] transition-all flex items-center justify-center gap-3 shadow-xl"
+                  >
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileSignature className="w-5 h-5" />}
+                    <span className="font-bold uppercase tracking-widest text-sm">
+                      {isSubmitting ? 'Processing Authorization...' : 'Authorize Treatment Transition'}
+                    </span>
                   </button>
                 </div>
               )}

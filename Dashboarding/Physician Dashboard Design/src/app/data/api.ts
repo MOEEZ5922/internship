@@ -1,15 +1,72 @@
-/**
- * API Service Layer — SleepCare Platform
- * Connects the frontend to Siamak's live backend at cpap-backend.onrender.com
- *
- * Usage: Import these functions instead of mockData.ts to fetch live data.
- * Fallback: If the API call fails, each function falls back to the local mock data
- *           so the UI never breaks during development.
- */
+import * as mock from './mockData';
 
 const BASE_URL = 'https://cpap-backend.onrender.com/api/v1';
 
-// ─── Generic fetch wrapper with error handling ───────────────────────────────
+// ─── Types & Interfaces ──────────────────────────────────────────────────────
+export interface PatientSummary {
+  patientId: string;
+  name: string;
+  status: string;
+  adherenceRate: number;
+  currentAHI: number;
+  averageHours: number;
+  percentileLeak: number;
+  // Demographic/Clinical metadata
+  gender?: string;
+  dob?: string;
+  therapyStartDate?: string;
+  maskType?: string;
+  riskScore?: number;
+  address?: string;
+  machineSerial?: string;
+  interventions?: any[];
+  patient?: any; // Nested patient object used in some endpoints
+}
+
+export interface WeeklyAnalysis {
+  weekOf: string;
+  compositeRiskScore: number;
+  clusterAssignment: {
+    current: string;
+    description: string;
+  };
+  nextBestAction: {
+    type: string;
+    rationale: string;
+  };
+}
+
+export interface CpapTrends {
+  averageHours: number;
+  currentAHI: number;
+  percentileLeak: number;
+  streak: number;
+  usageHistory: {
+    date: string;
+    hours: number;
+  }[];
+}
+
+export interface PhysicianQueue {
+  urgent: any[];
+  annualReviews: any[];
+}
+
+export interface SurveyResponse {
+  patient: {
+    next: {
+      name: string;
+      dueDate: string;
+      questions: number;
+      persistence: { status: string };
+    };
+    history: any[];
+  };
+}
+
+export interface DirectoryResponse {
+  patients: any[];
+}
 
 // ─── Helper to ensure ID is in PATxxxx format ────────────────────────────────
 
@@ -20,89 +77,132 @@ function formatPatientId(id: string | number): string {
   return `PAT${strId.padStart(4, '0')}`;
 }
 
+// ─── Generic fetch wrapper with fallback logic ──────────────────────────────
+
 async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  // Automatically replace any {id} or :id patterns in the endpoint with formatted version
-  // But since we pass it manually in the functions, we should just format it there.
-  const res = await fetch(`${BASE_URL}${endpoint}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  if (!res.ok) {
-    throw new Error(`API Error ${res.status}: ${res.statusText} — ${endpoint}`);
+  try {
+    const res = await fetch(`${BASE_URL}${endpoint}`, {
+      headers: { 'Content-Type': 'application/json' },
+      ...options,
+    });
+    if (!res.ok) {
+      throw new Error(`API Error ${res.status}: ${res.statusText} — ${endpoint}`);
+    }
+    return await res.json();
+  } catch (error) {
+    console.warn(`Falling back to mock data for: ${endpoint}`, error);
+    
+    // Map endpoints to mock data
+    if (endpoint.includes('/patients')) return { 
+      patients: [
+        { ...mock.patientInfo, patientId: 'PAT0001', age: 48, status: 'Active', complianceScore: 82 },
+        { patientId: 'PAT0002', name: 'James Wilson', age: 52, gender: 'Male', status: 'At Risk', complianceScore: 45 }
+      ] 
+    } as any;
+    if (endpoint.includes('/summary')) return { ...mock.patientInfo, ...mock.cpapData } as any;
+    if (endpoint.includes('/physician/queue')) return mock.physicianQueue as any;
+    if (endpoint.includes('/technician/queue')) return mock.technicianQueue as any;
+    if (endpoint.includes('/technician/events')) return mock.technicianEvents as any;
+    if (endpoint.includes('/trends/cpap')) return mock.cpapData as any;
+    if (endpoint.includes('/biomarkers')) return mock.biomarkerData as any;
+    if (endpoint.includes('/interventions')) return mock.technicianQueue[0].interventionHistory as any;
+    if (endpoint.includes('/analysis/weekly')) return mock.aiWeeklyState as any;
+    if (endpoint.includes('/surveys')) return mock.surveyData as any;
+    if (endpoint.includes('/videos')) return mock.videoData.patient as any;
+    if (endpoint.includes('/authorizations')) return [] as any;
+    if (endpoint.includes('/inventory')) return mock.inventoryItems as any;
+    if (endpoint.includes('/devices')) return mock.deviceData as any;
+    
+    // For POST requests, return a generic success
+    if (options?.method === 'POST') return { status: 'success', message: 'Mock submission accepted' } as any;
+    
+    throw error;
   }
-  return res.json();
 }
 
 // ─── GET Endpoints ───────────────────────────────────────────────────────────
 
 /** List all patients (for Physician Directory) */
-export async function fetchPatients(limit = 20) {
-  return apiFetch(`/patients?limit=${limit}`);
+export async function fetchPatients(limit = 20): Promise<DirectoryResponse> {
+  return apiFetch<DirectoryResponse>(`/patients?limit=${limit}`);
 }
 
 /** Get a single patient's summary (header cockpit) */
-export async function fetchPatientSummary(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/summary`);
+export async function fetchPatientSummary(patientId: string): Promise<PatientSummary> {
+  return apiFetch<PatientSummary>(`/patient/${formatPatientId(patientId)}/summary`);
 }
 
 /** Get the Physician Exception Inbox (urgent + annual reviews) */
-export async function fetchPhysicianQueue(limit = 20) {
-  return apiFetch(`/physician/queue?limit=${limit}`);
+export async function fetchPhysicianQueue(limit = 20): Promise<PhysicianQueue> {
+  return apiFetch<PhysicianQueue>(`/physician/queue?limit=${limit}`);
 }
 
 /** Get the Technician Retention Queue */
-export async function fetchTechnicianQueue(limit = 30) {
-  return apiFetch(`/technician/queue?limit=${limit}`);
+export async function fetchTechnicianQueue(limit = 30): Promise<any[]> {
+  return apiFetch<any[]>(`/technician/queue?limit=${limit}`);
 }
 
 /** Get Technician AI-flagged events (Mechanical/Self-Report inbox) */
-export async function fetchTechnicianEvents(limit = 30) {
-  return apiFetch(`/technician/events?limit=${limit}`);
+export async function fetchTechnicianEvents(limit = 30): Promise<any[]> {
+  return apiFetch<any[]>(`/technician/events?limit=${limit}`);
+}
+
+/** Get Triage Events (Alias for technician events) */
+export async function fetchTriageEvents(limit = 30): Promise<any[]> {
+  return apiFetch<any[]>(`/technician/triage/events?limit=${limit}`);
 }
 
 /** Get CPAP usage trends for a patient */
-export async function fetchCpapTrends(patientId: string, days = 90) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/trends/cpap?days=${days}`);
+export async function fetchCpapTrends(patientId: string, days = 90): Promise<CpapTrends> {
+  return apiFetch<CpapTrends>(`/patient/${formatPatientId(patientId)}/trends/cpap?days=${days}`);
 }
 
 /** Get biomarker data for a patient */
-export async function fetchBiomarkers(patientId: string, days = 30) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/biomarkers?days=${days}`);
+export async function fetchBiomarkers(patientId: string, days = 30): Promise<any[]> {
+  return apiFetch<any[]>(`/patient/${formatPatientId(patientId)}/biomarkers?days=${days}`);
 }
 
 /** Get biomarker devices assigned to a patient */
-export async function fetchDevices(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/devices`);
+export async function fetchDevices(patientId: string): Promise<any[]> {
+  return apiFetch<any[]>(`/patient/${formatPatientId(patientId)}/devices`);
 }
 
 /** Get intervention history for a patient */
-export async function fetchInterventions(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/interventions`);
+export async function fetchInterventions(patientId: string): Promise<any[]> {
+  return apiFetch<any[]>(`/patient/${formatPatientId(patientId)}/interventions`);
 }
 
 /** Get survey data for a patient */
-export async function fetchSurveys(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/surveys`);
+export async function fetchSurveys(patientId: string): Promise<SurveyResponse> {
+  return apiFetch<SurveyResponse>(`/patient/${formatPatientId(patientId)}/surveys`);
 }
 
 /** Get AI weekly analysis for a patient */
-export async function fetchWeeklyAnalysis(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/analysis/weekly`);
+export async function fetchWeeklyAnalysis(patientId: string): Promise<WeeklyAnalysis> {
+  return apiFetch<WeeklyAnalysis>(`/patient/${formatPatientId(patientId)}/analysis/weekly`);
 }
 
 /** Get video content for a patient */
-export async function fetchVideos(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/videos`);
+export async function fetchVideos(patientId: string): Promise<any[]> {
+  return apiFetch<any[]>(`/patient/${formatPatientId(patientId)}/videos`);
 }
 
 /** Get clinical authorizations for a patient */
-export async function fetchAuthorizations(patientId: string) {
-  return apiFetch(`/patient/${formatPatientId(patientId)}/authorizations`);
+export async function fetchAuthorizations(patientId: string): Promise<any[]> {
+  return apiFetch<any[]>(`/patient/${formatPatientId(patientId)}/authorizations`);
 }
 
 /** Get general technician inventory (not patient specific) */
 export async function fetchInventory() {
   return apiFetch(`/technician/inventory`);
+}
+
+/** Backend health check */
+export async function checkHealth() {
+  // Using /patients as a proxy for health since root /health is non-responsive
+  const res = await fetch(`${BASE_URL}/patients`);
+  if (!res.ok) throw new Error('Clinical services unavailable');
+  return { status: 'ok' };
 }
 
 // ─── POST Endpoints ──────────────────────────────────────────────────────────
@@ -174,8 +274,8 @@ export async function submitVideoInteraction(patientId: string, videoId: number,
 
 /** Patient submits a medical survey */
 export async function submitSurveyResponse(patientId: string, surveyId: string, data: {
-  answers: { question_id: string; value: string }[];
-  completion_time_seconds: number;
+  answers: { question_id: string; value: string | number }[];
+  completion_time_seconds?: number;
 }) {
   return apiFetch(`/patient/${formatPatientId(patientId)}/surveys/${surveyId}/submit`, {
     method: 'POST',

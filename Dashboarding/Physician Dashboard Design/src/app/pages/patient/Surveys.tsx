@@ -2,7 +2,7 @@ import { useParams } from 'react-router';
 import { FileText, Clock, CheckCircle, ChevronRight, ChevronLeft, Signal, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { useApi } from '../../hooks/useApi';
-import { fetchSurveys } from '../../data/api';
+import { fetchSurveys, submitSurveyResponse, SurveyResponse } from '../../data/api';
 
 const surveyQuestions = [
   {
@@ -57,12 +57,17 @@ const surveyQuestions = [
 
 export default function PatientSurveys() {
   const { id } = useParams();
-  const { data: liveSurveys, isLoading, error } = useApi(() => fetchSurveys(id || '1'), {
+  const { data: liveSurveys, isLoading, error } = useApi<SurveyResponse>(() => fetchSurveys(id || '1'), {
     dependencies: [id]
   });
 
   const isLive = !error && !!liveSurveys;
-  const nextSurvey = liveSurveys?.patient?.next || { name: 'Health Survey', dueDate: null };
+  const nextSurvey = liveSurveys?.patient?.next || { 
+    name: 'Health Survey', 
+    dueDate: new Date().toISOString(), 
+    questions: 8, 
+    persistence: { status: 'Pending' } 
+  };
   const history = Array.isArray(liveSurveys?.patient?.history) ? liveSurveys.patient.history : [];
 
   const [inSurvey, setInSurvey] = useState(false);
@@ -79,6 +84,20 @@ export default function PatientSurveys() {
       setCurrentQuestion(currentQuestion + 1);
     } else {
       // Survey complete
+      const submit = async () => {
+        try {
+          const payload = {
+            answers: Object.entries(answers).map(([idx, val]) => ({
+              question_id: surveyQuestions[parseInt(idx)].id.toString(),
+              value: val
+            }))
+          };
+          await submitSurveyResponse(id || '1', 'health-survey', payload);
+        } catch (err) {
+          console.error('Failed to submit survey');
+        }
+      };
+      submit();
       setShowCompletion(true);
       setTimeout(() => {
         setInSurvey(false);

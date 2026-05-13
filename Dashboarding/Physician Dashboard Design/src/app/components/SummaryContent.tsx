@@ -25,7 +25,15 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useApi } from '../hooks/useApi';
-import { fetchPatientSummary, fetchWeeklyAnalysis } from '../data/api';
+import { 
+  fetchPatientSummary, 
+  fetchWeeklyAnalysis, 
+  fetchCpapTrends, 
+  fetchInterventions,
+  PatientSummary,
+  WeeklyAnalysis,
+  CpapTrends
+} from '../data/api';
 
 interface SummaryContentProps {
   patientId?: string;
@@ -45,11 +53,19 @@ export default function SummaryContent({
   const { id: urlId } = useParams();
   const id = propPatientId || urlId || '1';
 
-  const { data: summary, isLoading: isSumLoading, error: sumError } = useApi(() => fetchPatientSummary(id), {
+  const { data: summary, isLoading: isSumLoading, error: sumError } = useApi<PatientSummary>(() => fetchPatientSummary(id), {
     dependencies: [id]
   });
 
-  const { data: ai, isLoading: isAiLoading, error: aiError } = useApi(() => fetchWeeklyAnalysis(id), {
+  const { data: ai, isLoading: isAiLoading, error: aiError } = useApi<WeeklyAnalysis>(() => fetchWeeklyAnalysis(id), {
+    dependencies: [id]
+  });
+
+  const { data: trends, isLoading: isTrendsLoading } = useApi<CpapTrends>(() => fetchCpapTrends(id, 7), {
+    dependencies: [id]
+  });
+
+  const { data: interventionsData, isLoading: isIntLoading, refetch: refetchInt } = useApi<any[]>(() => fetchInterventions(id), {
     dependencies: [id]
   });
 
@@ -82,9 +98,10 @@ export default function SummaryContent({
 
   // Ultra-resilient data mapping
   const nextAction = ai?.nextBestAction || { type: 'Monitoring', rationale: 'No active clinical exception.' };
-  const currentAHI = summary?.currentAHI || 0;
-  const usage = summary?.averageHours || 0;
-  const leak = summary?.percentileLeak || 0;
+  const currentAHI = trends?.currentAHI || summary?.currentAHI || 0;
+  const usage = trends?.averageHours || summary?.averageHours || 0;
+  const leak = trends?.percentileLeak || summary?.percentileLeak || 0;
+  const interventionsList = Array.isArray(interventionsData) ? interventionsData : (summary?.interventions || []);
 
 
   return (
@@ -186,7 +203,7 @@ export default function SummaryContent({
               Intervention History
             </h3>
             <div className="space-y-3">
-              {(summary?.interventions || []).slice(0, 3).map((item: any, idx: number) => (
+              {interventionsList.slice(0, 3).map((item: any, idx: number) => (
                 <div key={idx} className="flex items-start gap-4 p-3 bg-[#FAFAFA] rounded-xl border border-[#E8EEF2] hover:border-[#2D9596]/30 transition-all group">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                     item.type.includes('Educational') ? 'bg-[#2D9596]/10 text-[#2D9596]' :

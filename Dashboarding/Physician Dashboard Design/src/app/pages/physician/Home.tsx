@@ -2,14 +2,14 @@ import { AlertTriangle, Calendar, ChevronRight, Activity, Search, Filter, Signal
 import { Link } from 'react-router';
 import { useState, useEffect, useMemo } from 'react';
 import SummaryContent from '../../components/SummaryContent';
-import { fetchPhysicianQueue } from '../../data/api';
+import { fetchPhysicianQueue, PhysicianQueue } from '../../data/api';
 import { useApi } from '../../hooks/useApi';
 
 export default function PhysicianHome() {
   const [activeTab, setActiveTab] = useState<'urgent' | 'annual'>('urgent');
   
   // Use the scalable useApi hook
-  const { data: queue, isLoading, error } = useApi(fetchPhysicianQueue);
+  const { data: queue, isLoading, error } = useApi<PhysicianQueue>(fetchPhysicianQueue);
 
   const isLive = !error && !!queue;
   const [selectedPatientId, setSelectedPatientId] = useState<number | null>(null);

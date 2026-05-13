@@ -35,7 +35,7 @@ export function useApi<T>(
     } finally {
       setIsLoading(false);
     }
-  }, [apiCall, ...dependencies]);
+  }, dependencies);
 
   useEffect(() => {
     fetchData();

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Framework Figure</title>
+    <style>
+        :root {
+            --primary: #1e3a8a; /* Deep Blue */
+            --primary-light: #eff6ff;
+            --accent: #ef4444; /* Red for problem */
+            --accent-light: #fef2f2;
+            --border: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --bg: #ffffff;
+            --bg-alt: #f8fafc;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #e2e8f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            margin: 0;
+        }
+
+        .figure-container {
+            background-color: var(--bg);
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .figure-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .layer {
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            background-color: var(--bg-alt);
+        }
+
+        .layer-title {
+            position: absolute;
+            top: -14px;
+            left: 20px;
+            background: var(--bg);
+            padding: 0 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            border-radius: 4px;
+        }
+
+        .problem-layer .layer-title {
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .box-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .box {
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            padding: 15px 10px;
+            text-align: center;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: transform 0.2s;
+        }
+
+        .problem-box {
+            background-color: var(--accent-light);
+            border-color: #fca5a5;
+            color: #991b1b;
+        }
+
+        .highlight-box {
+            background-color: var(--primary-light);
+            border-color: #93c5fd;
+            color: #1e40af;
+            font-weight: bold;
+        }
+
+        /* Arrows between layers */
+        .arrow-down {
+            width: 0; 
+            height: 0; 
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 15px solid var(--border);
+            margin: -20px auto 15px auto;
+        }
+
+        /* Sub-layer for Architecture */
+        .sub-layer {
+            background: rgba(255,255,255,0.6);
+            border: 1px dashed var(--border);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        
+        .sub-layer-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .arrow-vertical-inner {
+            text-align: center;
+            color: var(--border);
+            font-size: 24px;
+            line-height: 1;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="figure-container">
+    <div class="figure-title">
+        Role-Based Clinical Dashboard Architecture for CPAP Therapy
+    </div>
+
+    <!-- 1. Problem Layer -->
+    <div class="layer problem-layer">
+        <div class="layer-title">1. The Problem (Information Asymmetry)</div>
+        <div class="box-grid">
+            <div class="box problem-box">Fragmented<br>Device Data</div>
+            <div class="box problem-box">Disconnected<br>Surveys</div>
+            <div class="box problem-box">Reactive<br>Interventions</div>
+            <div class="box problem-box">High Dropout<br>Rates</div>
+        </div>
+    </div>
+    
+    <div class="arrow-down"></div>
+
+    <!-- 2. Objectives Layer -->
+    <div class="layer">
+        <div class="layer-title">2. Research Objectives</div>
+        <div class="box-grid">
+            <div class="box">Design Role-Based<br>Architecture</div>
+            <div class="box">Implement Shared<br>Data Layer</div>
+            <div class="box">Integrate Biomarker<br>Hardware</div>
+            <div class="box">Enable AI Event<br>Triage</div>
+        </div>
+    </div>
+
+    <div class="arrow-down"></div>
+
+    <!-- 3. Architecture Layer -->
+    <div class="layer">
+        <div class="layer-title">3. System Architecture & Methodology</div>
+        
+        <div class="sub-layer">
+            <div class="sub-layer-title">Three-Portal UI</div>
+            <div class="box-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="box highlight-box">Physician Dashboard<br><span style="font-size:0.75rem; font-weight:normal; margin-top:4px;">(Exception Inbox)</span></div>
+                <div class="box highlight-box">Technician Workbench<br><span style="font-size:0.75rem; font-weight:normal; margin-top:4px;">(Triage Queue)</span></div>
+                <div class="box highlight-box">Patient Interface<br><span style="font-size:0.75rem; font-weight:normal; margin-top:4px;">(Mobile App)</span></div>
+            </div>
+        </div>
+
+        <div class="arrow-vertical-inner">↓</div>
+
+        <div class="sub-layer">
+            <div class="sub-layer-title">Shared Clinical Views (The "Universal Truth" Layer)</div>
+            <div class="box-grid">
+                <div class="box">CPAP Usage<br>Trends</div>
+                <div class="box">Physiological<br>Biomarkers</div>
+                <div class="box">Standardized<br>Surveys</div>
+                <div class="box">AI Weekly<br>Analysis</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="arrow-down"></div>
+
+    <!-- 4. Contributions Layer -->
+    <div class="layer">
+        <div class="layer-title">4. Expected Contributions</div>
+        <div class="box-grid">
+            <div class="box">Reduced Information<br>Asymmetry</div>
+            <div class="box">Faster Clinical<br>Response</div>
+            <div class="box">Structured Therapy<br>Transitions</div>
+            <div class="box">Guided Patient<br>Self-Management</div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -2,20 +2,26 @@ import { Search, User, Filter, MoreVertical, Loader2, Signal } from 'lucide-reac
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useApi } from '../../hooks/useApi';
-import { fetchPatients } from '../../data/api';
+import { fetchPatients, DirectoryResponse } from '../../data/api';
 
 export default function PhysicianDirectory() {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   
-  const { data: patients, isLoading, error } = useApi(fetchPatients);
+  const { data: patients, isLoading, error } = useApi<DirectoryResponse>(fetchPatients);
 
   const isLive = !error && !!patients;
 
-  const patientList = Array.isArray(patients) ? patients : (patients?.patients || []);
+  const rawList = Array.isArray(patients) ? patients : (patients?.patients || []);
+  const patientList = rawList.map((p: any) => {
+    if (typeof p === 'string') return { id: p, patientId: p, name: 'Patient ' + p, status: 'Active' };
+    return p;
+  });
+
+  console.log('Directory hydrated list:', patientList);
   const filteredPatients = patientList.filter((p: any) => 
-    (p.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (p.id?.toLowerCase() || '').includes(searchTerm.toLowerCase())
+    ((p.name || p.patientName || '').toLowerCase()).includes(searchTerm.toLowerCase()) ||
+    ((p.patientId || p.id || '').toLowerCase()).includes(searchTerm.toLowerCase())
   );
 
   if (isLoading && !patients) {
@@ -77,38 +83,38 @@ export default function PhysicianDirectory() {
             ) : (
               filteredPatients.map((patient: any) => (
                 <tr 
-                  key={patient.id} 
+                  key={patient.patientId || patient.id} 
                   className="hover:bg-[#FAFAFA] transition-colors cursor-pointer"
-                  onClick={() => navigate(`/physician/${patient.id}/summary`)}
+                  onClick={() => navigate(`/physician/patient/${patient.patientId || patient.id}`)}
                 >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-[#E8EEF2] rounded-full flex items-center justify-center text-[#2D9596]">
                         <User className="w-4 h-4" />
                       </div>
-                      <span className="font-medium text-[#0A1128]">{patient.name}</span>
+                      <span className="font-medium text-[#0A1128]">{patient.name || 'Unknown Patient'}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm font-mono text-[#5A6B7C]">
-                    {patient.id}
+                    {patient.patientId || patient.id || '—'}
                   </td>
                   <td className="px-6 py-4 text-sm text-[#5A6B7C]">
-                    {patient.gender}, {patient.age}y
+                    {patient.gender || patient.sex || '—'}, {patient.age || '—'}y
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       patient.status === 'Active' ? 'bg-[#6A994E]/10 text-[#6A994E]' : 'bg-[#F4A261]/10 text-[#F4A261]'
                     }`}>
-                      {patient.status}
+                      {patient.status || 'Active'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`text-sm font-medium ${
-                      patient.complianceScore >= 70 
+                      (patient.complianceScore || 0) >= 70 
                         ? 'text-[#6A994E]' 
                         : 'text-[#E76F51]'
                     }`}>
-                      {patient.complianceScore}% ({patient.complianceScore >= 70 ? 'Good' : 'Poor'})
+                      {patient.complianceScore || 0}% ({(patient.complianceScore || 0) >= 70 ? 'Good' : 'Poor'})
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">

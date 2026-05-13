@@ -35,16 +35,8 @@ export default function PatientVideos() {
   });
 
   const isLive = !error && !!liveVideos;
-  const rawVideos = liveVideos?.patient || liveVideos || [];
+  const rawVideos = (liveVideos as any)?.patient || liveVideos || [];
   const videos = Array.isArray(rawVideos) ? rawVideos : [];
-
-  if (isLoading && videos.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
-      </div>
-    );
-  }
 
   const [activeFilter, setActiveFilter] = useState<string>('All');
   const [watchedMap, setWatchedMap] = useState<{ [id: number]: boolean }>({});
@@ -56,6 +48,14 @@ export default function PatientVideos() {
       setRatingMap(Object.fromEntries(videos.map((v: any) => [v.id, v.rating])));
     }
   }, [videos]);
+
+  if (isLoading && videos.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 text-[#2D9596] animate-spin" />
+      </div>
+    );
+  }
 
   const recommended = videos.filter((v: any) => v.relevance === 'high');
   const watchedCount = Object.values(watchedMap).filter(Boolean).length;

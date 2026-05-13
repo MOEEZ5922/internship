@@ -584,3 +584,19 @@ export const aiWeeklyState = {
     reassessmentWindow: "7 days post-intervention",
   },
 };
+
+export const inventoryItems = [
+  { id: 1, item: "AirFit F20 Mask (Medium)", category: "Masks", stock: 12, minStock: 5, status: "In Stock" },
+  { id: 2, item: "AirFit P10 Nasal Pillows (Small)", category: "Masks", stock: 2, minStock: 5, status: "Low Stock" },
+  { id: 3, item: "Heated Tubing (ClimateLineAir)", category: "Tubing", stock: 0, minStock: 3, status: "Out of Stock" },
+  { id: 4, item: "Hypoallergenic Filters (6-pack)", category: "Filters", stock: 25, minStock: 10, status: "In Stock" },
+  { id: 5, item: "HumidAir Water Chamber", category: "Water Chambers", stock: 8, minStock: 4, status: "In Stock" },
+  { id: 6, item: "Mask Liners (Cotton)", category: "Accessories", stock: 4, minStock: 10, status: "Low Stock" },
+];
+
+export const deviceData = [
+  { id: "HEXO-092", name: "Hexoskin Smart Shirt", type: "Wearable", status: "Online", battery: "82%", lastSync: "12 mins ago", assigned: "Jan 12, 2025" },
+  { id: "MAS-441", name: "Masimo MightySat Rx", type: "Oximeter", status: "Online", battery: "95%", lastSync: "1 min ago", assigned: "Feb 05, 2025" },
+  { id: "SA-882", name: "Somno-Art Band", type: "Sleep Tracker", status: "Offline", battery: "12%", lastSync: "4 hours ago", assigned: "Jan 20, 2025" },
+  { id: "WIT-991", name: "Withings BPM Core", type: "Blood Pressure", status: "Disconnected", battery: "N/A", lastSync: "2 days ago", assigned: "Mar 10, 2025" },
+];

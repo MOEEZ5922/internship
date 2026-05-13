@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useParams } from 'react-router';
 import { Home, Activity, Package, FileText, HelpCircle, Video, Signal } from 'lucide-react';
+import ConnectivityStatus from '../components/ui/ConnectivityStatus';
 import { useApi } from '../hooks/useApi';
 import { fetchPatientSummary } from '../data/api';
 
@@ -32,15 +33,14 @@ export default function PatientLayout() {
         
         <div className="relative z-10">
           <div className="flex justify-between items-start mb-3">
-            <Link to="/" className="text-white/80 hover:text-white text-sm flex items-center gap-1 transition-colors">
-              ← Back to Portal
-            </Link>
-            {isLive && (
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-white/20 border border-white/30 rounded-md">
-                <Signal className="w-3 h-3 text-white animate-pulse" />
-                <span className="text-[10px] font-bold text-white uppercase tracking-wider">Live</span>
+            <div className="flex flex-col items-end gap-3">
+              <div className="flex gap-2">
+                <Link to="/physician" className="px-2 py-1 bg-white/10 text-white text-[10px] font-bold rounded hover:bg-white/20 transition-all uppercase tracking-tighter">MD</Link>
+                <Link to="/technician" className="px-2 py-1 bg-white/10 text-white text-[10px] font-bold rounded hover:bg-white/20 transition-all uppercase tracking-tighter">TECH</Link>
+                <Link to="/patient/1/home" className="px-2 py-1 bg-white/10 text-white text-[10px] font-bold rounded hover:bg-white/20 transition-all uppercase tracking-tighter border border-white/30">PAT</Link>
               </div>
-            )}
+              <ConnectivityStatus />
+            </div>
           </div>
           
           <h1 className="text-3xl font-bold mb-1">

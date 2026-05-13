@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Progress Report - Moeez Ahmed</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11.4.0/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D9596;
+            --text: #1A202C;
+            --bg: #FFFFFF;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px;
+            background: var(--bg);
+        }
+        h1 { font-size: 2.5rem; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 30px; color: #0A1128; }
+        h2 { font-size: 1.8rem; margin-top: 40px; color: var(--primary); border-left: 5px solid var(--primary); padding-left: 15px; }
+        h3 { font-size: 1.4rem; margin-top: 30px; color: #2D3748; }
+        h4 { font-size: 1.1rem; margin-top: 20px; color: #4A5568; }
+        p, li { font-size: 1.05rem; margin-bottom: 12px; }
+        ul { padding-left: 20px; }
+        img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 20px 0; }
+        .mermaid { margin: 20px 0; background: white; border: 1px solid #EDF2F7; border-radius: 8px; padding: 10px; text-align: center; }
+        
+        @media print {
+            body { padding: 20px; }
+            .no-print { display: none; }
+            h2 { page-break-before: auto; }
+            .mermaid { page-break-inside: avoid; }
+            img { page-break-inside: avoid; }
+        }
+
+        .pdf-header {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Internship Progress Report</h1>
+    
+    <p><strong>Student:</strong> Moeez Ahmed<br>
+    <strong>Date:</strong> April 26, 2026<br>
+    <strong>Internship Topic:</strong> SleepCare — Integrated Sleep Apnea Management Platform<br>
+    <strong>Host Organization:</strong> DISP Lab (University of Lyon 2)</p>
+
+    <h2>1. Supervisor Information</h2>
+    <ul>
+        <li><strong>Name:</strong> Yasaman Kakaei Siahkal</li>
+        <li><strong>Role:</strong> PhD Researcher / Project Supervisor</li>
+        <li><strong>Email:</strong> yasaman.kakaei-siahkal@univ-lyon2.fr</li>
+    </ul>
+
+    <h2>2. Project Context & Objectives</h2>
+    <p><strong>SleepCare</strong> is a digital health platform designed to improve therapy success for patients with <strong>Obstructive Sleep Apnea (OSA)</strong>.</p>
+    <p>OSA is a condition where breathing stops during sleep, leading to serious health risks if untreated. While CPAP therapy is effective, many patients stop using it ("dropout") due to technical or comfort issues. SleepCare aims to solve this by:</p>
+    <ul>
+        <li><strong>Predictive Analytics:</strong> Using AI and digital biomarkers (HRV, SpO2) to identify at-risk patients early.</li>
+        <li><strong>Improving Coordination:</strong> Providing tailored dashboards for Physicians, Technicians, and Patients to ensure faster intervention when issues arise.</li>
+    </ul>
+
+    <h2>3. Achievements to Date</h2>
+    <p>I have completed the first phase of the internship and am preparing for the development phase.</p>
+
+    <h3>Phase 1: Requirements & Design (Weeks 1–4)</h3>
+    <ul>
+        <li><strong>Research:</strong> Studied academic papers on sleep apnea therapy and digital biomarkers (Weeks 1–2).</li>
+        <li><strong>Stakeholder Meetings:</strong> Worked with Yasaman and the backend intern to define features for each user role.</li>
+        <li><strong>UI/UX Design:</strong> Created wireframes for the dashboards and specialized tabs.</li>
+        <li><strong>API Strategy:</strong> Collaborated with the backend intern to define data formats (Week 4).</li>
+    </ul>
+
+    <h2>4. Upcoming Schedule</h2>
+    <ul>
+        <li><strong>Week 5:</strong> Initialize React project with TypeScript/Tailwind and set up mock API environments.</li>
+        <li><strong>Weeks 6–13:</strong> Build core tabs (AHI, Biomarkers, Surveys) and AI monitoring panels.</li>
+        <li><strong>Week 13:</strong> Full working prototype demo.</li>
+        <li><strong>Phase 3 (Weeks 14-18):</strong> AI Integration and advanced views.</li>
+        <li><strong>Phase 4 (Weeks 19-21):</strong> Testing and optimization.</li>
+        <li><strong>Phase 5 (Weeks 22-24):</strong> Final documentation.</li>
+    </ul>
+
+    <h2>5. Challenges Faced</h2>
+    <ul>
+        <li><strong>Data Handling:</strong> Combining data from different hardware brands into a single interface.</li>
+        <li><strong>Information Design:</strong> Showing critical alerts without overwhelming physicians.</li>
+        <li><strong>API Alignment:</strong> Ensuring the frontend handles data gaps correctly.</li>
+    </ul>
+
+    <h2>6. System Diagrams</h2>
+
+    <h3>Use Case Diagram</h3>
+    <pre class="mermaid">
+    flowchart LR
+        P[Patient]
+        T[Technician]
+        D[Physician]
+        A[AI Model]
+
+        subgraph PatUI [Patient Interface]
+            U1[View Progress]
+            U2[Complete Surveys]
+            U3[Submit Report]
+        end
+        
+        subgraph TechUI [Technician Interface]
+            U4[Manage Queue]
+            U5[Log Dispatch]
+        end
+
+        subgraph DocUI [Physician Interface]
+            U6[Manage Inbox]
+            U7[Review Logs]
+        end
+
+        P --- PatUI
+        T --- TechUI
+        D --- DocUI
+        
+        U3 --> U4
+        U3 --> A
+        A --> U6
+    </pre>
+
+    <h3>Sequence Diagrams</h3>
+
+    <h4>Physician Workflow</h4>
+    <pre class="mermaid">
+    sequenceDiagram
+        actor P as Physician
+        participant D as Dashboard
+        participant S as System
+
+        P->>D: Open Inbox
+        D->>S: Request critical patients
+        S-->>D: Return Alerts
+        D-->>P: Show Urgent Actions
+        P->>D: View Pathway Report
+        S-->>D: Load Data
+        D-->>P: Display Context
+        P->>D: Authorize Therapy
+        D->>S: Log Auth
+        S-->>D: Success
+    </pre>
+
+    <h4>Technician Workflow</h4>
+    <pre class="mermaid">
+    sequenceDiagram
+        actor T as Technician
+        participant D as Dashboard
+        participant S as System
+
+        T->>D: Open Queue
+        D->>S: Request tasks
+        S-->>D: Return patients
+        D-->>T: Show Actions
+        T->>D: Open Prep Card
+        S-->>D: Load Hardware
+        D-->>T: Display needs
+        T->>D: Log Dispatch
+        D->>S: Update record
+    </pre>
+
+    <h4>Patient Workflow</h4>
+    <pre class="mermaid">
+    sequenceDiagram
+        actor P as Patient
+        participant A as App
+        participant Q as Tech Queue
+        participant AI as AI Model
+
+        P->>A: Open App
+        A-->>P: Show Card
+        P->>A: Report issue
+        par Route to Tech
+            A->>Q: Trigger Alert
+        and Route to AI
+            A->>AI: Feed feedback
+            AI-->>AI: Update Score
+        end
+        A-->>P: Submitted
+    </pre>
+
+    <h2>7. UI Snapshots</h2>
+
+    <h4>Role Selector Page</h4>
+    <img src="screenshots/role_selector_page_1777241616163.png" alt="Role Selector">
+
+    <h4>Physician Portal Dashboard</h4>
+    <img src="screenshots/physician_portal_page_1777241630115.png" alt="Physician Portal">
+
+    <h4>Technician Portal Dashboard</h4>
+    <img src="screenshots/technician_portal_page_1777241645938.png" alt="Technician Portal">
+
+    <h4>Patient Portal Dashboard</h4>
+    <img src="screenshots/patient_dashboard_maximized_1777241781121.png" alt="Patient Portal">
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true, 
+            theme: 'neutral',
+            securityLevel: 'loose'
+        });
+    </script>
+</body>
+</html>

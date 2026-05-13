@@ -1,18 +1,28 @@
 import React, { useState } from 'react';
 import { Moon, Flame, ChevronRight, Package, FileText, Sparkles, Video, HelpCircle, X, AlertCircle, Play, Signal, Loader2 } from 'lucide-react';
-import { Link, useParams } from 'react-router';
+import { Link, useNavigate, useParams } from 'react-router';
 import { useApi } from '../../hooks/useApi';
-import { fetchPatientSummary, fetchCpapTrends, fetchSurveys, submitSurveyResponse } from '../../data/api';
+import { 
+  fetchPatientSummary, 
+  fetchCpapTrends, 
+  fetchSurveys, 
+  submitSurveyResponse,
+  PatientSummary,
+  CpapTrends,
+  SurveyResponse
+} from '../../data/api';
 
 export default function PatientHome() {
   const { id } = useParams();
-  const { data: summary, error: summaryError } = useApi(() => fetchPatientSummary(id || '1'), {
+  const navigate = useNavigate();
+  
+  const { data: summary, error: summaryError } = useApi<PatientSummary>(() => fetchPatientSummary(id || '1'), {
     dependencies: [id]
   });
-  const { data: cpapTrends, error: cpapError } = useApi(() => fetchCpapTrends(id || '1', 7), {
+  const { data: cpapTrends, error: cpapError } = useApi<CpapTrends>(() => fetchCpapTrends(id || '1', 7), {
     dependencies: [id]
   });
-  const { data: surveyData, error: surveyError } = useApi(() => fetchSurveys(id || '1'), {
+  const { data: surveyData, error: surveyError } = useApi<SurveyResponse>(() => fetchSurveys(id || '1'), {
     dependencies: [id]
   });
 
@@ -53,7 +63,7 @@ export default function PatientHome() {
       {/* 2-Minute Objective: Action Center */}
       <div className="space-y-4">
         {/* Persistent AI Trigger (Dynamic based on leak) */}
-        {cpapTrends?.percentileLeak > 20 && (
+        {cpapTrends && cpapTrends.percentileLeak > 20 && (
           <div className="bg-[#0A1128] text-white rounded-[2rem] p-8 shadow-2xl relative overflow-hidden border-2 border-white/10 animate-in zoom-in-95 duration-500">
             <div className="flex items-start gap-6">
               <div className="w-16 h-16 bg-[#E76F51]/20 rounded-[1.25rem] flex items-center justify-center flex-shrink-0 relative overflow-hidden group cursor-pointer shadow-lg">
@@ -69,11 +79,12 @@ export default function PatientHome() {
                 <h3 className="text-xl font-bold mb-4 leading-tight">We detected a leak of {cpapTrends.percentileLeak} L/min. Let's fix it now with a 60s guide.</h3>
                 <div className="flex gap-3">
                   <button 
+                    onClick={() => navigate(`/patient/${id}/videos`)}
                     className="bg-[#E76F51] text-white px-6 py-2.5 rounded-xl font-bold hover:bg-[#d6654b] transition-all shadow-lg active:scale-95"
                   >
                     Watch Now
                   </button>
-                  <button className="text-white/60 text-sm hover:text-white transition-colors">
+                  <button onClick={() => navigate(`/patient/${id}/help`)} className="text-white/60 text-sm hover:text-white transition-colors">
                     Check Mask Settings →
                   </button>
                 </div>
@@ -106,13 +117,13 @@ export default function PatientHome() {
               <div className="bg-white h-full rounded-full transition-all duration-1000" style={{ width: `${surveyProgress}%` }} />
             </div>
           </div>
-          <Link
-            to={`/patient/${id}/surveys`}
+          <button
+            onClick={() => navigate(`/patient/${id}/surveys`)}
             className="flex items-center justify-center gap-3 w-full bg-white text-[#2D9596] py-5 rounded-2xl font-bold hover:bg-[#f0f9f9] transition-all shadow-xl active:scale-98"
           >
             Finish Survey
             <ChevronRight className="w-6 h-6" />
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -135,7 +146,9 @@ export default function PatientHome() {
               onClick={async () => {
                 setSurveyResponse(rating);
                 try {
-                  await submitSurveyResponse(id || '1', 'daily-pulse', { restful_feeling: rating });
+                  await submitSurveyResponse(id || '1', 'daily-pulse', { 
+                    answers: [{ question_id: 'restful_feeling', value: rating }]
+                  });
                 } catch (e) {
                   console.error('Failed to submit pulse');
                 }
@@ -280,20 +293,20 @@ export default function PatientHome() {
 
       {/* Quick Access Buttons */}
       <div className="grid grid-cols-2 gap-4">
-        <Link
-          to={`/patient/${id}/videos`}
+        <button
+          onClick={() => navigate(`/patient/${id}/videos`)}
           className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2] hover:shadow-md transition-all text-center"
         >
           <Video className="w-8 h-8 text-[#2D9596] mx-auto mb-2" />
           <p className="text-sm font-medium text-[#0A1128]">Watch Tutorials</p>
-        </Link>
-        <Link
-          to={`/patient/${id}/help`}
+        </button>
+        <button
+          onClick={() => navigate(`/patient/${id}/help`)}
           className="bg-white rounded-2xl p-6 shadow-sm border border-[#E8EEF2] hover:shadow-md transition-all text-center"
         >
           <HelpCircle className="w-8 h-8 text-[#F4A261] mx-auto mb-2" />
           <p className="text-sm font-medium text-[#0A1128]">Get Help</p>
-        </Link>
+        </button>
       </div>
 
       {/* Urgent Video Modal */}
@@ -325,7 +338,7 @@ export default function PatientHome() {
             
             <div className="flex flex-col gap-3">
               <button 
-                onClick={() => setShowUrgentModal(false)}
+                onClick={() => navigate(`/patient/${id}/videos`)}
                 className="w-full bg-[#E76F51] text-white font-bold py-4 rounded-xl shadow-lg shadow-[#E76F51]/20 hover:bg-[#d6654b] transition-all"
               >
                 Watch Now (1:00)

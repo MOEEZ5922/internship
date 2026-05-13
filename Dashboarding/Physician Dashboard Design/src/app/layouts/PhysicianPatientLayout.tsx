@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useParams } from 'react-router';
 import { ArrowLeft, Signal, Loader2 } from 'lucide-react';
+import ConnectivityStatus from '../components/ui/ConnectivityStatus';
 import { useApi } from '../hooks/useApi';
 import { fetchPatientSummary } from '../data/api';
 
@@ -53,12 +54,14 @@ export default function PhysicianPatientLayout() {
           <Link to="/physician" className="flex items-center gap-2 text-[#2D9596] hover:underline text-sm font-medium">
             <ArrowLeft className="w-4 h-4" /> Back to Inbox
           </Link>
-          {isLive && (
-            <div className="flex items-center gap-1.5 px-2 py-1 bg-[#6A994E]/10 border border-[#6A994E]/20 rounded-md">
-              <Signal className="w-3 h-3 text-[#6A994E]" />
-              <span className="text-[10px] font-bold text-[#6A994E] uppercase tracking-wider">Live</span>
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+             <div className="flex gap-2">
+                <Link to="/physician" className="px-2 py-1 bg-[#2D9596]/10 text-[#2D9596] text-[10px] font-bold rounded hover:bg-[#2D9596]/20 transition-all uppercase tracking-tighter">MD</Link>
+                <Link to="/technician" className="px-2 py-1 bg-[#F4A261]/10 text-[#F4A261] text-[10px] font-bold rounded hover:bg-[#F4A261]/20 transition-all uppercase tracking-tighter">TECH</Link>
+                <Link to="/patient/1/home" className="px-2 py-1 bg-[#6A994E]/10 text-[#6A994E] text-[10px] font-bold rounded hover:bg-[#6A994E]/20 transition-all uppercase tracking-tighter">PAT</Link>
+             </div>
+             <ConnectivityStatus />
+          </div>
         </div>
         
         <div className="flex items-center justify-between">
@@ -75,7 +78,7 @@ export default function PhysicianPatientLayout() {
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Therapy Timeline</p>
-              <p className="text-[#0A1128]">Started: {new Date(patient.therapyStartDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              <p className="text-[#0A1128]">Started: {new Date(patient.therapyStartDate || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
             </div>
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
@@ -85,8 +88,8 @@ export default function PhysicianPatientLayout() {
             <div className="w-px h-10 bg-[#E8EEF2]" />
             <div>
               <p className="text-xs text-[#5A6B7C] mb-1">Risk Score</p>
-              <p className={`font-semibold ${getRiskColor(patient.riskScore)}`}>
-                {patient.riskScore}/100
+              <p className={`font-semibold ${getRiskColor(patient.riskScore || 0)}`}>
+                {patient.riskScore || 0}/100
               </p>
             </div>
           </div>

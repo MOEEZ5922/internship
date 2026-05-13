@@ -48,11 +48,11 @@ const clusterColors: Record<string, string> = {
 export default function TechnicianHome() {
   const [activeTab, setActiveTab] = useState<'events' | 'queue'>('events');
   
-  const { data: eventsData, isLoading: isLoadingEvents, error: eventError, refetch: refetchEvents } = useApi(fetchTechnicianEvents);
-  const { data: queueData, isLoading: isLoadingQueue, error: queueError } = useApi(fetchTechnicianQueue);
+  const { data: eventsData, isLoading: isLoadingEvents, error: eventError, refetch: refetchEvents } = useApi<any>(() => fetchTechnicianEvents());
+  const { data: queueData, isLoading: isLoadingQueue, error: queueError } = useApi<any>(() => fetchTechnicianQueue());
 
-  const events = Array.isArray(eventsData) ? eventsData : (eventsData?.events || []);
-  const queue = Array.isArray(queueData) ? queueData : (queueData?.patients || queueData?.queue || []);
+  const events: any[] = Array.isArray(eventsData) ? eventsData : ((eventsData as any)?.events || []);
+  const queue: any[] = Array.isArray(queueData) ? queueData : ((queueData as any)?.patients || (queueData as any)?.queue || []);
   const isLive = !eventError && !!eventsData;
 
 
@@ -99,8 +99,8 @@ export default function TechnicianHome() {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
-  const selectedEvent = events.find(e => e.id === selectedEventId);
-  const selectedQueuePatient = queue.find(p => p.id === selectedQueuePatientId);
+  const selectedEvent = events.find((e: any) => e.id === selectedEventId);
+  const selectedQueuePatient = queue.find((p: any) => p.id === selectedQueuePatientId);
 
   return (
     <div className="flex flex-col h-full bg-[#FAFAFA] overflow-hidden">
@@ -199,7 +199,7 @@ export default function TechnicianHome() {
                   <div className="flex justify-between items-start mb-10">
                     <div className="flex items-center gap-6">
                       <div className={`w-20 h-20 rounded-2xl flex items-center justify-center ${eventTypeConfig[selectedEvent.type]?.bg || 'bg-[#2D9596]'}/10`}>
-                        {React.cloneElement((eventTypeConfig[selectedEvent.type] || eventTypeConfig['Equipment Alert']).icon as React.ReactElement, { className: "w-10 h-10 " + (eventTypeConfig[selectedEvent.type] || eventTypeConfig['Equipment Alert']).color })}
+                        {React.cloneElement((eventTypeConfig[selectedEvent.type] || eventTypeConfig['Equipment Alert']).icon as React.ReactElement<any>, { className: "w-10 h-10 " + (eventTypeConfig[selectedEvent.type] || eventTypeConfig['Equipment Alert']).color })}
                       </div>
                       <div>
                         <div className="flex items-center gap-3 mb-1">
@@ -229,8 +229,8 @@ export default function TechnicianHome() {
                             disabled={isSubmitting}
                             className="px-6 py-3 bg-[#E76F51] text-white font-bold rounded-xl shadow-lg shadow-[#E76F51]/20 hover:scale-105 transition-all active:scale-95 flex items-center gap-2"
                           >
-                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                            Validate Alert
+                            {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Activity className="w-4 h-4" />}
+                            Submit Event Triage
                           </button>
                         </>
                       ) : (
