@@ -1,18 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Research Framework</title>
+    <title>Interactive Preemptive Research Framework</title>
     <style>
-        body, html {
+        body,
+        html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100vh;
-            background-color: #fcfcfc;
+            background-color: #fafbfc;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         #chart-container {
             width: 100%;
             height: 100%;
@@ -21,6 +24,7 @@
     <!-- Load Apache ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
 </head>
+
 <body>
     <div id="chart-container"></div>
 
@@ -29,16 +33,16 @@
         var myChart = echarts.init(chartDom);
         var option;
 
-        // Color Palette matching the user's image closely
-        const rootColor = '#00102a'; 
+        // Elegant Clinical Color Palette
+        const rootColor = '#001b3a';
 
         const colors = {
-            c1: { main: '#e63946', light: '#ffebee', border: '#ffcdd2', text: '#b71c1c' }, // Context / State of Art (Red)
-            c2: { main: '#f4a261', light: '#fff3e0', border: '#ffe0b2', text: '#e65100' }, // Objective / Methodology (Orange)
-            c3: { main: '#e9c46a', light: '#fffde7', border: '#fff59d', text: '#f57f17' }, // Results / Implementation (Yellow)
-            c4: { main: '#2a9d8f', light: '#e8f5e9', border: '#c8e6c9', text: '#1b5e20' }, // Research Problem (Green)
-            c5: { main: '#1d3557', light: '#e3f2fd', border: '#bbdefb', text: '#0d47a1' }, // Research Question (Blue)
-            c6: { main: '#7209b7', light: '#f3e5f5', border: '#e1bee7', text: '#4a148c' }, // Introduction (Purple)
+            c1: { main: '#b21c1c', light: '#ffebee', border: '#ffcdd2', text: '#7f0000' }, // Context / State of Art (Clinical Crisis - Crimson)
+            c2: { main: '#d85c00', light: '#fff3e0', border: '#ffe0b2', text: '#913b00' }, // Objective / Methodology (Proactive Orange)
+            c3: { main: '#a88100', light: '#fffde7', border: '#fff59d', text: '#6d5100' }, // Expected Results / Implementation (Golden Opportunity)
+            c4: { main: '#007f5f', light: '#e8f5e9', border: '#c8e6c9', text: '#004b30' }, // Research Problem (Silent Obstacles - Emerald)
+            c5: { main: '#005b96', light: '#e3f2fd', border: '#bbdefb', text: '#003366' }, // Research Question (Clinical Queries - Deep Teal)
+            c6: { main: '#560bad', light: '#f3e5f5', border: '#e1bee7', text: '#3f077a' }, // Introduction (Paradigm Purple)
         };
 
         // Helper to format heading nodes
@@ -75,7 +79,7 @@
         }
 
         const data = {
-            name: 'Evaluating Digital Biomarker Implementation\nin Personalized CPAP Therapy',
+            name: 'SleepCare: A Preemptive Patient-Centric\nCPAP Adherence Platform',
             label: {
                 backgroundColor: rootColor,
                 color: '#ffffff',
@@ -87,79 +91,84 @@
             },
             children: [
                 {
-                    ...heading('Context', colors.c1),
+                    ...heading('Clinical Context', colors.c1),
                     children: [
-                        textNode('Assess impact of digital biomarkers via a Role-Based Dashboard', colors.c1),
-                        textNode('Validation: Real-time UI feedback loops', colors.c1),
-                        textNode('Personalization: Backend AI-driven clustering', colors.c1)
+                        textNode('Stop early therapy abandonment in the critical first 90 days', colors.c1),
+                        textNode('Prioritize patient well-being, somatic comfort, and therapy tolerance', colors.c1),
+                        textNode('Establish patient as the primary, empowered actor of therapy', colors.c1),
+                        textNode('Scale to manage millions of patients globally suffering from OSA', colors.c1)
                     ]
                 },
                 {
-                    ...heading('Research Objective', colors.c2),
+                    ...heading('Research Objectives', colors.c2),
                     children: [
-                        textNode('Obj1: Design a Full-Stack Role-Based UI Architecture', colors.c2),
-                        textNode('Obj2: Establish Universal API Contracts for Biomarkers', colors.c2),
-                        textNode('Obj3: Develop Backend AI-driven clustering models', colors.c2),
-                        textNode('Obj4: Implement Frontend AI Triage Interfaces', colors.c2),
-                        textNode('Obj5: Enhance patient engagement via mobile-first feedback', colors.c2)
+                        textNode('Obj1 (Biomarker Ingestion): Capture continuous high-fidelity respiratory, cardiac (ECG/HRV), and blood-gas (SpO2) telemetry', colors.c2),
+                        textNode('Obj2 (Weekly Aggregation): Construct a unified symmetric weekly patient state tracking well-being and adherence', colors.c2),
+                        textNode('Obj3 (Patient Empowerment): Design zero-friction interfaces to enhance patient well-being and self-correction', colors.c2),
+                        textNode('Obj4 (Clinical Governance): Shield physicians from alert fatigue while scaling clinical monitoring', colors.c2),
+                        textNode('Obj5 (Traceable Taxonomy): Embed an 8-type tactical intervention taxonomy to track homecare performance', colors.c2)
                     ]
                 },
                 {
                     ...heading('Expected Results', colors.c3),
                     children: [
-                        textNode('EX1: Scalable framework for medical dashboards', colors.c3),
-                        textNode('EX2: Seamless clinical data synchronization', colors.c3),
-                        textNode('EX3: Automated notifications via Exception Inbox', colors.c3),
-                        textNode('EX4: User-friendly mobile adherence tracking', colors.c3)
+                        textNode('EX1: Preemptive prevention of early CPAP therapy dropout', colors.c3),
+                        textNode('EX2: Maximized patient well-being and sustained therapy comfort', colors.c3),
+                        textNode('EX3: Zero clinical information asymmetry across all homecare roles', colors.c3),
+                        textNode('EX4: High clinical scalability (demonstrated across 40,000+ Linde France cohort)', colors.c3),
+                        textNode('EX5: Shielded clinicians free from mechanical alert fatigue', colors.c3),
+                        textNode('EX6: Rapid, first-time-fix mechanical troubleshooting by technicians', colors.c3)
                     ]
                 },
                 {
                     ...heading('Research Problem', colors.c4),
                     children: [
-                        textNode('RP1: Lack of real-time validation due to disconnected backends', colors.c4),
-                        textNode('RP2: Fragmented Multi-Vendor Hardware APIs', colors.c4),
-                        textNode('RP3: Lack of AI-driven clustering data pipelines', colors.c4),
-                        textNode('RP4: Information Asymmetry across clinical roles', colors.c4)
+                        textNode('RP1: Reactive telemonitoring relies on retrospective, lagging thresholds (e.g., 30-day compliance)', colors.c4),
+                        textNode('RP2: Late clinical rescue occurs after patient has already mentally checked out due to physical distress', colors.c4),
+                        textNode('RP3: High clinical latency in resolving early mechanical leaks and somatic discomfort', colors.c4),
+                        textNode('RP4: Poor scalability: Managing millions of patients (40% of world pop) using manual outreach is impossible', colors.c4),
+                        textNode('RP5: Fragmented data across vendors creates an uncoordinated, high-risk homecare pathway', colors.c4)
                     ]
                 },
                 {
-                    ...heading('Research Question', colors.c5),
+                    ...heading('Research Questions', colors.c5),
                     children: [
-                        textNode('RQ1: How do API contracts ensure real-time clinical parity?', colors.c5),
-                        textNode('RQ2: Which biomarkers are most predictive in the Physician UI?', colors.c5),
-                        textNode('RQ3: How can backend clustering dynamically adjust therapy?', colors.c5),
-                        textNode('RQ4: What event-driven UI mechanisms trigger early notifications?', colors.c5)
+                        textNode('RQ1: How does a preemptive patient self-correction loop affect early therapy retention and well-being?', colors.c5),
+                        textNode('RQ2: How do multi-source autonomic biomarkers (HRV, SpO2 desaturation) predict dropout probability?', colors.c5),
+                        textNode('RQ3: Can exception-based clinical shielding reduce physician alert fatigue while preserving governance?', colors.c5),
+                        textNode('RQ4: How can a clinical platform scale to manage 40,000+ patients with low operational resource latency?', colors.c5)
                     ]
                 },
                 {
                     ...heading('Introduction', colors.c6),
                     children: [
-                        textNode('Background: Overcoming data silos in sleep medicine', colors.c6),
-                        textNode('Contributions: Bridging Engineering and Medicine via Dashboards', colors.c6)
+                        textNode('Background: The critical 90-day CPAP adherence window and early dropouts', colors.c6),
+                        textNode('Scale Challenge: Sleep apnea affects 40% of the world population, requiring extreme scalability', colors.c6),
+                        textNode('Paradigm Shift: Shifting from reactive compliance to preemptive patient-centric clinical interception', colors.c6)
                     ]
                 },
                 {
                     ...heading('State of the Art', colors.c1),
                     children: [
-                        textNode('Existing Models: Passive monitoring without UI feedback', colors.c1),
-                        textNode('Gaps: No comprehensive dashboard linking biomarkers', colors.c1),
-                        textNode('AI Personalization: Centralized event-based risk detection', colors.c1)
+                        textNode('Standard Care: Retrospective 4-hour nightly compliance checks using coarse device modems', colors.c1),
+                        textNode('The Reactive Gap: Late "clinical rescues" after somatic distress and therapy failure have already set in', colors.c1),
+                        textNode('The Linde-Physician Failure Loop: Return to clinic represents homecare delivery failure', colors.c1)
                     ]
                 },
                 {
                     ...heading('Methodology', colors.c2),
                     children: [
-                        textNode('System Architecture: Frontend (React) & Backend (APIs)', colors.c2),
-                        textNode('Data Ingestion: Wearables & CPAP Machine Data', colors.c2),
-                        textNode('Validation: Human-in-the-loop Technician Triage', colors.c2)
+                        textNode('Continuous Multi-Source Biomarker Ingestion (ECG, HRV, SpO2, Leaks, surveys)', colors.c2),
+                        textNode('Symmetric Weekly Patient-State Aggregation Pipeline tracking compliance and somatic well-being', colors.c2),
+                        textNode('Preemptive Adherence Stratification Engine (Dynamic Dropout Probability & Profiles)', colors.c2)
                     ]
                 },
                 {
-                    ...heading('Implementation', colors.c3),
+                    ...heading('Operational Tools', colors.c3),
                     children: [
-                        textNode('Contract-First API Development', colors.c3),
-                        textNode('Shared UI Component Library', colors.c3),
-                        textNode('Real-Time State Management', colors.c3)
+                        textNode('Patient: Zero-Friction Self-Correction Feed promoting therapy well-being & comfort', colors.c3),
+                        textNode('Technician: Unified Priority Queue & Visit Prep Cards (Leak Percentiles & Mask History)', colors.c3),
+                        textNode('Physician: Exception-Based Clinical Workspace & Intervention Viability Log', colors.c3)
                     ]
                 }
             ]
@@ -175,9 +184,9 @@
                     type: 'tree',
                     data: [data],
                     top: '5%',
-                    left: '12%',
+                    left: '10%',
                     bottom: '5%',
-                    right: '30%',
+                    right: '32%',
                     symbolSize: 1, // Hide the dot symbol
                     initialTreeDepth: 3,
                     roam: true, // Allow zooming and panning
@@ -204,11 +213,12 @@
         };
 
         option && myChart.setOption(option);
-        
+
         // Handle window resize
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', function () {
             myChart.resize();
         });
     </script>
 </body>
+
 </html>

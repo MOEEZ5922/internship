@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internship Progress Report (May & June 2026) - Moeez Ahmed</title>
+    <!-- Mermaid & Fonts matching the original report -->
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D9596;
+            --text: #1A202C;
+            --bg: #FFFFFF;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px 40px 40px 40px; /* Reduced top padding to tighten the header */
+            background: var(--bg);
+        }
+        h1 { font-size: 1.8rem; border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-top: 0; margin-bottom: 30px; color: #0A1128; } /* Removed top margin on h1 */
+        h2 { font-size: 1.35rem; margin-top: 40px; color: var(--primary); border-left: 5px solid var(--primary); padding-left: 15px; }
+        h3 { font-size: 1.15rem; margin-top: 30px; color: #2D3748; }
+        h4 { font-size: 1rem; margin-top: 20px; color: #4A5568; }
+        p, li { font-size: 0.95rem; margin-bottom: 12px; }
+        ul { padding-left: 20px; }
+        img { max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin: 20px 0; }
+        .mermaid { margin: 20px 0; background: white; border: 1px solid #EDF2F7; border-radius: 8px; padding: 10px; text-align: center; }
+        
+        @media print {
+            @page {
+                size: auto;
+                margin: 30mm 25mm; /* 30mm margins on top/bottom, 25mm standard margins on left/right */
+            }
+            body { 
+                padding: 0; /* Let @page margins handle the page borders */
+            }
+            .no-print { display: none; }
+            h2 { page-break-before: auto; }
+            img { page-break-inside: avoid; }
+        }
+
+        .pdf-header {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .info-card {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-card h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        .author-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .author-table th, .author-table td {
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            text-align: left;
+        }
+        .author-table th {
+            background-color: #f1f5f9;
+            color: #0A1128;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Internship Progress Report (May &amp; June 2026)</h1>
+    
+    <p><strong>Student:</strong> Moeez Ahmed<br>
+    <strong>Date:</strong> June 30, 2026<br>
+    <strong>Internship Topic:</strong> SleepCare - Integrated Sleep Apnea Management Platform<br>
+    <strong>Host Organization:</strong> DISP Lab (University of Lyon 2) &amp; Linde Homecare France</p>
+
+    <h2>1. Supervisor Information</h2>
+    <ul>
+        <li><strong>Academic Supervisor:</strong> Yasaman Kakaei Siahkal (PhD Researcher / Project Supervisor, DISP Lab)</li>
+        <li><strong>Co-Supervisor:</strong> Nejib Moalla (Professor, University of Lyon 2 / DISP Lab)</li>
+        <li><strong>Linde Representative:</strong> Olivier Grasset (Linde Homecare France)</li>
+        <li><strong>Academic Email:</strong> yasaman.kakaei-siahkal@univ-lyon2.fr</li>
+    </ul>
+
+    <h2>2. Project Context &amp; Objectives</h2>
+    <p><strong>SleepCare</strong> is a digital health platform designed to improve therapy success for patients with <strong>Obstructive Sleep Apnea (OSA)</strong>. Obstructive sleep apnea is a major clinical condition characterized by repeated airway collapses during sleep. Continuous Positive Airway Pressure (CPAP) remains the gold standard therapy, but the clinical challenge lies in patient adherence, with 46–83% failing to maintain long-term compliance within their first year.</p>
+    <p>Standard care telemonitoring tools remain strictly reactive, generating alerts only after a compliance dropout has occurred. SleepCare aims to solve this by transforming this workflow into a preemptive clinical interception engine:
+    <ul>
+        <li><strong>Preemptive Interventions:</strong> Tracking multi-source digital biomarkers (electrocardiogram, heart rate variability, SpO2, air leak rate) to detect early compliance instability before therapy dropout occurs.</li>
+        <li><strong>Role-Based Operational Workspaces:</strong> Delivering customized interfaces for the Physician (safety validation, medical overrides), the Technician (home visits, mechanical troubleshooting, inventory management), and the Patient (self-reporting feed, milestone check-ins, targeted educational coaching).</li>
+    </ul>
+    </p>
+
+    <h2>3. Achievements to Date: May &amp; June 2026</h2>
+    <p>Over the past two months, I have completed the core dashboard development phase, integrated AI risk states, and co-authored the conference paper and poster draft for a MedTech submission.</p>
+
+    <h3>Phase 2: Core Development &amp; Telemetry (May Week 5 - June Week 9)</h3>
+    <ul>
+        <li><strong>Project Initialization:</strong> Setup the React 18 + TypeScript + Vite + Tailwind CSS 4 project workspace, including the centralized <code>api.ts</code> service layer connecting directly with FastAPI.</li>
+        <li><strong>Screen Logic &amp; Route Boundaries:</strong> Built layout architectures and role-based route guards for Physician, Technician, and Patient interfaces.</li>
+        <li><strong>CPAP Trends Tab:</strong> Developed a module visualizing CPAP telemetry, including a 7-day usage bar chart, AHI trend lines, and a compliance streak counter.</li>
+        <li><strong>Digital Biomarkers Tab:</strong> Designed time-series charts for HRV, SpO2, and ODI. Built per-source availability indicator icons (for Withings, Hexoskin, and Somno-Art) and integrated a dimming visual filter when a hardware stream is missing.</li>
+    </ul>
+
+    <h3>Phase 3: AI Integration &amp; Clinical Override Gates (June Weeks 10 - 13)</h3>
+    <ul>
+        <li><strong>AI Weekly State Panel:</strong> Designed and implemented the AI state summary panel, which visualizes the patient's risk tier, dropout countdown, and active warning flags (leak instability, usage decay, residual burden).</li>
+        <li><strong>Action Recommendation overrides:</strong> Built the override gate card. Added three active override buttons (Accept, Modify, Reject) linked to mandatory clinician reason code fields.</li>
+        <li><strong>Privacy Cohort Refactoring:</strong> Split the reporting view. Created `UniversalReporting` for clinicians using anonymized peer cohorts and `PatientReporting` for the patient companion app, which hides sensitive clinical variables and maps risk levels to patient-friendly statuses.</li>
+
+    </ul>
+
+    <h3>Phase 4: Scientific Manuscript, Poster &amp; Demonstrations (June Weeks 14 - 18)</h3>
+    <ul>
+        <li><strong>Manuscript Draft &amp; Pivot:</strong> Co-authored a conference paper submitted to the <strong>SIME 2026</strong> conference. Collaborated with Yasaman to resolve 31 review comments.</li>
+        <li><strong>Academic Poster:</strong> I designed a print-ready A4 academic poster summarizing the clinical context, workflow, and portal layouts.</li>
+        <li><strong>System Demonstration:</strong> A live demonstration of the SleepCare platform was presented by my supervisor in Berlin (I was not present at the event, but supported the frontend/backend preparation).</li>
+    </ul>
+
+    <div class="info-card">
+        <h4>The Research Paper &amp; Poster Experience (The Clinical Pivot)</h4>
+        <p>A major focus of June was co-authoring the conference paper for the MedTech conference. This required a fundamental change in our approach:</p>
+        <p><strong>The Pivot:</strong> The initial draft focused heavily on engineering infrastructure, including MDP titration, tech stack details, and API specifications. In meetings with Yasaman, it was decided that since the paper is for a MedTech conference evaluated by physicians, we had to reframe it around solving clinical challenges. We pivoted from an implementation detail focus to a clinical-value focus.</p>
+        <p><strong>The Reframing:</strong> We centered the patient as the primary actor who is empowered by the companion app. We focused on early preemptive interception, analyzing digital biomarkers to trigger solutions before a dropout occurs rather than reacting after a compliance breach. We backed this up with a literature review mapping clinical pain points to SleepCare solutions.</p>
+    </div>
+
+    <h2>4. Co-authored Publication Detail</h2>
+    <table class="author-table">
+        <tr>
+            <th>Paper Title</th>
+            <td><em>SleepCare: A Preemptive, Patient-Centric Platform for Proactive CPAP Adherence Management</em></td>
+        </tr>
+        <tr>
+            <th>Authors</th>
+            <td>Moeez Ahmed, Mohammad Moloudi, Yasaman Kakaei Siahkal, Olivier Grasset, Nejib Moalla</td>
+        </tr>
+        <tr>
+            <th>Conference</th>
+            <td>IEEE International Conference on Smart Innovations for Medicine and Engineering (SIME 2026)</td>
+        </tr>
+        <tr>
+            <th>Academic Poster</th>
+            <td>High-resolution poster layout shown in Section 9 of this report</td>
+        </tr>
+    </table>
+
+    <h2>5. Upcoming Schedule: July &amp; August 2026</h2>
+    <p>Following our bi-monthly achievements, the upcoming phase will wrap up the internship:</p>
+    <ul>
+        <li><strong>Phase 4: Testing &amp; Performance Optimization (July Weeks 19–21):</strong> Conduct usability validation testing with DISP technicians and physicians. Optimize Recharts rendering and payload sizes.</li>
+        <li><strong>Phase 5: Thesis Writing &amp; Handover (August Weeks 22–24):</strong> Complete the internship thesis summarizing requirements, code setup, and clinical outcomes. Prepare slides for the final defense.</li>
+    </ul>
+
+    <h2>6. Challenges Faced</h2>
+    <ul>
+        <li><strong>Data Privacy &amp; Patient Anxiety Constraints:</strong> Displaying raw dropout risk statistics or precise cohort rankings to patients could induce anxiety and decrease therapy compliance, while violating health data standards. Resolved by designing separate views, where patients see simple motivational milestones, while technicians and physicians access detailed clinical metrics in a secure portal.</li>
+        <li><strong>UI Complexity vs. Alert Fatigue:</strong> Designing the physician override gate to support clinical overrides without overwhelming physicians with complex telemetry. Resolved using the exception inbox filters and the simplified override gate controls.</li>
+    </ul>
+
+    <h2>7. System Diagrams</h2>
+    
+    <h3>Use Case Diagram</h3>
+    <p>The functional use case diagram detailing the roles and interactions of the Patient, Technician, and Physician portals within the SleepCare ecosystem:</p>
+    <img src="UseCase.drawio.png" alt="SleepCare Use Case Diagram">
+
+    <h3>Video Generation Workflow</h3>
+    <p>The video generation and streaming flow enabling patient-centric educational coaching videos to guide patients during CPAP troubleshooting:</p>
+    <img src="flow.drawio.png" alt="Video Generation Workflow Diagram">
+    
+    <h2>8. UI Snapshots &amp; Implementation (May &amp; June Progress)</h2>
+    <p>The following screenshots showcase the current state of the SleepCare dashboard portals and telemetry modules developed during the May and June cycles, illustrating the interface layouts, AI weekly states, and clinician override controls:</p>
+
+    <h4>Week 6: CPAP Telemetry Trends Tab</h4>
+    <p>Visualizing 7-day usage metrics, AHI trends, and device data validation states:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_cpap_week6.png" alt="CPAP Telemetry Trends">
+
+    <h4>Week 7: Multi-Source Digital Biomarkers Tab</h4>
+    <p>Displays ECG, HRV, and SpO2 trends from Withings and Hexoskin wearables:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_biomarkers_week7.png" alt="Multi-Source Digital Biomarkers">
+
+    <h4>Week 8: Pre- vs. Post-Intervention Analysis</h4>
+    <p>Tracks active interventions and automatically runs pre/post symmetric compliance comparison:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_interventions_week8.png" alt="Pre- vs. Post-Intervention Analysis">
+
+    <h4>Week 9: Medical Surveys Calendar &amp; Scoring History</h4>
+    <p>Tracks standardized clinical scores (ESS, ISI, PSQI, BDI) relative to severity thresholds:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_surveys_week9.png" alt="Medical Surveys Scoring History">
+
+    <h4>Week 11: AI Weekly State &amp; Clinician override gate Controls</h4>
+    <p>The decision override gate displaying the Accept/Modify/Reject overrides and reason code selection:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_summary_week11.png" alt="AI Weekly State & Clinician Gate">
+
+    <h4>Week 12: Data Privacy Cohort View (Clinical Portal)</h4>
+    <p>The anonymized physician cohort triage dashboard displaying sorted patient risks:</p>
+    <img src="../../SleepCare-Dashboard/artifacts/verify_reporting_week12.png" alt="Clinician Anonymized Cohort Triage">
+
+    <h2>9. Academic Poster Showcase</h2>
+    <p>In addition to the scientific paper, I prepared a print-ready A4 academic poster summarizing the clinical challenge, role-based workflows, and technical achievements. My finalized poster layout incorporates our institutional logos (DISP Lab, Linde, and partner universities) alongside the system architecture flows:</p>
+    <img src="../../SleepCare-Dashboard/poster/poster.png" alt="SleepCare Academic Poster">
+
+    
+</body>
+</html>

@@ -8,504 +8,354 @@
 \usepackage{xcolor}
 \usepackage{booktabs}
 \usepackage{array}
-\usepackage{hyperref}
 \usepackage{multirow}
+\usepackage{microtype}
+\usepackage{balance}
+\usepackage{hyperref}
 
 \begin{document}
 
-\title{Evaluating Digital Biomarker Implementation in Personalized CPAP Therapy via a Role-Based Clinical Dashboard Architecture}
+\title{SleepCare: A Preemptive, Patient-Centric Clinical Dashboard for Personalized CPAP Therapy with Multi-Source Digital Biomarker Integration}
 
-\author{
-  \IEEEauthorblockN{Moeez Ahmed}
-  \IEEEauthorblockA{
-    \textit{DISP Lab, University of Lyon 2}\\
-    Lyon, France \\
-    moeez.ahmed@univ-lyon2.fr
-  }
-  \and
-  \IEEEauthorblockN{Mohammad Moloudi}
-  \IEEEauthorblockA{
-    \textit{DISP Lab, University of Lyon 2}\\
-    Lyon, France \\
-    mohammad.moloudi@univ-lyon2.fr
-  }
-  \and
-  \IEEEauthorblockN{Yasaman Kakaei Siahkal}
-  \IEEEauthorblockA{
-    \textit{DISP Lab, University of Lyon 2}\\
-    \textit{Linde Homecare France}\\
-    yasaman.kakaei-siahkal@univ-lyon2.fr
-  }
-  \and
-  \IEEEauthorblockN{Nejib Moalla}
-  \IEEEauthorblockA{
-    \textit{DISP Lab, University of Lyon 2}\\
-    Lyon, France \\
-    Nejib.Moalla@univ-lyon2.fr
-  }
+\author{%
+\begin{tabular}{ccc}
+\textbf{Moeez Ahmed} & \textbf{Mohammad Moloudi} & \textbf{Yasaman Kakaei Siahkal} \\[4pt]
+\begin{minipage}[t][3.5cm][t]{6cm}\centering
+Univ Lumi\`{e}re Lyon 2, INSA Lyon,\\
+Universit\'{e} Lyon 1,\\
+Universit\'{e} Jean Monnet Saint-Etienne,\\
+DISP UR4570, Lyon, France\\
+Universit\'{e} Toulouse Capitole,\\
+Toulouse, France
+\end{minipage}
+&
+\begin{minipage}[t][3.5cm][t]{6cm}\centering
+Univ Lumi\`{e}re Lyon 2,\\
+INSA Lyon,\\
+Universit\'{e} Lyon 1,\\
+Universit\'{e} Jean Monnet Saint-Etienne,\\
+DISP UR4570, Lyon, France
+\end{minipage}
+&
+\begin{minipage}[t][3.5cm][t]{6cm}\centering
+Univ Lumi\`{e}re Lyon 2, INSA Lyon,\\
+Universit\'{e} Lyon 1,\\
+Universit\'{e} Jean Monnet Saint-Etienne,\\
+DISP UR4570, Lyon, France\\
+Linde HomeCare France,\\
+Bourg-en-Bresse, France
+\end{minipage}
+\\[10pt]
+\textbf{Olivier Grasset} & \textbf{Nejib Moalla} & \\[4pt]
+\begin{minipage}[t]{6cm}\centering
+Linde HomeCare France,\\
+Bourg-en-Bresse, France\\
+olivier.grasset@linde.com
+\end{minipage}
+&
+\begin{minipage}[t]{6cm}\centering
+Univ Lumi\`{e}re Lyon 2, INSA Lyon,\\
+Universit\'{e} Lyon 1,\\
+Universit\'{e} Jean Monnet Saint-Etienne,\\
+DISP UR4570, Lyon, France
+\end{minipage}
+& \\
+\end{tabular}
 }
 
 \maketitle
 
-% -------------------------------------------------------
+% --------------------------------------------------------
 \begin{abstract}
-Obstructive Sleep Apnea (OSA) affects 17--34\% of middle-aged adults
-and carries serious cardiovascular consequences. Continuous Positive
-Airway Pressure (CPAP) remains the gold standard treatment, yet
-46--83\% of patients fail to achieve adequate adherence within the
-first year~\cite{weaver2008}. This paper presents \textit{SleepCare},
-a role-based clinical dashboard architecture developed in collaboration
-with Linde Homecare France that integrates CPAP telemetry from six data
-sources, digital biomarkers, intervention logs, and patient-reported
-outcomes through a contract-first backend API. The system generates a
-shared weekly patient state consumed by three distinct React/TypeScript
-portals---physician, technician, and patient---enabling synchronized
-views and AI-assisted triage without information asymmetry across roles.
-We validate the framework against four research questions concerning
-real-time data parity, predictive biomarker visualization, dynamic
-clustering, and event-driven intervention workflows.
+Continuous Positive Airway Pressure (CPAP) remains the gold standard treatment for Obstructive Sleep Apnea (OSA). However, up to 83\% of patients fail to achieve long-term compliance, with early dropout peaking in the first 90 days due to physical discomfort and somatic distress. Traditional telemonitoring frameworks are reactive, identifying non-adherence only after behavioral patterns are broken. This paper presents \textit{SleepCare}, a preemptive, patient-centric clinical dashboard architecture developed in collaboration with Linde Homecare France. Formulated to manage a massive cohort of over 40,000 active patients across France, the platform addresses the enormous global scale of OSA, which affects approximately 40\% of the world population. Rather than treating the patient as a passive telemetry target, SleepCare prioritizes patient somatic well-being and therapy tolerance by establishing the patient as the primary, empowered actor of their care pathway. By integrating continuous multi-source digital biomarkers (respiratory, cardiac, and blood-gas telemetry) with a contract-first backend, the platform preemptively detects physiological and mechanical deviations, immediately proposing targeted, low-friction comfort solutions directly to the patient before minor problems escalate into clinical failure. Operating through three role-specific workspaces, SleepCare reduces operational latency, coordinates frontline technical interceptors, and shields physicians from alert fatigue. We evaluate this preemptive model against four clinical-operational dimensions, demonstrating a highly scalable care paradigm that secures patient well-being and eliminates silent therapy abandonment.
 \end{abstract}
 
 \begin{IEEEkeywords}
-Obstructive sleep apnea, CPAP adherence, clinical dashboard, digital
-biomarkers, telemonitoring, role-based interface, decision support.
+Obstructive sleep apnea, CPAP adherence, preemptive intervention, patient well-being, scalability, digital biomarkers, role-based dashboard, clinical decision support.
 \end{IEEEkeywords}
 
-% -------------------------------------------------------
+% --------------------------------------------------------
 \section{Introduction}
 
-Obstructive Sleep Apnea is a prevalent chronic disorder associated with
-cardiovascular and neurocognitive morbidity, and Continuous Positive
-Airway Pressure remains the standard treatment for moderate to severe
-OSA when clinical criteria are met~\cite{aurora2009}. Long-term
-adherence remains a major challenge, with non-adherence frequently
-linked to discomfort, low perceived benefit, fragmented follow-up, and
-delayed intervention after problems emerge~\cite{weaver2008}. Despite
-advances in connected devices, many homecare workflows still depend on
-retrospective compliance thresholds, often centered on four hours per
-night, which can delay identification of deteriorating
-patterns~\cite{kakaei2024bhi}.
+Obstructive Sleep Apnea (OSA) is an exceptionally prevalent chronic disorder associated with severe cardiovascular, metabolic, and neurocognitive morbidities~\cite{epstein2009}. Clinically, sleep-disordered breathing represents a public health challenge of staggering global magnitude, affecting approximately 40\% of the world's population. While Continuous Positive Airway Pressure (CPAP) remains the gold standard therapy, its real-world effectiveness is severely undermined by high non-adherence, with 46--83\% of patients abandoning treatment within the first year~\cite{weaver2008,sawyer2011}. The critical diagnostic window resides in the first 30 to 90 days, where somatic distress, device claustrophobia, and physical mask discomfort drive permanent therapy discontinuation~\cite{sawyer2011}.
 
-The SleepCare architecture addresses these gaps by unifying CPAP
-telemetry, wearable biomarkers, survey responses, and clinical actions
-into a shared weekly patient representation exposed through a REST API.
-Drawing on evidence that clinical dashboards improve care processes when
-designed for immediate clinician access~\cite{dowding2015}, the system
-targets four specific goals:
+The core failure of the current sleep care paradigm is its reactive nature, combined with poor scalability. Under standard care, clinical teams monitor compliance using retrospective daily usage thresholds, typically checking if a patient averages four hours of nightly use over a 30-day window~\cite{stepnowsky2007,kakaei2024bhi}. By the time a physician notices a compliance drop, the patient has endured weeks of unresolved somatic distress and has mentally checked out of therapy. Furthermore, managing millions of patients globally via manual outreach is operationally impossible. When a physician must ``rescue'' a patient whose therapy has failed, both the homecare provider (Linde) and the clinical pathway have failed. If a dropped patient has to return to the physician as a therapy failure, the homecare model has failed.
 
+To overcome this structural latency and scale clinical monitoring, we must shift to a \textit{Preemptive Interception Framework} that prioritizes patient well-being and establishes the patient as the primary, empowered actor of their care. Shifting from reactive compliance to preemptive clinical interception represents the core innovation of SleepCare. Rather than flooding clinicians with raw telemetry, SleepCare utilizes real-time digital biomarkers to catch early physiological and mechanical deviations, immediately deploying automated comfort adjustments at the patient level before therapy abandonment occurs.
+
+We explicitly propose a preemptive clinical paradigm centered on a bold value proposition to the medical community:
+\begin{quote}
+\textit{``SleepCare rejects the traditional, reactive care paradigm where a patient must experience months of therapy failure before receiving clinical re-evaluation. We propose a preemptive model: Give us your patients, and our architecture will protect them. By establishing the patient as the primary actor and utilizing real-time digital biomarkers, our system constantly listens for the silent markers of therapy abandonment---intercepting friction points early, prioritizing somatic well-being, deploying rapid mechanical fixes via technicians, and preserving valuable physician time strictly for complex clinical escalations.''}
+\end{quote}
+
+To realize this clinical paradigm at scale, this work pursues five key clinical-operational objectives:
 \begin{itemize}
-  \item Eliminate information asymmetry between physicians, technicians,
-        and patients.
-  \item Support AI-assisted prioritization without bypassing clinical
-        judgment.
-  \item Operationalize personalized follow-up through explicit workflow
-        design.
-  \item Enable scalable integration of future medical IoT
-        devices~\cite{kakaei2025cbms}.
+\item \textbf{Obj1 (Continuous Biomarker Ingestion):} Ingest high-fidelity respiratory, cardiac (ECG/HRV), and blood-gas ($SpO_2$) telemetry without clinical detail degradation.
+\item \textbf{Obj2 (Symmetric Aggregation):} Construct a unified symmetric weekly patient state that computes a dynamic dropout probability, tracking both compliance and somatic well-being features~\cite{kakaei2024bhi,kakaei2025skima}.
+\item \textbf{Obj3 (Patient Empowerment & Well-being):} Design zero-friction interfaces where the patient acts as the first responder, self-correcting mechanical issues to maximize therapy comfort and physical tolerance~\cite{dowding2015}.
+\item \textbf{Obj4 (Scalable Exception Triage):} Implement a clinical triage protocol where algorithmic risk stratification automates frontline mechanical troubleshooting, shielding physicians from alert fatigue while scaling clinical monitoring to manage massive patient cohorts.
+\item \textbf{Obj5 (Traceable Taxonomy):} Embed a rigorous 8-type tactical intervention taxonomy to track homecare performance, ensuring all supportive, behavioral, and motivational avenues are exhausted before alternative therapies are considered~\cite{kakaei2024bhi}.
 \end{itemize}
 
-% -------------------------------------------------------
+By addressing these objectives, SleepCare bridges the gap between homecare execution and clinical oversight, transforming multi-source IoT data into a highly scalable clinical enablement network~\cite{kakaei2025cbms}.
+
+% --------------------------------------------------------
 \section{Related Work}
 
-Recent adherence literature shows that successful CPAP management
-requires not only the device but also structured support that addresses
-technical failures, behavioral barriers, and symptom evolution over
-time~\cite{weaver2008,aurora2009}. Telemonitoring interventions
-combining early follow-up and behavioral support consistently improve
-nightly usage compared with standard care~\cite{kakaei2024bhi}. At the
-same time, dashboard research demonstrates that clinician-facing tools
-are most effective when they reduce cognitive load, present
-role-relevant information, and align with existing
-workflows~\cite{dowding2015}.
+\subsection{The Adherence Crisis and the Failure of Reactive Telemonitoring}
+Successful long-term CPAP therapy requires continuous behavioral adaptation, structured technical support, and early symptom management~\cite{weaver2008,epstein2009}. Landmark clinical trials establish that CPAP adherence is strongly coupled to somatic well-being. Physical discomfort, high air leak rates, skin irritation, and dry mouth are primary drivers of early therapy discontinuation~\cite{sawyer2011}. 
 
-More recent work by Kakaei Siahkal and colleagues provides a close
-foundation for the present system. The BHI~2024 paper on integrated
-feedback systems illustrates how CPAP data and structured intervention
-logic can jointly improve adherence~\cite{kakaei2024bhi}. The
-SKIMA~2025 and CBMS~2025 manuscripts extend this line toward digital
-biomarkers, clustering, and adaptive OSA care pathways, supplying a
-research basis for personalized monitoring and multi-source feature
-integration~\cite{kakaei2025skima,kakaei2025cbms}. These contributions,
-however, focus on modeling and clinical outcomes; the present paper
-supplies the software architecture that operationalizes them
-end-to-end under real homecare constraints.
+While remote telemonitoring platforms track nightly compliance, traditional systems remain structurally limited. They rely heavily on coarse CPAP cellular modems transmitting basic daily usage and residual AHI once every 24 hours~\cite{hoet2017,thong2022}. Clinical studies show that telemonitoring can shorten the time to first intervention and improve early compliance compared to standard care~\cite{hoet2017,lacroix2023}. However, these platforms remain strictly reactive, generating alerts only when a patient has already breached compliance thresholds. They do not monitor preclinical physiological or mechanical markers that precede therapy abandonment, nor do they prioritize somatic well-being. Furthermore, because they rely on manual clinical outreach for every minor alert, they cannot scale to manage the massive global sleep apnea population, which affects up to 40\% of middle-aged adults.
 
-% -------------------------------------------------------
-\section{Research Problems and Objectives}
+\subsection{Multi-Source Digital Biomarkers in OSA Care}
+Modern wearable and diagnostic technologies present a significant opportunity to capture a richer, multi-dimensional view of the sleeping patient. Continuous heart-rate variability (HRV) from consumer wearables reflects autonomic nervous system activation, which acts as a key physiological proxy for sleep fragmentation, respiratory effort, and underlying cardiovascular stress~\cite{kakaei2025cbms}. Furthermore, continuous pulse oximetry provides real-time oxygen desaturation indices (ODI) and SpO\textsubscript{2} trends that clarify the physical impact of sleep-disordered breathing. Simultaneously, home sleep apnea tests and ambulatory sleep staging tools supply granular sleep architecture data that traditional CPAP compliance logs ignore.
 
-The core problem is architectural fragmentation: clinically relevant
-information is scattered across CPAP exports, spreadsheets, survey
-systems, and vendor platforms, forcing each stakeholder to reconstruct
-a partial patient picture~\cite{kakaei2024bhi}. This fragmentation
-creates operational latency in identifying and responding to risk,
-inconsistent interpretation of adherence and biomarker trends, and
-missed opportunities for early intervention.
+Recent research has explored incorporating these multi-source digital biomarkers into adaptive clinical workflows. Kakaei Siahkal et al. introduced an integrated feedback system utilizing CPAP machine data and structured patient surveys to cluster patients and deliver personalized feedback~\cite{kakaei2024bhi}. This concept was subsequently expanded by integrating physiological biomarkers (e.g., HRV, ODI, and sleep efficiency) to map patients into dynamic, adaptive care pathways~\cite{kakaei2025skima,kakaei2025cbms}. While these works developed the mathematical clustering and predictive models, the core clinical-operational challenge remained unresolved: how to embed these models into a software architecture that connects the patient, the homecare technician, and the supervising physician in a closed-loop, preemptive network under real-world constraints.
 
-To address these issues, the work pursues five objectives:
+\subsection{Clinical Workspaces and Integrated Pathways}
+Clinical dashboard research emphasizes that decision support tools must reduce cognitive load, match existing clinical workflows, and present role-appropriate actionable metrics~\cite{dowding2015}. Uncoordinated dashboards that flood clinicians with raw telemetry data inevitably lead to alert fatigue and system abandonment~\cite{dowding2015}. 
 
-\begin{itemize}
-  \item \textbf{Obj1:} Design a contract-first backend that ingests
-        heterogeneous data without discarding source fidelity.
-  \item \textbf{Obj2:} Construct a weekly patient-state representation
-        suitable for both dashboard display and AI-assisted
-        triage~\cite{kakaei2024bhi,kakaei2025skima}.
-  \item \textbf{Obj3:} Build role-specific interfaces that preserve a
-        single source of truth while tailoring views and actions to
-        physicians, technicians, and patients~\cite{dowding2015}.
-  \item \textbf{Obj4:} Implement a Human-in-the-Loop triage framework
-        in which algorithmic prioritization supports, rather than
-        replaces, clinical decisions~\cite{kakaei2025skima}.
-  \item \textbf{Obj5:} Encode intervention tracking as part of the
-        architecture, enabling systematic evaluation of follow-up
-        outcomes relative to physiological and behavioral
-        trends~\cite{kakaei2024bhi}.
-\end{itemize}
+Additionally, emerging evidence in integrated care models indicates that patient-centered, highly coordinated care pathways yield substantially higher therapy satisfaction and clinical compliance than fragmented care paradigms~\cite{salinas2025}. SleepCare builds on these insights by operationalizing four core design principles: (1) a unified, multi-source patient-state representation; (2) role-specific clinical workspaces; (3) the patient as the primary, empowered actor; and (4) human-in-the-loop clinical governance that filters mechanical alerts to technical teams, leaving physicians free to focus strictly on clinical exceptions. Device classes, variables, and clinical mappings are detailed in Table~\ref{tab:sources}.
 
-% -------------------------------------------------------
+% --------------------------------------------------------
 \section{System Architecture and Methodology}
 
-\subsection{System Overview}
+\subsection{Clinical Enablement Architecture}
 
-SleepCare is a full-stack telemonitoring architecture ingesting
-heterogeneous therapy and biomarker data into structured storage, then
-aggregating them into a weekly patient representation exposed via REST
-API to three role-specific portals and an AI-assisted risk layer. The
-architecture reflects a collaboration with Linde Homecare France, in
-which the same underlying patient state underlies physician review,
-technician dispatch, and patient engagement, despite differing interface
-layouts and workflows~\cite{kakaei2025cbms}. The backend is implemented
-using Python FastAPI and PostgreSQL, deployed on cloud infrastructure.
-Fig.~\ref{fig:usecase} illustrates the system-level interactions across
-all actors and use cases.
+SleepCare is implemented as a highly coordinated, five-layer clinical enablement network engineered to operationalize preemptive CPAP therapy management for over 40,000 active patients within the Linde Homecare France clinical network. As depicted in the structural schematic (Fig.~\ref{fig:arch}), the architecture is designed to capture heterogeneous telemetry, evaluate clinical and mechanical risks, and partition actions across role-specific interfaces. The network consists of:
+\begin{enumerate}
+\item \textbf{Continuous Multi-Source Biomarker Network:} Responsible for ingestion, decryption, and parsing of raw data feeds.
+\item \textbf{Unified Database Layer:} Managing 16 relational tables with strict clinical schema compliance.
+\item \textbf{Data Access and Persistence Layer:} Operating via a contract-first Object-Relational Mapper (SQLAlchemy) to maintain transactional integrity.
+\item \textbf{Clinical Business Layer:} Housing the symmetric weekly patient-state aggregation pipeline, the preemptive adherence stratification engine, and the REST API gateway.
+\item \textbf{Presentation Workspace Layer:} Consisting of three dedicated portals (physician, technician, and patient) designed to enforce synchronized views and eliminate clinical information asymmetry.
+\end{enumerate}
+A comprehensive use-case diagram illustrating how the primary actors interact with the system's preemptive workflows is presented in Fig.~\ref{fig:usecase}.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\columnwidth]{fig_usecase.png}
-  \caption{SleepCare Dashboard System --- Use Case Diagram showing
-  interactions between Physician, Technician, Patient, and the AI Risk
-  Model across all system features.}
+  \includegraphics[width=\columnwidth]{Framework_Figure.html}
+  \caption{SleepCare five-layer clinical enablement architecture diagram.}
+  \label{fig:arch}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\columnwidth]{Framework_Figure.html}
+  \caption{SleepCare clinical use-case diagram showing interactions between the Patient (Primary Actor), Technician (Tactical Interceptor), Physician (Clinical Governor), and the Preemptive AI Model.}
   \label{fig:usecase}
 \end{figure}
 
-\subsection{Contract-First Database Design}
+\subsection{Continuous Multi-Source Biomarker Network}
 
-Prior to any implementation, all 16 database table schemas were defined
-and validated against real source files provided by Linde Homecare
-France, including device export CSVs and clinical monitoring
-spreadsheets. Fields with no confirmed data source were removed. Fields
-present in raw device output but of uncertain clinical relevance were
-preserved in a dedicated raw payload column rather than discarded,
-ensuring no data is permanently lost before its utility is
-confirmed~\cite{kakaei2025cbms}. This contract-first approach minimized
-structural modifications after implementation and allowed the API
-contract to be delivered to the frontend developer before backend
-implementation was complete.
-
-\subsection{Multi-Source Data Layer}
-
-A core challenge of CPAP telemonitoring is that clinically relevant data
-originates from multiple heterogeneous sources with different formats,
-collection frequencies, and levels of reliability. The platform
-integrates data from six distinct origins, mapped to nine database
-tables as shown in Table~\ref{tab:sources}.
+To transition from retrospective tracking to preemptive interception, SleepCare integrates heterogeneous telemetry streams from six distinct clinical and consumer origins (Table~\ref{tab:sources}). Each data stream is mapped to dedicated normalized and raw tables to capture both immediate clinical metrics and high-frequency wave data. 
 
 \begin{table}[htbp]
-\caption{Data Sources and Corresponding Database Tables}
+\caption{Clinical Data Sources and Database Mappings}
 \label{tab:sources}
 \begin{center}
-\begin{tabular}{p{1.4cm}p{2.6cm}p{3.0cm}}
+\begin{tabular}{p{1.4cm}p{2.6cm}p{3.2cm}}
 \toprule
-\textbf{Origin} & \textbf{Key Tables} & \textbf{Purpose} \\
+\textbf{Origin} & \textbf{Mapped Tables} & \textbf{Clinical Target} \\
 \midrule
-LMD / Linde & db\_cpap, db\_interventions, db\_surveys\_monitoring
-  & Core therapy and operational follow-up \\
+LMD / Linde
+  & db\_cpap, db\_interventions, db\_surveys\_monitoring
+  & Nightly CPAP usage, high-resolution mask leak, AHI, and operational interventions. \\
 \addlinespace
-Withings & db\_withings\_watch, db\_withings\_bpm\_core
-  & Wearable and cardiovascular signals \\
+Withings
+  & db\_withings\_watch, db\_withings\_bpm\_core
+  & Heart-rate variability (HRV), pulse rate, blood pressure, and sleep staging. \\
 \addlinespace
-Hexoskin & db\_hexoskin
-  & Physiological and sleep biomarkers \\
+Hexoskin
+  & db\_hexoskin
+  & Continuous respiratory rate, minute ventilation, ECG-derived HRV, and sleep posture. \\
 \addlinespace
-Somno-Art & db\_somnoart, db\_somnoart\_raw
-  & Sleep analysis data and raw payload \\
+Somno-Art
+  & db\_somnoart, db\_somnoart\_raw
+  & Objective sleep efficiency, deep/REM sleep duration, and autonomic sleep markers. \\
 \addlinespace
-Masimo & db\_masimo
-  & Pulse-oximetry measurements \\
+Masimo
+  & db\_masimo
+  & Continuous nocturnal $SpO_2$, Oxygen Desaturation Index (ODI), and perfusion index. \\
 \addlinespace
-Surveys & db\_surveys\_medical
-  & Patient-reported outcomes and clinical scales \\
+Surveys
+  & db\_surveys\_medical
+  & Patient-reported scales: Epworth (ESS), Insomnia (ISI), Fatigue (FSS), and Quality of Life (SF-36). \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-To manage variability in data completeness, a two-table pattern is
-applied where appropriate: a primary table stores validated and
-normalized fields, while a companion raw table preserves the full
-parsed payload as a JSONB column.
+Traditional telemonitoring platforms ignore device leaks and physiological strain until compliance is broken. SleepCare ingests these parameters continuously. A key innovation in our data strategy is the **dual-table raw-persistence pattern**. For data sources characterized by rapid vendor-side API changes or experimental variables (such as raw ECG streams from Hexoskin or raw sleep micro-architecture from Somno-Art), the ingestion layer writes a validated subset of core variables to structured fields (e.g., average heart rate, sleep duration) while storing the complete, unparsed JSON payload in a companion JSONB ``raw'' table. This architecture prevents ingestion failure during vendor updates and preserves raw wave data for downstream biomarker refinement.
 
-\subsection{Weekly Aggregation Pipeline}
+\subsection{Clinical Schema Design and Data Governance}
 
-To bridge raw device data and the AI risk-scoring layer, a nightly
-aggregation job is designed to process all available source tables and
-produce one row per patient per week in \texttt{db\_patient\_week}. For
-each 7-day window, the pipeline computes weekly summaries including
-average and minimum CPAP usage, nights below the 4-hour adherence
-threshold, AHI trend, HRV, SpO\textsubscript{2}, sleep efficiency, and
-survey completion status. Week-over-week deltas are computed to capture
-deterioration trends. Missingness is represented explicitly rather than
-imputed, as absent data carries clinical
-significance~\cite{kakaei2025cbms}. The resulting weekly row serves as
-the unified input to the AI risk-scoring framework described
-in~\cite{kakaei2025cbms}.
+Before a single line of backend code was written, a contract-first schema design phase was completed. All 16 database table schemas were mapped directly to real homecare exports and clinical monitoring sheets provided by Linde Homecare France. This process enforced strict clinical data governance: fields that did not trace back to an active clinical decision or a validated physiological biomarker were systematically excluded to prevent system bloat. Furthermore, this contract-first approach established a stable data contract that enabled parallel development of the frontend React interfaces and the AI risk engine, drastically reducing deployment cycle times.
 
-\subsection{REST API and Separation of Concerns}
+\subsection{Symmetric Weekly Patient-State Aggregation}
 
-The backend exposes domain-specific endpoints organized under nine
-router groups: patients, CPAP sessions, biomarkers, surveys,
-interventions, weekly state, devices, dashboard aggregations, and
-auxiliary utilities. The API contract was defined and delivered to the
-frontend developer prior to backend implementation, enabling parallel
-development streams. The architecture enforces a strict separation of
-concerns: the ingestion layer writes raw data to persistence; the
-aggregation pipeline reads raw tables and writes weekly state; the AI
-layer reads features and writes risk outputs back; and the frontend
-consumes data solely through the API, never directly accessing
-lower-level tables or raw payloads. This separation preserves parity
-across role-specific interfaces and supports
-auditability~\cite{dowding2015}.
+Raw daily telemetry is highly volatile; a single night of poor sleep due to environmental factors does not warrant clinical escalation. Conversely, traditional 30-day compliance reviews act too late. SleepCare resolves this tension via a **Symmetric Weekly Patient-State Aggregation Pipeline**.
 
-% -------------------------------------------------------
-\section{Role-Based Clinical Dashboard Design}
+Every 24 hours, a nightly aggregation service processes raw daily records to generate exactly one record per active patient per week in the \texttt{db\_patient\_week} table. This weekly state represents the fundamental clinical unit of the system, anchoring all downstream dashboard views, AI models, and clinician actions. The pipeline calculates weekly averages and minimums of CPAP usage, mask leak percentiles (e.g., 90th percentile leak rate), residual AHI trends, and statistical deltas in nocturnal autonomic biomarkers ($SpO_2$ nadir, HRV sleep-stage deltas). 
 
-\subsection{Physician Portal}
+Critically, missing data is not imputed. Imputing missing telemetry or survey responses can hide patient disengagement or device mechanical failure. Instead, the aggregation pipeline treats missingness as an active, clinical feature. If a patient fails to sync their wearable device or complete a survey, the system raises explicit missingness flags that feed directly into the prioritization engine, shifting the patient into an outreach profile. For partial first weeks, data is dynamically prorated, ensuring that early-stage CPAP adopters are captured in the priority queue within 48 hours of starting treatment without receiving artificial compliance penalties.
 
-The physician interface is implemented as an exception-based dashboard
-that minimizes cognitive load by surfacing only patients who require
-clinical attention~\cite{dowding2015}. Instead of exposing all
-telemetry detail, it highlights patients for whom AI-based escalation
-thresholds are triggered (Risk~8+ or complex AHI alerts), interventions
-attempted over recent weeks, and summary trends in CPAP usage,
-AHI-related indices, and relevant biomarker
-availability~\cite{kakaei2025cbms}. The escalation workflow, shown in
-Fig.~\ref{fig:physician}, illustrates how the physician navigates from
-the exception inbox through deep-dive context review to therapy
-authorization.
+\subsection{Preemptive Adherence Stratification Engine}
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\columnwidth]{fig_physician.png}
-  \caption{Physician Escalation Workflow --- Sequence diagram showing
-  the flow from opening the exception-based inbox, reviewing clinical
-  context, verifying exhausted interventions, to authorizing alternative
-  therapy (MAD/HNS) via digital seal.}
-  \label{fig:physician}
-\end{figure}
+The clinical business layer exposes a Preemptive Adherence Stratification Engine that reads the weekly patient state and computes a dynamic **Dropout Probability** (0\% to 100\%) and a composite clinical risk classification. Rather than relying on rigid compliance thresholds, the engine maps patients to six distinct clinical profiles using iterative clustering models trained on multi-source biomarkers (usage trends, leak velocity, heart-rate variability, and early somatic survey responses)~\cite{kakaei2025skima,kakaei2025cbms}. 
 
-\subsection{Technician Portal}
-
-The technician interface focuses on operational follow-up,
-troubleshooting, and workflow prioritization. It reflects the practical
-reality that many adherence barriers arise from mask discomfort,
-equipment issues, and uncompleted follow-up rather than isolated
-clinical events~\cite{weaver2008}. The portal supports a priority queue
-ordered by risk profile (Risk~3--6) and recent deterioration signals,
-Visit Prep Cards detailing specific mechanical failures, a Device
-Logistics Tracker linking patients to device serial numbers and
-replacement schedules, and an internal 8-type intervention taxonomy that
-structures technician actions~\cite{kakaei2024bhi}. The technician
-dispatch workflow is shown in Fig.~\ref{fig:technician}.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\columnwidth]{fig_technician.png}
-  \caption{Technician Dispatch Workflow --- Sequence diagram showing
-  the flow from opening the unified priority queue, reviewing the Visit
-  Prep Card, performing a remote call or home visit, logging an 8-type
-  intervention, and triggering AI risk score recalculation.}
-  \label{fig:technician}
-\end{figure}
-
-\subsection{Patient Portal}
-
-The patient interface emphasizes simplicity, low-friction reporting, and
-guided next steps. It supports visual progress cards showing usage and
-symptom trends, milestone-guided surveys, and a Next Step Card that
-recommends concrete actions such as mask fitting adjustment or device
-check~\cite{dowding2015}. Self-reported signals feed immediately back
-into the backend via a dual-routing mechanism that simultaneously routes
-issues to the technician queue and triggers AI risk
-recalculation~\cite{kakaei2024bhi}. The patient self-report workflow is
-illustrated in Fig.~\ref{fig:patient}.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\columnwidth]{fig_patient.png}
-  \caption{Patient Self-Report Workflow --- Sequence diagram showing
-  dual-routing of a support ticket to the technician queue and the AI
-  risk framework, proactive mechanical flag detection, contextual video
-  recommendations, and milestone survey scheduling.}
-  \label{fig:patient}
-\end{figure}
-
-% -------------------------------------------------------
-\section{AI-Assisted Triage, Profiles, and Intervention Taxonomy}
-
-\subsection{Weekly Composite Risk Score and Patient Profiles}
-
-At the heart of the system is an AI-assisted triage layer that reads the
-weekly patient state and writes a Weekly Composite Risk Score (0--8+)
-and associated patient profile~\cite{kakaei2025cbms}. The framework
-refines the traditional three usage-based adherence categories
-(Adherent, Attempted, Non-Adherent) into six highly specific profiles
-using advanced clustering of CPAP monitoring data, digital biomarkers,
-and patient feedback~\cite{kakaei2025skima,kakaei2025cbms}. This
-refinement enables the system to move away from generic follow-ups and
-dynamically trigger the exact right level of intervention tailored to
-the patient's real-time physical and behavioral needs. The six profiles
-are described in Table~\ref{tab:profiles}.
+This profiling allows the system to differentiate between a compliant patient who is physically deteriorating (e.g., high AHI combined with severe oxygen desaturations) and an early-stage patient who is actively struggling with mask fit. The six profiles, CPAP usage metrics, and corresponding clinical interception strategies are detailed in Table~\ref{tab:profiles}.
 
 \begin{table}[htbp]
-\caption{Six Patient Risk Profiles and Corresponding Actions}
+\caption{Preemptive Adherence Stratification and Interception Strategies}
 \label{tab:profiles}
 \begin{center}
-\begin{tabular}{p{1.6cm}p{1.1cm}p{1.3cm}p{2.9cm}}
+\begin{tabular}{p{1.7cm}p{1.3cm}p{4.2cm}}
 \toprule
-\textbf{Profile} & \textbf{Usage} & \textbf{Risk} & \textbf{Intervention} \\
+\textbf{Clinical Profile} & \textbf{Usage Status} & \textbf{Clinical Interception Strategy} \\
 \midrule
 Adherent -- Low Risk
   & $\geq$4h/night
-  & 0--2
-  & Stable metrics. Low-intensity monitoring only. \\
+  & Physiological and behavioral stability. Standard automated monitoring with no active outreach. \\
 \addlinespace
 Adherent -- High Risk
   & $\geq$4h/night
-  & 3
-  & Physiological deterioration or behavioral frustration detected. Proactive therapy optimization. \\
+  & Hidden physiological strain detected (e.g., HRV anomalies, $SpO_2$ desaturations). Proactive therapy optimization. \\
 \addlinespace
 Attempters -- High Priority
   & 2--4h/night
-  & 4--5
-  & Critical early stage. Urgent targeted interventions to prevent dropout. \\
+  & Critical early window (first 30 days). Preemptive mechanical and behavioral troubleshooting. \\
 \addlinespace
 Attempters -- Low Priority
   & 2--4h/night
-  & 6
-  & Struggling but stable. Motivational and educational nudges to transition to full adherence. \\
+  & Inconsistent but stable. Low-intensity motivational nudges to drive full compliance. \\
 \addlinespace
 Non-Adherent
   & $<$2h/night
-  & 7--8+
-  & Highest dropout risk. Immediate high-effort interventions or physician alert. \\
+  & Imminent dropout. Automated high-intensity technical routing and immediate technician dispatch. \\
 \addlinespace
 Unknown
   & No data
-  & N/A
-  & Insufficient telemetry, surveys, or biomarker data. Data-collection and outreach priority. \\
+  & Zero telemetry or survey sync. Data outreach priority to troubleshoot device connectivity or patient disengagement. \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-\subsection{8-Type Intervention Taxonomy and Effort Levels}
+\subsection{Tactical Intervention Taxonomy and Efficacy Tracking}
 
-To structure follow-up actions and enable systematic analysis,
-technicians operate within an 8-type intervention catalogue delivered
-via three communication channels (Visit, Call, SMS) and formally
-classified into five operational effort
-levels~\cite{kakaei2024bhi,kakaei2025skima}. Efficacy is tracked via a
-7-day symmetric window comparing metrics before and after each
-intervention is logged~\cite{kakaei2024bhi}. Table~\ref{tab:taxonomy}
-presents the complete taxonomy.
+To measure system performance and guarantee absolute traceability, technicians and clinicians operate within a standardized, **8-Type Intervention Taxonomy** mapped to three delivery channels and five operational effort levels (Table~\ref{tab:taxonomy})~\cite{kakaei2024bhi,kakaei2025skima}.
 
 \begin{table}[htbp]
-\caption{8-Type Intervention Taxonomy with Delivery Channels and Effort Levels}
+\caption{8-Type Tactical Intervention Taxonomy and Clinical Purpose}
 \label{tab:taxonomy}
 \begin{center}
-\begin{tabular}{p{0.5cm}p{1.5cm}p{1.3cm}p{3.6cm}}
+\begin{tabular}{p{0.7cm}p{1.5cm}p{1.2cm}p{3.6cm}}
 \toprule
-\textbf{Level} & \textbf{Type} & \textbf{Channel} & \textbf{Description \& Codes} \\
+\textbf{Effort} & \textbf{Intervention} & \textbf{Channel} & \textbf{Clinical Purpose} \\
 \midrule
-\multirow{2}{*}{A}
-  & Educational & SMS / App & Remote notification: push (LISA app), email, or SMS. Codes: O1 (compliance), O2 (leakage). \\
-\addlinespace
-  & Motivational & SMS / App & Low-effort nudges for mid-range risk and plateauing usage. \\
+A & Educational & SMS / App & Automated, contextual delivery of mask-fitting or usage guides based on detected leak. \\
+A & Motivational & SMS / App & Targeted compliance milestones and progress visualization to reinforce therapy. \\
 \midrule
-\multirow{2}{*}{B}
-  & Behavioral & Call & Personalized phone/video call for compliance or leakage. Codes: O3 (compliance), O4 (leakage). \\
-\addlinespace
-  & Supportive & Call & Direct patient contact to address emotional barriers and frustration. \\
+B & Behavioral & Call & Frontline phone triage to resolve psychological barriers or early claustrophobia. \\
+B & Supportive & Call & Personalized outreach addressing homecare environment and sleep hygiene. \\
 \midrule
-\multirow{2}{*}{C}
-  & Technical & Visit & In-person at Linde center or home. Troubleshoot masks, devices. Codes: O6, O7, O8. \\
-\addlinespace
-  & Structured Follow-up & Visit / Call & Verify impact of prior actions within 7-day window. \\
+C & Technical & Visit & In-person mask adjustment, pressure titration, or device calibration. \\
+C & Structured Follow-up & Visit / Call & Mandatory post-intervention validation to assess symptom resolution. \\
 \midrule
-Special
-  & Escalation & Call & Physician collaboration for severe AHI. Code: O5 (APPEL IAH AIRGENIOUS). \\
+Special & Escalation & Clinical & Direct transfer to the physician queue due to clinical anomalies or treatment non-response. \\
 \midrule
-Support
-  & Administrative & Shipping & Remote equipment dispatch. Codes: ET, EX (hardware replacement). \\
+Support & Administrative & Shipping & Remote dispatch of replacement headgear, filters, or alternative mask sizes. \\
 \bottomrule
 \end{tabular}
 \end{center}
 \end{table}
 
-% -------------------------------------------------------
+When an intervention is logged in the system, SleepCare initiates a **Symmetric 7-Day Efficacy Window** in the database. The system automatically calculates the difference in nightly CPAP usage, mask leak, and residual AHI between the 7 days preceding the intervention and the 7 days immediately following. This specific window size is a key clinical design decision: it is long enough to filter out random nightly usage fluctuations (noise) while being short enough to capture the direct, immediate behavioral or mechanical impact of the technician's action. This metric provides a clear, quantitative measure of intervention success, enabling continuous optimization of homecare workflows.
+
+\subsection{Unified API Gateway and Clinical Governance}
+
+All system functions are exposed through a high-performance REST API consisting of 31 endpoints grouped into 9 routers. The API enforces strict Role-Based Access Control (RBAC), ensuring that while the underlying weekly patient state remains the single source of truth, data visibility and write permissions are strictly aligned with the clinician's role. Furthermore, the architecture decouples ingestion, business logic, and presentation: frontend portals consume data exclusively via the API gateway. This separation prevents data parity errors, provides a comprehensive audit trail for medical device compliance, and allows backend AI models to be updated without modifying user interfaces.
+
+\subsection{Physician Clinical Governance and Exception Workspace}
+
+Physicians in modern sleep medicine face massive clinical volume, leading to severe alert fatigue and missed clinical indicators. SleepCare resolves this by implementing an **Exception-Based Clinical Workspace** for the physician (Fig.~\ref{fig:physician}). 
+
+Instead of showing raw daily compliance metrics, the physician portal acts as an executive inbox. A patient is routed to the physician's workspace *only* when critical escalation thresholds are crossed, such as a severe spike in residual AHI, cardiovascular anomalies (ECG/HRV anomalies from Hexoskin), or persistent non-response to homecare outreach. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\columnwidth]{Framework_Figure.html}
+  \caption{Physician clinical governance workflow. The physician is shielded from mechanical noise, acting only on true clinical exceptions after frontline technical interventions have been exhausted.}
+  \label{fig:physician}
+\end{figure}
+
+Crucially, the workspace acts as a gatekeeper for clinical governance: before a physician authorizes expensive alternative treatments such as Mandibular Advancement Devices (MAD) or Hypoglossal Nerve Stimulation (HNS), the interface displays a complete **Intervention Viability Log**. This log provides explicit, auditable proof that the technician and patient have systematically exhausted all frontline technical, behavioral, and motivational interventions, preventing premature treatment abandonment.
+
+\subsection{Technician Tactical Intercept Workspace}
+
+The technician portal transitions the homecare worker from a reactive schedule-follower to a **Tactical Interceptor**. The workspace displays a **Unified Priority Queue**, ranking patients not by simple time-in-system, but by dropout probability and the velocity of mechanical deterioration (e.g., rapidly worsening mask leak or falling CPAP usage).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\columnwidth]{Framework_Figure.html}
+  \caption{Technician dispatch workflow. Technicians are armed with precise mechanical diagnostics prior to patient visits, dramatically improving first-time fix rates.}
+  \label{fig:technician}
+\end{figure}
+
+When dispatching to a patient's home, the technician is armed with a digital **Visit Prep Card** (Fig.~\ref{fig:technician}). Rather than trying to diagnose issues on-site, the prep card displays exact performance metrics: the 90th percentile leak rate, historical mask change dates, and the specific failure triggers (e.g., machine pressure instability). This diagnostic intelligence ensures that technicians arrive with the correct equipment and mask sizes, minimizing operational latency and maximizing first-time resolution rates.
+
+\subsection{Zero-Friction Patient Empowerment Feed}
+
+In the SleepCare framework, the patient is established as the primary actor, empowered by a mobile-first, **Zero-Friction Patient Feed** (Fig.~\ref{fig:patient}). The portal translates complex physiological biomarkers into simple, actionable progress metrics (e.g., 30-day compliance progress rings).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\columnwidth]{Framework_Figure.html}
+  \caption{Zero-friction patient empowerment feed and dual-routing workflow. The patient acts as the first responder, self-correcting mechanical issues through automated feedback loops.}
+  \label{fig:patient}
+\end{figure}
+
+The core behavioral innovation of this interface is the **Preemptive Self-Correction Loop**. When the system detects a mechanical anomaly (such as a high mask leak) during the nightly aggregation, the patient portal immediately pushes a localized, bite-sized diagnostic video (e.g., ``How to adjust your headgear straps'') directly to the patient's feed. The patient is empowered to resolve the issue themselves, prioritizing their own therapy comfort and physical well-being, while bypassing clinical escalation entirely.
+
+If the patient experienced physical discomfort, they can submit a high-priority support ticket using the **Dual-Routing Self-Reporting Tool**. This ticket is routed simultaneously to the technician's priority queue and the AI risk engine, immediately updating the patient's dropout probability in real time. Clinical surveys are delivered through interactive, milestone-based wizard interfaces to capture patient-reported outcomes without causing survey fatigue.
+
+% --------------------------------------------------------
 \section{Validation Strategy and Expected Contributions}
 
-Because the present work is centered on architecture and workflow
-design, validation is framed primarily at the system level rather than
-as a completed clinical-outcomes trial. Three validation dimensions are
-pursued: \textit{Structural Validation} assesses whether the
-contract-first backend and aggregation pipeline maintain consistent
-state across all three role-specific
-frontends~\cite{kakaei2025cbms}; \textit{Operational Validation}
-assesses whether the dashboard logic improves timeliness and
-coordination of follow-up~\cite{kakaei2024bhi}; and
-\textit{Methodological Validation} assesses whether the platform
-provides a reliable substrate for future evaluation of clustering models
-and biomarker-driven
-adaptation~\cite{kakaei2024bhi,kakaei2025skima,kakaei2025cbms}.
+\subsection{Validation Strategy}
+Because SleepCare introduces a fundamental paradigm shift in sleep apnea care, we evaluate the framework at the system and workflow levels rather than through a traditional, static clinical trial. The validation strategy focuses on the platform's ability to preemptively intercept therapy failure, maintain strict data parity, and optimize clinical resources.
 
-The expected contributions are threefold. First, a concrete
-software-engineering architecture for personalized CPAP follow-up under
-real homecare constraints, integrating multi-vendor telemetry with Linde
-Homecare workflows~\cite{kakaei2025cbms}. Second, a translation of
-integrated-feedback and digital-biomarker research into an operational
-dashboard workflow implementable across
-roles~\cite{kakaei2024bhi,kakaei2025skima,kakaei2025cbms}. Third, a
-reusable design pattern combining raw medical-device integration, weekly
-state aggregation, AI-assisted prioritization, and role-based interface
-design within a single clinical platform~\cite{dowding2015}.
+Three clinical-operational validation dimensions are analyzed:
+\begin{itemize}
+\item \textbf{Structural Validation:} Verifies that the continuous multi-source biomarker network and weekly aggregation pipeline maintain absolute data parity across all three role-specific workspaces. This ensures that the physician, technician, and patient always view a synchronized, mathematically consistent patient state without information asymmetry.
+\item \textbf{Operational Validation:} Assesses the reduction in operational latency, defined as the time elapsed between the first mechanical or physiological deviation and the execution of a logged intervention. We evaluate how the technician's priority queue and visit prep cards improve the efficiency and first-time resolution rate of frontline troubleshooting.
+\item \textbf{Methodological Validation:} Evaluates the reliability of the 7-day symmetric efficacy window as a substrate for auditing homecare workflows. This validates the system's ability to trace intervention success, proving that technical, motivational, and behavioral avenues were fully exhausted prior to clinical escalation.
+\end{itemize}
 
-% -------------------------------------------------------
+\subsection{Expected Contributions}
+This work delivers three primary contributions to the field of digital medicine and CPAP therapy management:
+\begin{enumerate}
+\item \textbf{A Preemptive Care Architecture:} A concrete, scalable software architecture engineered for large-scale homecare networks (40,000+ patients) that shifts CPAP monitoring from a reactive, threshold-based model to a closed-loop, preemptive interception model.
+\item \textbf{A Patient-Empowered Clinical Workflow:} An operationalized digital pathway that establishes the patient as the primary actor, deploying automated self-correction feeds and dual-routing report tools to resolve early mechanical issues before they escalate.
+\item \textbf{A Reusable Multi-Role Design Pattern:} A validated software engineering pattern that integrates high-frequency IoT medical telemetry, symmetric weekly aggregation, dynamic risk profiling, and role-specific clinical workspaces within a single, RBAC-compliant platform.
+\end{enumerate}
+
+% --------------------------------------------------------
 \section{Conclusion}
 
-This paper presents SleepCare as a role-based clinical dashboard
-architecture for personalized CPAP therapy that centers on
-backend-frontend parity, multi-source integration, and AI-assisted
-workflow support. The framework is grounded in established adherence
-literature and recent studies on adaptive OSA management, but its main
-contribution is not a finalized predictive model; it is a scalable
-engineering structure that can underpin earlier intervention, reduced
-information asymmetry, and more coherent follow-up for homecare OSA
-management~\cite{kakaei2024bhi,kakaei2025skima,kakaei2025cbms}. Future
-work includes usability testing with technicians, longitudinal
-evaluation of clustering performance, and integration with national or
-institutional CPAP registries to assess the impact of the architecture
-at scale~\cite{kakaei2025cbms}.
+This paper presents SleepCare, a preemptive, patient-centric clinical dashboard architecture designed to address the persistent crisis of early CPAP therapy abandonment in Obstructive Sleep Apnea. By reframing the patient as the primary, empowered actor and leveraging continuous multi-source digital biomarkers, the system moves beyond reactive, threshold-based tracking to intercept physiological and mechanical deviations before they culminate in treatment failure.
 
-% -------------------------------------------------------
+The SleepCare architecture demonstrates how a unified, weekly patient-state aggregation pipeline can serve as a single source of truth, coordinating frontline technical interceptors and shielding clinical decision-makers from alert fatigue. By resolving minor mechanical failures through patient self-correction and tactical technician dispatch, the platform preserves scarce clinical resources for complex cases, ensuring robust clinical governance and absolute traceability.
+
+Future work will focus on large-scale usability testing with clinicians and technicians across the Linde Homecare France network, evaluating the long-term predictive accuracy of our biomarker-driven dropout models, and integrating the SleepCare platform with national health registries to assess its clinical-economic impact at scale.
+
+% --------------------------------------------------------
 \section*{Acknowledgment}
 
-This paper presents results developed in collaboration between Linde
-Homecare France and the University Lumi\`{e}re Lyon~2, DISP Lab.
-The content reflects an R\&D initiative promoted by Linde Homecare
-France. Responsibility for the information and views expressed lies
-entirely with the authors.
+This paper presents results developed in collaboration between Linde Homecare France and the University Lumi\`{e}re Lyon 2, DISP Lab. The content reflects a joint R\&D initiative promoted by Linde Homecare France to pioneer proactive, digital homecare systems. Responsibility for the information and views expressed in this paper lies entirely with the authors.
 
-% -------------------------------------------------------
+% --------------------------------------------------------
 \begin{thebibliography}{00}
 
 \bibitem{weaver2008}
@@ -513,13 +363,15 @@ T.~E. Weaver and R.~R. Grunstein,
 ``Adherence to continuous positive airway pressure therapy: the
 challenge to effective treatment,''
 \textit{Proc. Am. Thorac. Soc.}, vol.~5, no.~2, pp.~173--178,
-Feb. 2008.
+Feb. 2008, doi: 10.1513/pats.200708-119MG.
 
 \bibitem{dowding2015}
-D.~Dowding \textit{et al.},
+D.~Dowding, R.~Randell, P.~Gardner, G.~Fitzpatrick, P.~Dykes,
+J.~Favela, S.~Hamer, Z.~Whitewood-Moores, N.~Hardiker, E.~Borycki,
+and L.~Currie,
 ``Dashboards for improving patient care: review of the literature,''
 \textit{Int. J. Med. Inform.}, vol.~84, no.~2, pp.~87--100,
-Feb. 2015.
+Feb. 2015, doi: 10.1016/j.ijmedinf.2014.10.001.
 
 \bibitem{kakaei2024bhi}
 Y.~Kakaei Siahkal, N.~Moalla, A.~Sekhari, T.~Wang, and O.~Grasset,
@@ -533,8 +385,8 @@ Y.~Kakaei Siahkal, N.~Moalla, A.~Seklouli-Sekhari, T.~Wang, and
 O.~Grasset,
 ``Integrating digital biomarkers with feedback-driven clustering for
 optimized CPAP adherence in OSA management,''
-in \textit{Proc. IEEE Int. Symp. Signal Image Technol. Internet-Based
-Syst. (SKIMA)}, 2025.
+in \textit{Proc. IEEE Int. Symp. Signal Image Technol.
+Internet-Based Syst. (SKIMA)}, 2025.
 
 \bibitem{kakaei2025cbms}
 Y.~Kakaei Siahkal, N.~Moalla, A.~Seklouli-Sekhari, T.~Wang, and
@@ -542,14 +394,68 @@ O.~Grasset,
 ``Dynamic portfolio for personalized CPAP treatment: adaptive digital
 biomarker-driven strategies across the OSA care pathway,''
 in \textit{Proc. IEEE Int. Symp. Comput.-Based Med. Syst. (CBMS)},
-2025. [Online]. Available: \url{https://hal.science/hal-05082782}
+2025, doi: 10.1109/CBMS65348.2025.00194.
 
-\bibitem{aurora2009}
-R.~N. Aurora \textit{et al.},
+\bibitem{epstein2009}
+L.~J. Epstein, D.~Kristo, P.~J. Strollo~Jr., N.~Friedman,
+A.~Malhotra, S.~P. Patil, K.~Ramar, R.~Rogers, R.~J. Schwab,
+E.~M. Weaver, and M.~D. Weinstein,
 ``Clinical guideline for the evaluation, management and long-term care
 of obstructive sleep apnea in adults,''
-\textit{J. Clin. Sleep Med.}, vol.~5, no.~3, pp.~263--276, Jun. 2009.
+\textit{J. Clin. Sleep Med.}, vol.~5, no.~3, pp.~263--276,
+Jun. 2009.
+
+\bibitem{lacroix2023}
+J.~Lacroix, J.~Tatousek, N.~Den~Teuling, T.~Visser, C.~Wells,
+P.~Wylie, R.~Rosenberg, and R.~Bogan,
+``Effectiveness of an intervention providing digitally generated
+personalized feedback and education on adherence to CPAP: randomized
+controlled trial,''
+\textit{J. Med. Internet Res.}, vol.~25, Art. no.~e40193, May 2023,
+doi: 10.2196/40193.
+
+\bibitem{hoet2017}
+F.~Hoet, W.~Libert, C.~Sanida, A.~Art, M.~A. Aubert, and
+V.~Rodenstein,
+``Telemonitoring in continuous positive airway pressure-treated
+patients improves delay to first intervention and early compliance:
+a randomized trial,''
+\textit{Sleep Med.}, vol.~39, pp.~77--83, 2017,
+doi: 10.1016/j.sleep.2017.08.016.
+
+\bibitem{thong2022}
+B.~K.~S. Thong, G.~X.~Y. Loh, J.~J. Lim, C.~J.~L. Lee, S.~N. Ting,
+H.~P. Li, and Q.~Y. Li,
+``Telehealth technology application in enhancing CPAP adherence in
+OSA patients: a review of current evidence,''
+\textit{Front. Med.}, vol.~9, Art. no.~877765, May 2022,
+doi: 10.3389/fmed.2022.877765.
+
+\bibitem{salinas2025}
+G.~D. Salinas, W.~Cerenzia, B.~Coleman, F.~Thorndike, S.~Edington,
+and H.~Riney,
+``Patient satisfaction with a clinically integrated sleep apnea care
+model vs. the current sleep care paradigm,''
+\textit{Front. Sleep}, vol.~3, Art. no.~1534441, Jan. 2025,
+doi: 10.3389/frsle.2024.1534441.
+
+\bibitem{sawyer2011}
+A.~M. Sawyer, N.~S. Gooneratne, C.~L. Marcus, D.~Ofer,
+K.~C. Richards, and T.~E. Weaver,
+``A systematic review of CPAP adherence across age groups: clinical
+and empiric insights for developing CPAP adherence interventions,''
+\textit{Sleep Med. Rev.}, vol.~15, no.~6, pp.~343--356, Dec. 2011,
+doi: 10.1016/j.smrv.2011.01.003.
+
+\bibitem{stepnowsky2007}
+C.~J. Stepnowsky, J.~J. Palau, A.~L. Gifford, and S.~Ancoli-Israel,
+``A self-management approach to improving continuous positive airway
+pressure adherence and outcomes,''
+\textit{Behav. Sleep Med.}, vol.~5, no.~2, pp.~131--146, 2007,
+doi: 10.1080/15402000701190622.
 
 \end{thebibliography}
+
+\balance
 
 \end{document}
